@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+:root {
+  --bg:            #0A0B0D;
+  --surface:       #121419;
+  --surface-2:     #181B22;
+  --border:        #262B34;
+  --border-strong: #3A424E;
+
+  --text:          #F2F4F7;
+  --text-muted:    #9AA3B2;
+  --text-faint:    #5C6675;
+
+  --lime:          #C8F000;
+  --lime-dim:      #8FA800;
+
+  --red:           #FF2D46;
+  --red-dim:       #7A1622;
+
+  --blue:          #3B82F6;
+  --amber:         #F59E0B;
+
+  --radius:        10px;
+  --radius-sm:     6px;
+  --shadow:        0 8px 30px rgba(0,0,0,0.45);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography utilities */
+.font-display {
+  font-family: 'Archivo', sans-serif;
+}
+
+.font-mono-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.metric-number {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1;
+  color: var(--text);
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.card:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--lime);
+  color: #0A0B0D;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+/* Stage rail */
+.rail-line {
+  height: 2px;
+  background: var(--border);
+  position: relative;
+  flex: 1;
+}
+
+.rail-line.done {
+  background: var(--lime);
+}
+
+.rail-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  border: 2px solid var(--border-strong);
+  background: var(--bg);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.rail-node.done {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.rail-node.active {
+  background: var(--bg);
+  border-color: var(--lime);
+  box-shadow: 0 0 8px rgba(200, 240, 0, 0.4);
+}
+
+.rail-node.blocked {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 8px rgba(255, 45, 70, 0.4);
+}
+
+/* Form inputs */
+.input {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  padding: 10px 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: var(--lime);
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select.input {
+  cursor: pointer;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
