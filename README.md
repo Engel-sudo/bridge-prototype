@@ -1,4 +1,4 @@
-# BRIDGE — what it is and why it exists
+# BRIDGE 
 
 ---
 
