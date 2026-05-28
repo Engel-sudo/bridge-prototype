@@ -1,32 +1,32 @@
 // Network viz: Startups → Pain Points → Pilots → Departments
-// Ported from thefifthring, seeded with real Bridge data
+// viewBox 1000×310 (3.2:1 ratio) so SVG fills full width at any container size
 
 const startups = [
-  { x: 80,  y: 100, label: 'VisionQual' },
-  { x: 60,  y: 210, label: 'FlowRoute' },
-  { x: 100, y: 320, label: 'GridMind' },
-  { x: 70,  y: 430, label: 'CarbonLens' },
+  { x: 80,  y: 61,  label: 'VisionQual' },
+  { x: 60,  y: 122, label: 'FlowRoute' },
+  { x: 100, y: 184, label: 'GridMind' },
+  { x: 70,  y: 245, label: 'CarbonLens' },
 ]
 
 const hubs = [
-  { x: 360, y: 160, label: 'Pain · QA throughput' },
-  { x: 400, y: 300, label: 'Pain · logistics delay' },
-  { x: 340, y: 430, label: 'Pain · energy peaks' },
+  { x: 360, y: 94,  label: 'Pain · QA throughput' },
+  { x: 400, y: 172, label: 'Pain · logistics delay' },
+  { x: 340, y: 245, label: 'Pain · energy peaks' },
 ]
 
 const pilots = [
-  { x: 670, y: 120, label: 'Pilot — QC AI' },
-  { x: 700, y: 240, label: 'Pilot — Logistics' },
-  { x: 660, y: 360, label: 'Pilot — Energy' },
-  { x: 690, y: 470, label: 'Pilot — Carbon' },
+  { x: 670, y: 72,  label: 'Pilot — QC AI' },
+  { x: 700, y: 139, label: 'Pilot — Logistics' },
+  { x: 660, y: 206, label: 'Pilot — Energy' },
+  { x: 690, y: 267, label: 'Pilot — Carbon' },
 ]
 
 const departments = [
-  { x: 920, y: 90,  label: 'Quality' },
-  { x: 960, y: 195, label: 'Logistics' },
-  { x: 940, y: 300, label: 'Production' },
-  { x: 920, y: 400, label: 'R&D' },
-  { x: 880, y: 490, label: 'Procurement' },
+  { x: 900, y: 55,  label: 'Quality' },
+  { x: 910, y: 114, label: 'Logistics' },
+  { x: 900, y: 172, label: 'Production' },
+  { x: 905, y: 228, label: 'R&D' },
+  { x: 895, y: 278, label: 'Procurement' },
 ]
 
 const edges: [{ x: number; y: number }, { x: number; y: number }][] = [
@@ -53,7 +53,10 @@ const edges: [{ x: number; y: number }, { x: number; y: number }][] = [
 
 export default function NetworkViz() {
   return (
-    <svg viewBox="0 0 1000 560" style={{ width: '100%', height: '100%', display: 'block' }}>
+    <svg
+      viewBox="0 0 1000 310"
+      style={{ width: '100%', height: 'auto', display: 'block' }}
+    >
       <defs>
         <linearGradient id="nv-edge" x1="0" x2="1">
           <stop offset="0%"   stopColor="var(--lime)" stopOpacity="0.04" />
@@ -75,7 +78,7 @@ export default function NetworkViz() {
       </defs>
 
       {/* Background grid */}
-      <rect width="1000" height="560" fill="url(#nv-grid)" />
+      <rect width="1000" height="310" fill="url(#nv-grid)" />
 
       {/* Column labels */}
       {[
@@ -87,7 +90,7 @@ export default function NetworkViz() {
         <text
           key={c.label}
           x={c.x}
-          y={34}
+          y={22}
           textAnchor="middle"
           fill="var(--text-faint)"
           style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, letterSpacing: 3 }}
@@ -100,9 +103,7 @@ export default function NetworkViz() {
       {edges.map(([a, b], i) => {
         const mx = (a.x + b.x) / 2
         const d = `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`
-        return (
-          <path key={`base-${i}`} d={d} stroke="var(--border-strong)" strokeWidth="1" fill="none" />
-        )
+        return <path key={`base-${i}`} d={d} stroke="var(--border-strong)" strokeWidth="1" fill="none" />
       })}
 
       {/* Edges — animated lime overlay */}
@@ -128,20 +129,9 @@ export default function NetworkViz() {
         const isHub = (hubs as { x: number; y: number; label: string }[]).includes(n)
         return (
           <g key={i}>
-            {isHub && <circle cx={n.x} cy={n.y} r="22" fill="url(#nv-glow)" />}
-            <circle
-              cx={n.x} cy={n.y}
-              r={isHub ? 5 : 3.5}
-              fill={isHub ? 'var(--lime)' : 'var(--text)'}
-              opacity={isHub ? 1 : 0.8}
-            />
-            <circle
-              cx={n.x} cy={n.y}
-              r={isHub ? 10 : 7}
-              stroke={isHub ? 'var(--lime)' : 'var(--border-strong)'}
-              strokeOpacity="0.4"
-              fill="none"
-            />
+            {isHub && <circle cx={n.x} cy={n.y} r="16" fill="url(#nv-glow)" />}
+            <circle cx={n.x} cy={n.y} r={isHub ? 5 : 3.5} fill={isHub ? 'var(--lime)' : 'var(--text)'} opacity={isHub ? 1 : 0.8} />
+            <circle cx={n.x} cy={n.y} r={isHub ? 10 : 7} stroke={isHub ? 'var(--lime)' : 'var(--border-strong)'} strokeOpacity="0.4" fill="none" />
             <text
               x={n.x + 13}
               y={n.y + 4}
@@ -155,11 +145,7 @@ export default function NetworkViz() {
       })}
 
       {/* Scan line */}
-      <rect
-        x="0" y="0" width="1000" height="60"
-        fill="url(#nv-scan)"
-        className="animate-scan-y"
-      />
+      <rect x="0" y="0" width="1000" height="40" fill="url(#nv-scan)" className="animate-scan-y" />
     </svg>
   )
 }

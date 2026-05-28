@@ -102,7 +102,7 @@ export default function PainPointMap() {
           </span>
           <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.1em', color: 'var(--lime)' }}>live</span>
         </div>
-        <div style={{ height: '260px', position: 'relative' }}>
+        <div>
           <NetworkViz />
         </div>
       </motion.div>
