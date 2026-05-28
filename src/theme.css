@@ -23,6 +23,7 @@
   --radius:        10px;
   --radius-sm:     6px;
   --shadow:        0 8px 30px rgba(0,0,0,0.45);
+  --grid:          rgba(255,255,255,0.04);
 }
 
 * {
@@ -196,6 +197,22 @@ textarea.input {
 
 select.input {
   cursor: pointer;
+}
+
+/* Network viz animations */
+@keyframes dash-flow {
+  to { stroke-dashoffset: -200; }
+}
+.animate-dash {
+  animation: dash-flow 8s linear infinite;
+}
+
+@keyframes scan-y {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(700%); }
+}
+.animate-scan-y {
+  animation: scan-y 6s linear infinite;
 }
 
 /* Scrollbar */

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Filter } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import PainPointCard from '../components/PainPointCard'
+import NetworkViz from '../components/NetworkViz'
 import type { PainPointStatus } from '../store/types'
 
 const DEPARTMENTS = ['All', 'Quality', 'Production', 'Logistics', 'R&D', 'Procurement', 'Innovation & Ventures']
@@ -75,6 +76,36 @@ export default function PainPointMap() {
         </div>
       </motion.div>
 
+
+      {/* Network viz */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+        style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius)',
+          overflow: 'hidden',
+          marginBottom: '28px',
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '10px 16px',
+          borderBottom: '1px solid var(--border)',
+        }}>
+          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+            innovation dependency graph
+          </span>
+          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.1em', color: 'var(--lime)' }}>live</span>
+        </div>
+        <div style={{ height: '260px', position: 'relative' }}>
+          <NetworkViz />
+        </div>
+      </motion.div>
 
       {/* Submission form */}
       <AnimatePresence>
