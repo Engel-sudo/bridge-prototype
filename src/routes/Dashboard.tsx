@@ -121,41 +121,11 @@ export default function Dashboard() {
         </p>
       </motion.div>
 
-      {/* Metric reframe */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.4 }}
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '28px 32px', marginBottom: '32px' }}
-      >
-        <span className="kicker">metric reframe</span>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '24px', alignItems: 'center', marginTop: '16px' }}>
-          <div style={{ padding: '20px', background: 'rgba(255,45,70,0.06)', border: '1px solid var(--red-dim)', borderRadius: 'var(--radius-sm)' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--red)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px' }}>Before Bridge</div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '18px', color: 'var(--red)', lineHeight: 1.2, marginBottom: '10px' }}>Startup requests + connections</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.5 }}>Audi measures how many startups it talks to. Not whether anything gets built.</div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>BRIDGE</div>
-            <div style={{ fontSize: '24px', color: 'var(--lime)' }}>→</div>
-          </div>
-          <div style={{ padding: '20px', background: 'rgba(200,240,0,0.06)', border: '1px solid rgba(200,240,0,0.25)', borderRadius: 'var(--radius-sm)' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--lime)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px' }}>After Bridge</div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '18px', color: 'var(--lime)', lineHeight: 1.2, marginBottom: '10px' }}>Implementations: idea to car</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '12px' }}>BRIDGE measures how many startups actually reach production.</div>
-            <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
-              <span style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '28px', color: 'var(--lime)', lineHeight: 1 }}>{metrics.implementationsThisQuarter}</span>
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '3px' }}>implementations this quarter</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Top KPIs */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.4 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
         style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1px', background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', marginBottom: '32px' }}
       >
         {[
@@ -175,7 +145,7 @@ export default function Dashboard() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
         style={{ marginBottom: '32px' }}
       >
         <Chrome title="bridge / map · innovation intelligence" badge="● live">
