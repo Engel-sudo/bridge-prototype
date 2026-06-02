@@ -18,6 +18,18 @@ const STAGE_LABELS: Record<string, string> = {
   path_to_production: 'Idea → Car',
 }
 
+const NEXT_STEP: Record<string, string> = {
+  submitted: 'A named Audi contact will be assigned within 48 hours.',
+  named_contact: 'Your owner is being assigned. Expect first contact shortly.',
+  owner_assigned: 'Your owner is reviewing your application.',
+  in_review: 'Your owner is preparing the 2-week signal. Expect a yes or no soon.',
+  signal_sent: 'Decision imminent. Your owner will send a Go or Redirect signal.',
+  decision_go: 'Pilot confirmed. Your owner will reach out to set up next steps.',
+  decision_redirect: 'Redirected with a referral. Your owner will send contact details.',
+  matched_pain_owner: 'Matched to a pain owner. Pilot scope being defined.',
+  path_to_production: 'In production. Your technology is going into the car.',
+}
+
 export default function FounderStatus() {
   const { id } = useParams()
   const { applications, owners } = useBridgeStore()
@@ -107,23 +119,41 @@ export default function FounderStatus() {
             </div>
           </div>
 
-          {/* Countdown */}
+          {/* Countdown / overdue */}
           {!isGo && !isRedirect && (
-            <div style={{
-              background: 'rgba(200,240,0,0.06)',
-              border: '1px solid rgba(200,240,0,0.2)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '14px 20px',
-              textAlign: 'center',
-            }}>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
-                2-week signal in
+            daysLeft < 0 ? (
+              <div style={{
+                background: 'var(--red-dim)',
+                border: '1px solid var(--red)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '14px 20px',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Signal overdue
+                </div>
+                <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: 'var(--red)', lineHeight: 1 }}>
+                  {Math.abs(daysLeft)}
+                </div>
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>days past deadline</div>
               </div>
-              <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: daysLeft <= 3 ? 'var(--red)' : 'var(--lime)', lineHeight: 1 }}>
-                {Math.max(0, daysLeft)}
+            ) : (
+              <div style={{
+                background: 'rgba(200,240,0,0.06)',
+                border: '1px solid rgba(200,240,0,0.2)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '14px 20px',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  2-week signal in
+                </div>
+                <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: daysLeft <= 3 ? 'var(--red)' : 'var(--lime)', lineHeight: 1 }}>
+                  {daysLeft}
+                </div>
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>days remaining</div>
               </div>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>days remaining</div>
-            </div>
+            )
           )}
 
           {isGo && (
@@ -178,6 +208,14 @@ export default function FounderStatus() {
               <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: done ? 'var(--lime)' : 'var(--border-strong)' }} />
             </div>
           ))}
+        </div>
+
+        {/* Next step */}
+        <div style={{ marginTop: '16px', padding: '12px 16px', background: 'var(--surface-2)', borderRadius: 'var(--radius-sm)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', flexShrink: 0, marginTop: '1px' }}>Next</span>
+          <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+            {NEXT_STEP[app.stage]}
+          </span>
         </div>
       </motion.div>
 

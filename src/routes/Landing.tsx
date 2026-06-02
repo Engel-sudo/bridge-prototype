@@ -98,7 +98,7 @@ export default function Landing() {
             The door was never designed for him to walk through.
           </motion.p>
 
-          <motion.div {...fadeUp(0.24)} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <motion.div {...fadeUp(0.24)} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Link to="/apply" className="btn-primary" style={{ fontSize: '15px', padding: '12px 24px' }}>
               Apply to BRIDGE
               <ArrowRight size={16} />
@@ -106,6 +106,14 @@ export default function Landing() {
             <Link to="/dashboard" className="btn-secondary" style={{ fontSize: '15px', padding: '12px 24px' }}>
               System overview
               <ChevronRight size={16} />
+            </Link>
+            <Link to="/owner" style={{
+              fontFamily: 'IBM Plex Mono', fontSize: '11px', letterSpacing: '0.1em',
+              color: 'var(--text-faint)', textDecoration: 'none',
+              borderBottom: '1px solid var(--border)', paddingBottom: '1px',
+              transition: 'color 0.15s',
+            }}>
+              Audi employee? Sign in
             </Link>
           </motion.div>
         </div>

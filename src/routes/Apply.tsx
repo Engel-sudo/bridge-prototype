@@ -83,7 +83,7 @@ export default function Apply() {
       ownerId: null,
       signalDeadline: addDays(14),
       notes: data.ask,
-      funding: data.funding || 'Undisclosed',
+      funding: data.stage || 'Undisclosed',
       teamSize: parseInt(data.teamSize) || 1,
     }
     addApplication(app)
