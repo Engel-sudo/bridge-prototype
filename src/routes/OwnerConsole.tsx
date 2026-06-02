@@ -5,6 +5,7 @@ import { ChevronRight, Zap, Check, X, ExternalLink } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import StatusTimeline from '../components/StatusTimeline'
 import OwnerCard from '../components/OwnerCard'
+import DemoHint from '../components/DemoHint'
 import type { Application } from '../store/types'
 
 // Overdue = past the 2-week signal with no decision yet.
@@ -84,6 +85,8 @@ export default function OwnerConsole() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '1200px', margin: '0 auto' }}
     >
+      <DemoHint persona="You are an Audi owner" hint="Claim a new (amber) startup, advance its stage, then make the Go or Redirect call at the 2-week signal. Try the overdue one." />
+
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
         <span className="kicker">owner console</span>

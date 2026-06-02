@@ -4,6 +4,7 @@ import { Plus, Filter } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import PainPointCard from '../components/PainPointCard'
 import NetworkViz from '../components/NetworkViz'
+import DemoHint from '../components/DemoHint'
 import type { PainPointStatus } from '../store/types'
 
 const DEPARTMENTS = ['All', 'Quality', 'Production', 'Logistics', 'R&D', 'Procurement', 'Innovation & Ventures']
@@ -57,6 +58,8 @@ export default function PainPointMap() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '1200px', margin: '0 auto' }}
     >
+      <DemoHint persona="You are any Audi employee" hint="Submit a pain point — it appears here instantly and on the Dashboard live feed. No manager approval needed." />
+
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
         <span className="kicker">the map</span>

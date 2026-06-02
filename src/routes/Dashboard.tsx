@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useBridgeStore } from '../store/store'
 import MetricStat from '../components/MetricStat'
+import DemoHint from '../components/DemoHint'
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -108,6 +109,8 @@ export default function Dashboard() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '1200px', margin: '0 auto' }}
     >
+      <DemoHint persona="System overview" hint="Submit a pain point on the Map — it appears in the live feed below. Stats update when owners advance startups." />
+
       {/* Header */}
       <motion.div {...fadeUp} style={{ marginBottom: '48px' }}>
         <span className="kicker">system overview</span>
@@ -197,16 +200,15 @@ export default function Dashboard() {
               {/* Mini KPI strip */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', marginBottom: '16px' }}>
                 {[
-                  { k: 'Pilots active', v: `${metrics.activePilots}`, d: '+4' },
-                  { k: 'Owners', v: `${owners.length}`, d: '+1' },
-                  { k: 'Pain points', v: `${painPoints.length}`, d: '+3' },
-                  { k: 'To production', v: `${metrics.implementations}`, d: '+1' },
+                  { k: 'Pilots active', v: `${metrics.activePilots}` },
+                  { k: 'Owners', v: `${owners.length}` },
+                  { k: 'Pain points', v: `${painPoints.length}` },
+                  { k: 'To production', v: `${metrics.implementations}` },
                 ].map(s => (
                   <div key={s.k} style={{ background: 'var(--bg)', padding: '14px 16px' }}>
                     <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{s.k}</div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '4px' }}>
                       <span style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '28px', color: 'var(--text)', lineHeight: 1 }}>{s.v}</span>
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--lime)' }}>{s.d}</span>
                     </div>
                   </div>
                 ))}

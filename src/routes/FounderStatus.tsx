@@ -4,6 +4,7 @@ import { Clock, CheckCircle, XCircle } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import StatusTimeline from '../components/StatusTimeline'
 import OwnerCard from '../components/OwnerCard'
+import DemoHint from '../components/DemoHint'
 
 const STAGE_LABELS: Record<string, string> = {
   submitted: 'Application submitted',
@@ -59,6 +60,8 @@ export default function FounderStatus() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '860px', margin: '0 auto' }}
     >
+      <DemoHint persona="You are the founder" hint="This page updates live when your Audi owner advances the stage in the Owner Console." />
+
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '36px' }}>
         <span className="kicker">founder view</span>

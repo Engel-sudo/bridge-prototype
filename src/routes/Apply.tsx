@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useBridgeStore } from '../store/store'
+import DemoHint from '../components/DemoHint'
 import type { Application } from '../store/types'
 
 const STEPS = [
@@ -155,6 +156,8 @@ export default function Apply() {
           </motion.div>
         ) : (
           <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <DemoHint persona="You are a startup founder" hint="Fill the 3 steps and submit. You'll get a tracked application you can follow in the Founder view." />
+
             {/* Header */}
             <div style={{ marginBottom: '36px' }}>
               <span className="kicker">apply to bridge</span>
