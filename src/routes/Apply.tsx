@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, CheckCircle } from 'lucide-react'
+import { ChevronRight, CheckCircle, Check } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useBridgeStore } from '../store/store'
 import DemoHint from '../components/DemoHint'
@@ -12,9 +12,14 @@ const STEPS = [
   { title: 'The ask', subtitle: 'What do you need from Audi?' },
 ]
 
+const REGIONS = ['Bavaria', 'Baden-Württemberg', 'Hesse', 'Other Germany', 'Outside Germany'] as const
+type Region = typeof REGIONS[number]
+const NEARBY: Region[] = ['Bavaria', 'Baden-Württemberg']
+
 interface FormData {
   founderName: string
   companyName: string
+  region: Region | ''
   teamSize: string
   funding: string
   technology: string
@@ -26,6 +31,7 @@ interface FormData {
 const EMPTY: FormData = {
   founderName: '',
   companyName: '',
+  region: '',
   teamSize: '',
   funding: '',
   technology: '',
@@ -50,11 +56,12 @@ export default function Apply() {
   const [data, setData] = useState<FormData>(EMPTY)
   const [appId, setAppId] = useState('')
   const [done, setDone] = useState(false)
+  const [visitConfirmed, setVisitConfirmed] = useState(false)
   const { addApplication } = useBridgeStore()
   const navigate = useNavigate()
 
   function canNext() {
-    if (step === 0) return data.founderName.trim() && data.companyName.trim()
+    if (step === 0) return data.founderName.trim() && data.companyName.trim() && data.region
     if (step === 1) return data.technology.trim()
     return data.ask.trim()
   }
@@ -145,11 +152,42 @@ export default function Apply() {
               </div>
             </div>
 
+            {NEARBY.includes(data.region as Region) && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.35 }}
+                style={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderLeft: '3px solid var(--lime)',
+                  borderRadius: 'var(--radius)',
+                  padding: '20px 24px',
+                  marginBottom: '24px',
+                }}
+              >
+                <span className="kicker" style={{ marginBottom: '6px', display: 'block' }}>You're close to us</span>
+                <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '16px' }}>
+                  Since you're based nearby, your Owner can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks. This is optional but recommended.
+                </p>
+                {visitConfirmed ? (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600, color: 'var(--lime)' }}>
+                    <Check size={16} color="var(--lime)" />
+                    Visit requested
+                  </div>
+                ) : (
+                  <button className="btn-secondary" onClick={() => setVisitConfirmed(true)}>
+                    Yes, I'd like a visit
+                  </button>
+                )}
+              </motion.div>
+            )}
+
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button className="btn-secondary" onClick={() => navigate(`/founder/${appId}`)}>
                 Track application
               </button>
-              <button className="btn-secondary" onClick={() => { setDone(false); setStep(0); setData(EMPTY) }}>
+              <button className="btn-secondary" onClick={() => { setDone(false); setStep(0); setData(EMPTY); setVisitConfirmed(false) }}>
                 Submit another
               </button>
             </div>
@@ -220,6 +258,13 @@ export default function Apply() {
                       <div>
                         <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Company name *</label>
                         <input className="input" placeholder="Your startup name" value={data.companyName} onChange={e => setData(d => ({ ...d, companyName: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Where is your startup based? *</label>
+                        <select className="input" value={data.region} onChange={e => setData(d => ({ ...d, region: e.target.value as Region }))}>
+                          <option value="">Select a region…</option>
+                          {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                         <div>
