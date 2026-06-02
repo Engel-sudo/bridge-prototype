@@ -144,7 +144,7 @@ export default function Apply() {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <button className="btn-secondary" onClick={() => navigate('/founder')}>
+              <button className="btn-secondary" onClick={() => navigate(`/founder/${appId}`)}>
                 Track application
               </button>
               <button className="btn-secondary" onClick={() => { setDone(false); setStep(0); setData(EMPTY) }}>

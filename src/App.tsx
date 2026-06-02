@@ -17,6 +17,7 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/apply" element={<Apply />} />
           <Route path="/founder" element={<FounderStatus />} />
+          <Route path="/founder/:id" element={<FounderStatus />} />
           <Route path="/owner" element={<OwnerConsole />} />
           <Route path="/map" element={<PainPointMap />} />
           <Route path="/dashboard" element={<Dashboard />} />

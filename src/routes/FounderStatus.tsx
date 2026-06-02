@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link, useParams } from 'react-router-dom'
 import { Clock, CheckCircle, XCircle } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import StatusTimeline from '../components/StatusTimeline'
@@ -17,8 +18,34 @@ const STAGE_LABELS: Record<string, string> = {
 }
 
 export default function FounderStatus() {
+  const { id } = useParams()
   const { applications, owners } = useBridgeStore()
-  const app = applications.find(a => a.id === 'APP-2024-0047') || applications[0]
+  // With an :id, track that specific application. Without one, default to the
+  // demo founder (Jonas / VisionQual) so /founder stays a valid landing.
+  const app = id
+    ? applications.find(a => a.id === id)
+    : applications.find(a => a.id === 'APP-2024-0047') || applications[0]
+
+  if (!app) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        style={{ padding: '120px 40px 60px', maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}
+      >
+        <span className="kicker">founder view</span>
+        <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>
+          Application not found
+        </h1>
+        <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px' }}>
+          No application matches <span style={{ fontFamily: 'IBM Plex Mono', color: 'var(--text)' }}>{id}</span>. Check the link from your confirmation.
+        </p>
+        <Link to="/apply" className="btn-primary" style={{ textDecoration: 'none' }}>Apply to BRIDGE</Link>
+      </motion.div>
+    )
+  }
+
   const owner = owners.find(o => o.id === app.ownerId)
   const currentLabel = STAGE_LABELS[app.stage] || app.stage
   const isGo = app.stage === 'decision_go' || app.stage === 'path_to_production'
@@ -167,12 +194,29 @@ export default function FounderStatus() {
       </motion.div>
 
       {/* Owner card */}
-      {owner && (
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <span className="kicker" style={{ marginBottom: '10px', display: 'block' }}>your owner</span>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <span className="kicker" style={{ marginBottom: '10px', display: 'block' }}>your owner</span>
+        {owner ? (
           <OwnerCard owner={owner} />
-        </motion.div>
-      )}
+        ) : (
+          <div className="card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{
+              width: '44px', height: '44px', borderRadius: 'var(--radius-sm)',
+              background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <span style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '13px', color: 'var(--lime)' }}>TBA</span>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
+                Your Owner is being assigned.
+              </div>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginTop: '2px' }}>
+                A named Audi contact within 48 hours.
+              </div>
+            </div>
+          </div>
+        )}
+      </motion.div>
 
       {/* App meta */}
       <motion.div
