@@ -12,8 +12,10 @@ interface BridgeStore {
   addApplication: (app: Application) => void
   advanceStage: (appId: string) => void
   assignOwner: (appId: string, ownerId: string) => void
+  decide: (appId: string, outcome: 'go' | 'redirect') => void
   addPainPoint: (pp: PainPoint) => void
   matchPainPoint: (ppId: string, appId: string) => void
+  resetDemo: () => void
 }
 
 const STAGE_ORDER: Stage[] = [
@@ -89,6 +91,17 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
       }
     }),
 
+  // The 2-week yes/no call. Branches off the linear stage walk to set an
+  // explicit Go or Redirect outcome — decision_redirect is otherwise unreachable.
+  decide: (appId, outcome) =>
+    set((state) => ({
+      applications: state.applications.map((a) =>
+        a.id === appId
+          ? { ...a, stage: outcome === 'go' ? 'decision_go' : 'decision_redirect' }
+          : a
+      ),
+    })),
+
   addPainPoint: (pp) =>
     set((state) => ({
       painPoints: [pp, ...state.painPoints],
@@ -110,5 +123,16 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
         painPointsOpen: Math.max(0, state.metrics.painPointsOpen - 1),
         painPointsMatched: state.metrics.painPointsMatched + 1,
       },
+    })),
+
+  // Restore all seed state — lets a presenter reset between testers without a
+  // page reload. In-memory only, no storage touched.
+  resetDemo: () =>
+    set(() => ({
+      applications: seedApplications,
+      owners: seedOwners,
+      painPoints: seedPainPoints,
+      pilots: seedPilots,
+      metrics: seedMetrics,
     })),
 }))

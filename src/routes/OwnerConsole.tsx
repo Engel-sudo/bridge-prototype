@@ -1,10 +1,16 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, Zap } from 'lucide-react'
+import { ChevronRight, Zap, Check, X, ExternalLink } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import StatusTimeline from '../components/StatusTimeline'
 import OwnerCard from '../components/OwnerCard'
 import type { Application } from '../store/types'
+
+// Overdue = past the 2-week signal with no decision yet.
+const isOverdue = (a: Application) =>
+  a.daysInProcess > 14 &&
+  !['decision_go', 'decision_redirect', 'matched_pain_owner', 'path_to_production'].includes(a.stage)
 
 const STAGE_LABELS: Record<string, string> = {
   submitted: 'Submitted',
@@ -31,7 +37,7 @@ const stageColor: Record<string, string> = {
 }
 
 export default function OwnerConsole() {
-  const { applications, owners, advanceStage, assignOwner, metrics } = useBridgeStore()
+  const { applications, owners, advanceStage, assignOwner, decide, metrics } = useBridgeStore()
   const owner = owners.find(o => o.id === 'o3') || owners[0]
   // Unassigned applications (ownerId null) land in the inbox so they can be claimed.
   const unassigned = applications.filter(a => a.ownerId === null)
@@ -58,6 +64,16 @@ export default function OwnerConsole() {
       const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
       if (updated) setSelected(updated)
       setClaiming(false)
+    }, 600)
+  }
+
+  function handleDecide(appId: string, outcome: 'go' | 'redirect') {
+    setAdvancing(true)
+    setTimeout(() => {
+      decide(appId, outcome)
+      const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
+      if (updated) setSelected(updated)
+      setAdvancing(false)
     }, 600)
   }
 
@@ -156,6 +172,14 @@ export default function OwnerConsole() {
                       <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)' }}>
                         day {app.daysInProcess}
                       </span>
+                      {isOverdue(app) && (
+                        <span style={{
+                          fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase',
+                          color: 'var(--red)', background: 'var(--red-dim)', padding: '2px 6px', borderRadius: '3px',
+                        }}>
+                          Overdue
+                        </span>
+                      )}
                     </div>
                   </div>
                   <ChevronRight size={14} color={isSelected ? 'var(--lime)' : 'var(--text-faint)'} />
@@ -189,9 +213,27 @@ export default function OwnerConsole() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
+                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: isOverdue(selected) ? 'var(--red)' : 'var(--text-faint)', letterSpacing: '0.08em' }}>
                       day {selected.daysInProcess} · deadline {selected.signalDeadline}
                     </span>
+                    {isOverdue(selected) && (
+                      <span style={{
+                        fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase',
+                        color: 'var(--red)', background: 'var(--red-dim)', padding: '3px 8px', borderRadius: '3px',
+                      }}>
+                        Overdue
+                      </span>
+                    )}
+                    {selected.ownerId !== null && (
+                      <Link
+                        to={`/founder/${selected.id}`}
+                        className="btn-secondary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <ExternalLink size={13} />
+                        View as founder
+                      </Link>
+                    )}
                     {selected.ownerId === null ? (
                       <button
                         className="btn-primary"
@@ -202,7 +244,33 @@ export default function OwnerConsole() {
                         <Zap size={14} />
                         {claiming ? 'Claiming…' : 'Claim Startup'}
                       </button>
-                    ) : !['decision_go', 'decision_redirect', 'path_to_production'].includes(selected.stage) && (
+                    ) : selected.stage === 'signal_sent' ? (
+                      <>
+                        <button
+                          className="btn-primary"
+                          onClick={() => handleDecide(selected.id, 'go')}
+                          disabled={advancing}
+                          style={{ opacity: advancing ? 0.7 : 1 }}
+                        >
+                          <Check size={14} />
+                          Go
+                        </button>
+                        <button
+                          onClick={() => handleDecide(selected.id, 'redirect')}
+                          disabled={advancing}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600,
+                            padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                            color: 'var(--red)', background: 'transparent', border: '1px solid var(--red)',
+                            opacity: advancing ? 0.7 : 1,
+                          }}
+                        >
+                          <X size={14} />
+                          Redirect
+                        </button>
+                      </>
+                    ) : !['decision_redirect', 'path_to_production'].includes(selected.stage) ? (
                       <button
                         className="btn-primary"
                         onClick={() => handleAdvance(selected.id)}
@@ -212,7 +280,7 @@ export default function OwnerConsole() {
                         <Zap size={14} />
                         {advancing ? 'Advancing…' : 'Advance Stage'}
                       </button>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 

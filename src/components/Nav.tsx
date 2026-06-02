@@ -1,4 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
+import { RotateCcw } from 'lucide-react'
+import { useBridgeStore } from '../store/store'
 
 const links = [
   { to: '/', label: 'The Door', mono: 'public' },
@@ -10,6 +12,7 @@ const links = [
 
 export default function Nav() {
   const { pathname } = useLocation()
+  const resetDemo = useBridgeStore(s => s.resetDemo)
 
   return (
     <nav style={{
@@ -68,9 +71,24 @@ export default function Nav() {
         )
       })}
 
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--lime)', boxShadow: '0 0 6px var(--lime)' }} />
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>PROTOTYPE · CCC7</span>
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <button
+          onClick={resetDemo}
+          title="Reset demo state"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+            fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase',
+            color: 'var(--text-faint)', background: 'transparent', border: '1px solid var(--border-strong)',
+            padding: '5px 10px', borderRadius: 'var(--radius-sm)', transition: 'all 0.15s',
+          }}
+        >
+          <RotateCcw size={11} />
+          Reset
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--lime)', boxShadow: '0 0 6px var(--lime)' }} />
+          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>PROTOTYPE · CCC7</span>
+        </div>
       </div>
     </nav>
   )

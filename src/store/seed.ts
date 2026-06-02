@@ -128,6 +128,22 @@ export const seedApplications: Application[] = [
     funding: '€550K pre-seed',
     teamSize: 7,
   },
+  {
+    id: 'APP-2026-0061',
+    founderId: 'f6',
+    founderName: 'Mara Lindqvist',
+    founderInitials: 'ML',
+    companyName: 'TorqueIQ',
+    technology: 'Real-time torque telemetry and drift detection for assembly lines',
+    stage: 'in_review',
+    submittedAt: '2026-05-14',
+    daysInProcess: 19,
+    ownerId: 'o3',
+    signalDeadline: '2026-05-28',
+    notes: 'Past the 2-week signal with no decision. Owner review stalled — needs a yes or no.',
+    funding: '€700K seed',
+    teamSize: 8,
+  },
 ]
 
 export const seedPainPoints: PainPoint[] = [
