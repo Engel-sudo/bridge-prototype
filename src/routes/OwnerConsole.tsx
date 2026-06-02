@@ -31,11 +31,15 @@ const stageColor: Record<string, string> = {
 }
 
 export default function OwnerConsole() {
-  const { applications, owners, advanceStage, metrics } = useBridgeStore()
+  const { applications, owners, advanceStage, assignOwner, metrics } = useBridgeStore()
   const owner = owners.find(o => o.id === 'o3') || owners[0]
+  // Unassigned applications (ownerId null) land in the inbox so they can be claimed.
+  const unassigned = applications.filter(a => a.ownerId === null)
   const myApps = applications.filter(a => a.ownerId === owner.id || a.ownerId === 'o2')
-  const [selected, setSelected] = useState<Application | null>(myApps[0] || null)
+  const queue = [...unassigned, ...myApps]
+  const [selected, setSelected] = useState<Application | null>(queue[0] || null)
   const [advancing, setAdvancing] = useState(false)
+  const [claiming, setClaiming] = useState(false)
 
   function handleAdvance(appId: string) {
     setAdvancing(true)
@@ -44,6 +48,16 @@ export default function OwnerConsole() {
       const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
       if (updated) setSelected(updated)
       setAdvancing(false)
+    }, 600)
+  }
+
+  function handleClaim(appId: string) {
+    setClaiming(true)
+    setTimeout(() => {
+      assignOwner(appId, owner.id)
+      const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
+      if (updated) setSelected(updated)
+      setClaiming(false)
     }, 600)
   }
 
@@ -101,18 +115,22 @@ export default function OwnerConsole() {
       <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '24px' }}>
         {/* Queue list */}
         <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
-          <span className="kicker" style={{ marginBottom: '12px', display: 'block' }}>startup queue</span>
+          <span className="kicker" style={{ marginBottom: '12px', display: 'block' }}>
+            startup queue{unassigned.length > 0 && ` · ${unassigned.length} new`}
+          </span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {myApps.map(app => {
+            {queue.map(app => {
               const isSelected = selected?.id === app.id
-              const color = stageColor[app.stage] || 'var(--text-faint)'
+              const isUnassigned = app.ownerId === null
+              const color = isUnassigned ? 'var(--amber)' : stageColor[app.stage] || 'var(--text-faint)'
               return (
                 <button
                   key={app.id}
                   onClick={() => setSelected(app)}
                   style={{
                     background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
-                    border: `1px solid ${isSelected ? 'var(--lime)' : 'var(--border)'}`,
+                    border: `1px solid ${isSelected ? 'var(--lime)' : isUnassigned ? 'var(--amber)' : 'var(--border)'}`,
+                    borderLeft: isUnassigned ? '3px solid var(--amber)' : undefined,
                     borderRadius: 'var(--radius-sm)',
                     padding: '12px 14px',
                     cursor: 'pointer',
@@ -133,7 +151,7 @@ export default function OwnerConsole() {
                         fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase',
                         color, background: `${color}18`, padding: '2px 6px', borderRadius: '3px',
                       }}>
-                        {STAGE_LABELS[app.stage]}
+                        {isUnassigned ? 'New · Unclaimed' : STAGE_LABELS[app.stage]}
                       </span>
                       <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)' }}>
                         day {app.daysInProcess}
@@ -174,7 +192,17 @@ export default function OwnerConsole() {
                     <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
                       day {selected.daysInProcess} · deadline {selected.signalDeadline}
                     </span>
-                    {!['decision_go', 'decision_redirect', 'path_to_production'].includes(selected.stage) && (
+                    {selected.ownerId === null ? (
+                      <button
+                        className="btn-primary"
+                        onClick={() => handleClaim(selected.id)}
+                        disabled={claiming}
+                        style={{ opacity: claiming ? 0.7 : 1 }}
+                      >
+                        <Zap size={14} />
+                        {claiming ? 'Claiming…' : 'Claim Startup'}
+                      </button>
+                    ) : !['decision_go', 'decision_redirect', 'path_to_production'].includes(selected.stage) && (
                       <button
                         className="btn-primary"
                         onClick={() => handleAdvance(selected.id)}

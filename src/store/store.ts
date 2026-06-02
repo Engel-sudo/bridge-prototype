@@ -11,6 +11,7 @@ interface BridgeStore {
 
   addApplication: (app: Application) => void
   advanceStage: (appId: string) => void
+  assignOwner: (appId: string, ownerId: string) => void
   addPainPoint: (pp: PainPoint) => void
   matchPainPoint: (ppId: string, appId: string) => void
 }
@@ -69,6 +70,26 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
         return state.metrics
       })(),
     })),
+
+  assignOwner: (appId, ownerId) =>
+    set((state) => {
+      const app = state.applications.find((a) => a.id === appId)
+      if (!app || app.ownerId) return state
+      // Claiming a startup names the contact and assigns the owner in one move —
+      // jump straight to owner_assigned rather than stepping through named_contact.
+      const claimedStage: Stage =
+        STAGE_ORDER.indexOf(app.stage) < STAGE_ORDER.indexOf('owner_assigned')
+          ? 'owner_assigned'
+          : app.stage
+      return {
+        applications: state.applications.map((a) =>
+          a.id === appId ? { ...a, ownerId, stage: claimedStage } : a
+        ),
+        owners: state.owners.map((o) =>
+          o.id === ownerId ? { ...o, startupsOwned: o.startupsOwned + 1 } : o
+        ),
+      }
+    }),
 
   addPainPoint: (pp) =>
     set((state) => ({
