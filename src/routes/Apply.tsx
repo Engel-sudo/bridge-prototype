@@ -20,6 +20,7 @@ interface FormData {
   founderName: string
   companyName: string
   region: Region | ''
+  wantsVisit: boolean | null
   teamSize: string
   funding: string
   technology: string
@@ -32,6 +33,7 @@ const EMPTY: FormData = {
   founderName: '',
   companyName: '',
   region: '',
+  wantsVisit: null,
   teamSize: '',
   funding: '',
   technology: '',
@@ -56,7 +58,6 @@ export default function Apply() {
   const [data, setData] = useState<FormData>(EMPTY)
   const [appId, setAppId] = useState('')
   const [done, setDone] = useState(false)
-  const [visitConfirmed, setVisitConfirmed] = useState(false)
   const { addApplication } = useBridgeStore()
   const navigate = useNavigate()
 
@@ -152,34 +153,15 @@ export default function Apply() {
               </div>
             </div>
 
-            {NEARBY.includes(data.region as Region) && (
+            {data.wantsVisit === true && (
               <motion.div
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45, duration: 0.35 }}
-                style={{
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderLeft: '3px solid var(--lime)',
-                  borderRadius: 'var(--radius)',
-                  padding: '20px 24px',
-                  marginBottom: '24px',
-                }}
+                transition={{ delay: 0.45 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--lime)' }}
               >
-                <span className="kicker" style={{ marginBottom: '6px', display: 'block' }}>You're close to us</span>
-                <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '16px' }}>
-                  Since you're based nearby, your Owner can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks. This is optional but recommended.
-                </p>
-                {visitConfirmed ? (
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600, color: 'var(--lime)' }}>
-                    <Check size={16} color="var(--lime)" />
-                    Visit requested
-                  </div>
-                ) : (
-                  <button className="btn-secondary" onClick={() => setVisitConfirmed(true)}>
-                    Yes, I'd like a visit
-                  </button>
-                )}
+                <Check size={15} />
+                Plant visit requested. Your Owner will reach out to schedule.
               </motion.div>
             )}
 
@@ -187,7 +169,7 @@ export default function Apply() {
               <button className="btn-secondary" onClick={() => navigate(`/founder/${appId}`)}>
                 Track application
               </button>
-              <button className="btn-secondary" onClick={() => { setDone(false); setStep(0); setData(EMPTY); setVisitConfirmed(false) }}>
+              <button className="btn-secondary" onClick={() => { setDone(false); setStep(0); setData(EMPTY) }}>
                 Submit another
               </button>
             </div>
@@ -261,11 +243,65 @@ export default function Apply() {
                       </div>
                       <div>
                         <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Where is your startup based? *</label>
-                        <select className="input" value={data.region} onChange={e => setData(d => ({ ...d, region: e.target.value as Region }))}>
+                        <select className="input" value={data.region} onChange={e => setData(d => ({ ...d, region: e.target.value as Region, wantsVisit: null }))}>
                           <option value="">Select a region…</option>
                           {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
                       </div>
+
+                      {/* Inline visit prompt — only for nearby regions */}
+                      <AnimatePresence>
+                        {NEARBY.includes(data.region as Region) && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            <div style={{
+                              background: 'var(--surface)',
+                              border: '1px solid var(--border)',
+                              borderLeft: '3px solid var(--lime)',
+                              borderRadius: 'var(--radius-sm)',
+                              padding: '16px 18px',
+                            }}>
+                              <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px', color: 'var(--text)', marginBottom: '4px' }}>
+                                Would you like to meet in person?
+                              </div>
+                              <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '14px' }}>
+                                Since you're based nearby, your Owner can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks.
+                              </div>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                {[{ label: 'Yes, arrange a visit', value: true }, { label: 'No thanks', value: false }].map(opt => (
+                                  <button
+                                    key={String(opt.value)}
+                                    type="button"
+                                    onClick={() => setData(d => ({ ...d, wantsVisit: opt.value }))}
+                                    style={{
+                                      fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600,
+                                      padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                                      transition: 'all 0.15s',
+                                      background: data.wantsVisit === opt.value
+                                        ? (opt.value ? 'rgba(200,240,0,0.15)' : 'var(--surface-2)')
+                                        : 'transparent',
+                                      border: `1px solid ${data.wantsVisit === opt.value
+                                        ? (opt.value ? 'var(--lime)' : 'var(--border-strong)')
+                                        : 'var(--border-strong)'}`,
+                                      color: data.wantsVisit === opt.value
+                                        ? (opt.value ? 'var(--lime)' : 'var(--text)')
+                                        : 'var(--text-muted)',
+                                    }}
+                                  >
+                                    {opt.value && data.wantsVisit === true && <Check size={13} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />}
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                         <div>
                           <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Team size</label>
