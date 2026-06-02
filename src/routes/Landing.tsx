@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock, User, Map, ChevronRight } from 'lucide-react'
+import { useBridgeStore } from '../store/store'
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -42,6 +43,7 @@ const pillars = [
 ]
 
 export default function Landing() {
+  const activePilots = useBridgeStore(s => s.metrics.activePilots)
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -89,7 +91,7 @@ export default function Landing() {
           </motion.h1>
 
           <motion.p {...fadeUp(0.18)} style={{ fontFamily: 'IBM Plex Sans', fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--text-muted)', lineHeight: 1.65, maxWidth: '580px', marginBottom: '12px' }}>
-            27 active pilots. No shared system to convert them into cars. BRIDGE changes that with three simple structures: a Door, an Owner, and a Map.
+            {activePilots} active pilots. No shared system to convert them into cars. BRIDGE changes that with three simple structures: a Door, an Owner, and a Map.
           </motion.p>
 
           <motion.p {...fadeUp(0.21)} style={{ fontFamily: 'IBM Plex Mono', fontSize: '12px', color: 'var(--text-faint)', letterSpacing: '0.08em', maxWidth: '480px', marginBottom: '36px', lineHeight: 1.5 }}>
@@ -125,7 +127,7 @@ export default function Landing() {
           {[
             { label: '48h', caption: 'named contact', color: 'var(--lime)' },
             { label: '2 wks', caption: 'yes or no', color: 'var(--lime)' },
-            { label: '27', caption: 'active pilots', color: 'var(--text)' },
+            { label: `${activePilots}`, caption: 'active pilots', color: 'var(--text)' },
           ].map(({ label, caption, color }) => (
             <div key={label} style={{ background: 'var(--surface)', padding: '14px 20px', textAlign: 'center' }}>
               <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '24px', color, lineHeight: 1 }}>{label}</div>

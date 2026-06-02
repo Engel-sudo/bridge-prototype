@@ -73,17 +73,18 @@ function AreaChart() {
 }
 
 export default function Dashboard() {
-  const { metrics, applications, painPoints } = useBridgeStore()
+  const { metrics, applications, painPoints, owners } = useBridgeStore()
 
   const stageCount = (stage: string) => applications.filter(a => a.stage === stage).length
+  const unassignedCount = applications.filter(a => a.ownerId === null).length
 
   const navItems = [
-    { label: 'Inbox', badge: '5', active: false },
+    { label: 'Inbox', badge: `${unassignedCount}`, active: false },
     { label: 'Pilots', badge: `${metrics.activePilots}`, active: false },
     { label: 'Map', badge: null, active: true },
     { label: 'Pain Points', badge: `${painPoints.length}`, active: false },
     { label: 'Startups', badge: `${applications.length}`, active: false },
-    { label: 'Owners', badge: '4', active: false },
+    { label: 'Owners', badge: `${owners.length}`, active: false },
   ]
 
   const deps = [
@@ -93,12 +94,12 @@ export default function Dashboard() {
     { label: 'QA ↔ Production', pct: 49 },
   ]
 
-  const painFeed = [
-    { dept: 'Production', text: 'Torque telemetry drift flagged — line 7', tag: 'new' },
-    { dept: 'R&D', text: 'Cell aging overlap with Pilot 14 detected', tag: 'overlap' },
-    { dept: 'Procurement', text: 'Supplier ETA opacity · 9 mentions', tag: 'cluster' },
-    { dept: 'Legal', text: 'NDA cycle >18d on 4 active pilots', tag: 'risk' },
-  ]
+  // Live feed of the most recently submitted pain points, straight from the store.
+  const statusTag: Record<string, string> = { open: 'new', matched: 'matched', in_pilot: 'in pilot' }
+  const painFeed = [...painPoints]
+    .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))
+    .slice(0, 4)
+    .map(pp => ({ dept: pp.department, text: pp.title, tag: statusTag[pp.status] ?? pp.status }))
 
   return (
     <motion.div
@@ -197,7 +198,7 @@ export default function Dashboard() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', marginBottom: '16px' }}>
                 {[
                   { k: 'Pilots active', v: `${metrics.activePilots}`, d: '+4' },
-                  { k: 'Owners', v: '4', d: '+1' },
+                  { k: 'Owners', v: `${owners.length}`, d: '+1' },
                   { k: 'Pain points', v: `${painPoints.length}`, d: '+3' },
                   { k: 'To production', v: `${metrics.implementations}`, d: '+1' },
                 ].map(s => (

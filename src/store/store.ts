@@ -42,11 +42,9 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
 
   addApplication: (app) =>
     set((state) => ({
+      // A new application enters at stage 'submitted' — it is not yet an active
+      // pilot, so the activePilots count (Audi-wide narrative figure) is untouched.
       applications: [app, ...state.applications],
-      metrics: {
-        ...state.metrics,
-        activePilots: state.metrics.activePilots + 1,
-      },
     })),
 
   advanceStage: (appId) =>
