@@ -113,10 +113,11 @@ export default function Apply() {
                 <CheckCircle size={56} color="var(--lime)" style={{ margin: '0 auto 16px' }} />
               </motion.div>
               <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
-                Application received.
+                Your application is in.
               </h1>
-              <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '15px', color: 'var(--text-muted)' }}>
-                48h to a name. 2 weeks to a yes or no.
+              <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '15px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                You'll hear from a named Audi contact within 48 hours.<br />
+                We'll give you a yes or no within 2 weeks. A real decision, on a real deadline.
               </p>
             </div>
 
