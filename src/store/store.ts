@@ -1,12 +1,11 @@
 import { create } from 'zustand'
-import type { Application, PainPoint, Owner, Pilot, SystemMetrics, Stage } from './types'
-import { seedApplications, seedOwners, seedPainPoints, seedPilots, seedMetrics } from './seed'
+import type { Application, PainPoint, Owner, SystemMetrics, Stage } from './types'
+import { seedApplications, seedOwners, seedPainPoints, seedMetrics } from './seed'
 
 interface BridgeStore {
   applications: Application[]
   owners: Owner[]
   painPoints: PainPoint[]
-  pilots: Pilot[]
   metrics: SystemMetrics
 
   addApplication: (app: Application) => void
@@ -39,22 +38,19 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
   applications: seedApplications,
   owners: seedOwners,
   painPoints: seedPainPoints,
-  pilots: seedPilots,
   metrics: seedMetrics,
 
   addApplication: (app) =>
     set((state) => ({
-      // A new application enters at stage 'submitted' — it is not yet an active
-      // pilot, so the activePilots count (Audi-wide narrative figure) is untouched.
+      // A new application enters at stage 'submitted' — not yet an active pilot,
+      // so the activePilots count (Audi-wide narrative figure) is untouched.
       applications: [app, ...state.applications],
     })),
 
   advanceStage: (appId) =>
     set((state) => ({
       applications: state.applications.map((a) =>
-        a.id === appId
-          ? { ...a, stage: nextStage(a.stage) }
-          : a
+        a.id === appId ? { ...a, stage: nextStage(a.stage) } : a
       ),
       metrics: (() => {
         const app = state.applications.find((a) => a.id === appId)
@@ -103,13 +99,7 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
     })),
 
   addPainPoint: (pp) =>
-    set((state) => ({
-      painPoints: [pp, ...state.painPoints],
-      metrics: {
-        ...state.metrics,
-        painPointsOpen: state.metrics.painPointsOpen + 1,
-      },
-    })),
+    set((state) => ({ painPoints: [pp, ...state.painPoints] })),
 
   matchPainPoint: (ppId, appId) =>
     set((state) => ({
@@ -118,11 +108,6 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
           ? { ...pp, status: 'matched', linkedApplicationId: appId }
           : pp
       ),
-      metrics: {
-        ...state.metrics,
-        painPointsOpen: Math.max(0, state.metrics.painPointsOpen - 1),
-        painPointsMatched: state.metrics.painPointsMatched + 1,
-      },
     })),
 
   // Restore all seed state — lets a presenter reset between testers without a
@@ -132,7 +117,6 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
       applications: seedApplications,
       owners: seedOwners,
       painPoints: seedPainPoints,
-      pilots: seedPilots,
       metrics: seedMetrics,
     })),
 }))

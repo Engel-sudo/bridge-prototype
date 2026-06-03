@@ -51,21 +51,11 @@ export interface PainPoint {
   submittedAt: string
 }
 
-export interface Pilot {
-  id: string
-  name: string
-  department: string
-  stage: string
-  daysActive: number
-}
-
 export interface SystemMetrics {
   activePilots: number
   implementations: number
   avgTimeToSignal: number
   targetTimeToSignal: number
-  painPointsOpen: number
-  painPointsMatched: number
   connectionsThisQuarter: number
   implementationsThisQuarter: number
 }

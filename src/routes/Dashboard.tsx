@@ -79,6 +79,18 @@ export default function Dashboard() {
   const stageCount = (stage: string) => applications.filter(a => a.stage === stage).length
   const unassignedCount = applications.filter(a => a.ownerId === null).length
 
+  // Derived from real store state — no separate counters that can drift.
+  const openCount = painPoints.filter(pp => pp.status === 'open').length
+  const matchedCount = painPoints.filter(pp => pp.status === 'matched').length
+
+  // avgTimeToSignal from apps that have actually received a decision.
+  const decidedApps = applications.filter(a =>
+    ['decision_go', 'decision_redirect', 'path_to_production'].includes(a.stage)
+  )
+  const avgSignal = decidedApps.length
+    ? Math.round(decidedApps.reduce((sum, a) => sum + a.daysInProcess, 0) / decidedApps.length)
+    : metrics.avgTimeToSignal
+
   const navItems = [
     { label: 'Inbox', badge: `${unassignedCount}`, active: false },
     { label: 'Pilots', badge: `${metrics.activePilots}`, active: false },
@@ -135,8 +147,8 @@ export default function Dashboard() {
         {[
           { kicker: 'active pilots', value: metrics.activePilots, accent: 'lime' as const, caption: 'across all departments' },
           { kicker: 'implementations', value: metrics.implementations, accent: 'lime' as const, caption: 'idea to car, total' },
-          { kicker: 'avg time to signal', value: `${metrics.avgTimeToSignal}d`, accent: 'lime' as const, caption: `target: ${metrics.targetTimeToSignal} days` },
-          { kicker: 'pain points open', value: metrics.painPointsOpen, accent: 'amber' as const, caption: `${metrics.painPointsMatched} matched` },
+          { kicker: 'avg time to signal', value: `${avgSignal}d`, accent: 'lime' as const, caption: `target: ${metrics.targetTimeToSignal} days` },
+          { kicker: 'pain points open', value: openCount, accent: 'amber' as const, caption: `${matchedCount} matched` },
           { kicker: 'total pain points', value: painPoints.length, accent: 'muted' as const, caption: 'submitted by employees' },
         ].map(stat => (
           <div key={stat.kicker} style={{ background: 'var(--surface)', padding: '24px 20px' }}>

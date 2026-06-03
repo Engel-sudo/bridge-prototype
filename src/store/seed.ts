@@ -1,4 +1,4 @@
-import type { Owner, Application, PainPoint, Pilot, SystemMetrics } from './types'
+import type { Owner, Application, PainPoint, SystemMetrics } from './types'
 
 export const seedOwners: Owner[] = [
   {
@@ -229,21 +229,11 @@ export const seedPainPoints: PainPoint[] = [
   },
 ]
 
-export const seedPilots: Pilot[] = [
-  { id: 'p1', name: 'VisionQual — AI QC', department: 'Quality', stage: 'In Review', daysActive: 9 },
-  { id: 'p2', name: 'FlowRoute — Logistics AI', department: 'Logistics', stage: 'Go Signal', daysActive: 26 },
-  { id: 'p3', name: 'GridMind — Energy AI', department: 'Production', stage: 'Owner Assigned', daysActive: 4 },
-  { id: 'p4', name: 'SonoSense — Structural QC', department: 'Production', stage: 'Redirected', daysActive: 32 },
-  { id: 'p5', name: 'CarbonLens — Sustainability', department: 'R&D', stage: 'Named Contact', daysActive: 1 },
-]
-
 export const seedMetrics: SystemMetrics = {
   activePilots: 27,
   implementations: 3,
   avgTimeToSignal: 11,
   targetTimeToSignal: 14,
-  painPointsOpen: 5,
-  painPointsMatched: 3,
   connectionsThisQuarter: 32,
   implementationsThisQuarter: 3,
 }
