@@ -6,7 +6,7 @@ interface FunnelStage {
 
 const stages: FunnelStage[] = [
   { label: 'Interest / Door', value: 27, color: 'var(--blue)' },
-  { label: 'Owner Assigned', value: 18, color: 'var(--lime)' },
+  { label: 'Internal Lead Assigned', value: 18, color: 'var(--lime)' },
   { label: 'Map / Match', value: 11, color: 'var(--lime-dim)' },
   { label: 'In Review', value: 7, color: 'var(--amber)' },
   { label: 'Signal Sent', value: 5, color: 'var(--amber)' },

@@ -9,24 +9,24 @@ import DemoHint from '../components/DemoHint'
 const STAGE_LABELS: Record<string, string> = {
   submitted: 'Application submitted',
   named_contact: 'Named contact assigned',
-  owner_assigned: 'Owner assigned',
-  in_review: 'Owner reviewing',
+  owner_assigned: 'Internal Lead assigned',
+  in_review: 'Internal Lead reviewing',
   signal_sent: '2-week signal sent',
   decision_go: 'Decision: Go',
   decision_redirect: 'Decision: Redirect',
-  matched_pain_owner: 'Matched to pain owner',
+  matched_pain_owner: 'Matched to pain point',
   path_to_production: 'Idea → Car',
 }
 
 const NEXT_STEP: Record<string, string> = {
   submitted: 'A named Audi contact will be assigned within 48 hours.',
-  named_contact: 'Your owner is being assigned. Expect first contact shortly.',
-  owner_assigned: 'Your owner is reviewing your application.',
-  in_review: 'Your owner is preparing the 2-week signal. Expect a yes or no soon.',
-  signal_sent: 'Decision imminent. Your owner will send a Go or Redirect signal.',
-  decision_go: 'Pilot confirmed. Your owner will reach out to set up next steps.',
-  decision_redirect: 'Redirected with a referral. Your owner will send contact details.',
-  matched_pain_owner: 'Matched to a pain owner. Pilot scope being defined.',
+  named_contact: 'Your Internal Lead is being assigned. Expect first contact shortly.',
+  owner_assigned: 'Your Internal Lead is reviewing your application.',
+  in_review: 'Your Internal Lead is preparing the 2-week signal. Expect a yes or no soon.',
+  signal_sent: 'Decision imminent. Your Internal Lead will send a Go or Redirect signal.',
+  decision_go: 'Pilot confirmed. Your Internal Lead will reach out to set up next steps.',
+  decision_redirect: 'Redirected with a referral. Your Internal Lead will send contact details.',
+  matched_pain_owner: 'Matched to a pain point. Pilot scope being defined.',
   path_to_production: 'In production. Your technology is going into the car.',
 }
 
@@ -72,7 +72,7 @@ export default function FounderStatus() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '860px', margin: '0 auto' }}
     >
-      <DemoHint persona="You are the founder" hint="This page updates live when your Audi owner advances the stage in the Owner Console." />
+      <DemoHint persona="You are the founder" hint="This page updates live when your Internal Lead advances the stage in the Internal Lead Console." />
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '36px' }}>
@@ -236,7 +236,7 @@ export default function FounderStatus() {
 
       {/* Owner card */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-        <span className="kicker" style={{ marginBottom: '10px', display: 'block' }}>your owner</span>
+        <span className="kicker" style={{ marginBottom: '10px', display: 'block' }}>your internal lead</span>
         {owner ? (
           <OwnerCard owner={owner} />
         ) : (
@@ -249,7 +249,7 @@ export default function FounderStatus() {
             </div>
             <div>
               <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
-                Your Owner is being assigned.
+                Your Internal Lead is being assigned.
               </div>
               <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginTop: '2px' }}>
                 A named Audi contact within 48 hours.

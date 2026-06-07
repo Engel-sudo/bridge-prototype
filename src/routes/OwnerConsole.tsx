@@ -16,12 +16,12 @@ const isOverdue = (a: Application) =>
 const STAGE_LABELS: Record<string, string> = {
   submitted: 'Submitted',
   named_contact: 'Named Contact',
-  owner_assigned: 'Owner Assigned',
+  owner_assigned: 'Internal Lead Assigned',
   in_review: 'In Review',
   signal_sent: '2-Week Signal',
   decision_go: 'Decision: Go',
   decision_redirect: 'Decision: Redirect',
-  matched_pain_owner: 'Matched to Pain Owner',
+  matched_pain_owner: 'Matched to Pain Point',
   path_to_production: 'Idea → Car',
 }
 
@@ -85,13 +85,13 @@ export default function OwnerConsole() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '1200px', margin: '0 auto' }}
     >
-      <DemoHint persona="You are an Audi owner" hint="Claim a new (amber) startup, advance its stage, then make the Go or Redirect call at the 2-week signal. Try the overdue one." />
+      <DemoHint persona="You are an Audi Internal Lead" hint="Claim a new (amber) startup, advance its stage, then make the Go or Redirect call at the 2-week signal. Try the overdue one." />
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
-        <span className="kicker">owner console</span>
+        <span className="kicker">internal lead console</span>
         <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 3.5vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
-          Owner Queue
+          Internal Lead Queue
         </h1>
       </motion.div>
 

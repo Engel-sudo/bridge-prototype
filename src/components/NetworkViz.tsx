@@ -1,57 +1,108 @@
 // Network viz: Startups → Pain Points → Pilots → Departments
 // viewBox 1000×310 (3.2:1 ratio) so SVG fills full width at any container size
+// All nodes and edges derived from useBridgeStore — no hardcoded data.
 
-const startups = [
-  { x: 80,  y: 61,  label: 'VisionQual' },
-  { x: 60,  y: 122, label: 'FlowRoute' },
-  { x: 100, y: 184, label: 'GridMind' },
-  { x: 70,  y: 245, label: 'CarbonLens' },
-]
+import { useBridgeStore } from '../store/store'
 
-const hubs = [
-  { x: 360, y: 94,  label: 'Pain · QA throughput' },
-  { x: 400, y: 172, label: 'Pain · logistics delay' },
-  { x: 340, y: 245, label: 'Pain · energy peaks' },
-]
+const START_Y = 40
+const RANGE = 260
+const COL = { startup: 80, pain: 370, pilot: 650, dept: 900 }
 
-const pilots = [
-  { x: 670, y: 72,  label: 'Pilot — QC AI' },
-  { x: 700, y: 139, label: 'Pilot — Logistics' },
-  { x: 660, y: 206, label: 'Pilot — Energy' },
-  { x: 690, y: 267, label: 'Pilot — Carbon' },
-]
+function spacing(count: number) {
+  return RANGE / Math.max(count - 1, 1)
+}
 
-const departments = [
-  { x: 900, y: 55,  label: 'Quality' },
-  { x: 910, y: 114, label: 'Logistics' },
-  { x: 900, y: 172, label: 'Production' },
-  { x: 905, y: 228, label: 'R&D' },
-  { x: 895, y: 278, label: 'Procurement' },
-]
+function ys(count: number): number[] {
+  if (count === 0) return []
+  if (count === 1) return [START_Y + RANGE / 2]
+  const sp = spacing(count)
+  return Array.from({ length: count }, (_, i) => START_Y + i * sp)
+}
 
-const edges: [{ x: number; y: number }, { x: number; y: number }][] = [
-  [startups[0], hubs[0]],
-  [startups[1], hubs[0]],
-  [startups[1], hubs[1]],
-  [startups[2], hubs[1]],
-  [startups[2], hubs[2]],
-  [startups[3], hubs[2]],
-  [hubs[0], pilots[0]],
-  [hubs[0], pilots[1]],
-  [hubs[1], pilots[1]],
-  [hubs[1], pilots[2]],
-  [hubs[2], pilots[2]],
-  [hubs[2], pilots[3]],
-  [pilots[0], departments[0]],
-  [pilots[1], departments[1]],
-  [pilots[1], departments[2]],
-  [pilots[2], departments[2]],
-  [pilots[2], departments[3]],
-  [pilots[3], departments[3]],
-  [pilots[3], departments[4]],
-]
+interface NodeDef {
+  x: number
+  y: number
+  label: string
+  color: string
+  isHub?: boolean
+}
 
 export default function NetworkViz() {
+  const applications = useBridgeStore((s) => s.applications)
+  const painPoints = useBridgeStore((s) => s.painPoints)
+
+  // Pain points that have been matched (have a linked application)
+  const matchedPPs = painPoints.filter((pp) => pp.linkedApplicationId !== null)
+
+  // Set of app ids that have at least one matched pain point
+  const matchedAppIds = new Set(matchedPPs.map((pp) => pp.linkedApplicationId as string))
+
+  // Unique departments from matched pain points only
+  const deptLabels = Array.from(new Set(matchedPPs.map((pp) => pp.department)))
+
+  // --- Y positions ---
+  const startupYs = ys(applications.length)
+  const ppYs = ys(matchedPPs.length)
+  const pilotYs = ppYs // same positions as matched pain points
+  const deptYs = ys(deptLabels.length)
+
+  // --- Node arrays ---
+  const startupNodes: NodeDef[] = applications.map((app, i) => ({
+    x: COL.startup,
+    y: startupYs[i],
+    label: app.companyName,
+    color: matchedAppIds.has(app.id) ? 'var(--lime)' : 'var(--text)',
+  }))
+
+  const ppNodes: NodeDef[] = matchedPPs.map((pp, i) => ({
+    x: COL.pain,
+    y: ppYs[i],
+    label: pp.title.length > 28 ? pp.title.slice(0, 28) + '…' : pp.title,
+    color: 'var(--lime)',
+    isHub: true,
+  }))
+
+  const pilotNodes: NodeDef[] = matchedPPs.map((pp, i) => ({
+    x: COL.pilot,
+    y: pilotYs[i],
+    label: 'Pilot — ' + pp.department,
+    color: 'var(--blue)',
+  }))
+
+  const deptNodes: NodeDef[] = deptLabels.map((dept, i) => ({
+    x: COL.dept,
+    y: deptYs[i],
+    label: dept,
+    color: 'var(--text-muted)',
+  }))
+
+  // --- Edges ---
+  type Coord = { x: number; y: number }
+  const edges: [Coord, Coord][] = []
+
+  // Application → MatchedPainPoint
+  matchedPPs.forEach((pp, ppIdx) => {
+    const appIdx = applications.findIndex((a) => a.id === pp.linkedApplicationId)
+    if (appIdx !== -1) {
+      edges.push([startupNodes[appIdx], ppNodes[ppIdx]])
+    }
+  })
+
+  // MatchedPainPoint → Pilot (one-to-one by index)
+  matchedPPs.forEach((_pp, i) => {
+    edges.push([ppNodes[i], pilotNodes[i]])
+  })
+
+  // Pilot → Department
+  matchedPPs.forEach((pp, i) => {
+    const deptIdx = deptLabels.indexOf(pp.department)
+    if (deptIdx !== -1) {
+      edges.push([pilotNodes[i], deptNodes[deptIdx]])
+    }
+  })
+
+  const hasMatches = matchedPPs.length > 0
+
   return (
     <svg
       viewBox="0 0 1000 310"
@@ -82,11 +133,11 @@ export default function NetworkViz() {
 
       {/* Column labels */}
       {[
-        { x: 80,  label: 'STARTUPS' },
-        { x: 370, label: 'PAIN POINTS' },
-        { x: 680, label: 'PILOTS' },
-        { x: 925, label: 'DEPARTMENTS' },
-      ].map(c => (
+        { x: COL.startup, label: 'STARTUPS' },
+        { x: COL.pain,    label: 'PAIN POINTS' },
+        { x: COL.pilot,   label: 'PILOTS' },
+        { x: COL.dept,    label: 'DEPARTMENTS' },
+      ].map((c) => (
         <text
           key={c.label}
           x={c.x}
@@ -99,11 +150,32 @@ export default function NetworkViz() {
         </text>
       ))}
 
+      {/* No-matches placeholder */}
+      {!hasMatches && (
+        <text
+          x={370}
+          y={155}
+          textAnchor="middle"
+          fill="var(--text-faint)"
+          style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: 1 }}
+        >
+          No matches yet
+        </text>
+      )}
+
       {/* Edges — base */}
       {edges.map(([a, b], i) => {
         const mx = (a.x + b.x) / 2
         const d = `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`
-        return <path key={`base-${i}`} d={d} stroke="var(--border-strong)" strokeWidth="1" fill="none" />
+        return (
+          <path
+            key={`base-${i}`}
+            d={d}
+            stroke="var(--border-strong)"
+            strokeWidth="1"
+            fill="none"
+          />
+        )
       })}
 
       {/* Edges — animated lime overlay */}
@@ -125,24 +197,34 @@ export default function NetworkViz() {
       })}
 
       {/* Nodes */}
-      {([...startups, ...hubs, ...pilots, ...departments] as { x: number; y: number; label: string }[]).map((n, i) => {
-        const isHub = (hubs as { x: number; y: number; label: string }[]).includes(n)
-        return (
-          <g key={i}>
-            {isHub && <circle cx={n.x} cy={n.y} r="16" fill="url(#nv-glow)" />}
-            <circle cx={n.x} cy={n.y} r={isHub ? 5 : 3.5} fill={isHub ? 'var(--lime)' : 'var(--text)'} opacity={isHub ? 1 : 0.8} />
-            <circle cx={n.x} cy={n.y} r={isHub ? 10 : 7} stroke={isHub ? 'var(--lime)' : 'var(--border-strong)'} strokeOpacity="0.4" fill="none" />
-            <text
-              x={n.x + 13}
-              y={n.y + 4}
-              fill="var(--text-muted)"
-              style={{ fontFamily: 'IBM Plex Mono', fontSize: 9.5, letterSpacing: 0.5 }}
-            >
-              {n.label}
-            </text>
-          </g>
-        )
-      })}
+      {([...startupNodes, ...ppNodes, ...pilotNodes, ...deptNodes] as NodeDef[]).map((n, i) => (
+        <g key={i}>
+          {n.isHub && <circle cx={n.x} cy={n.y} r="16" fill="url(#nv-glow)" />}
+          <circle
+            cx={n.x}
+            cy={n.y}
+            r={n.isHub ? 5 : 3.5}
+            fill={n.color}
+            opacity={n.isHub ? 1 : 0.8}
+          />
+          <circle
+            cx={n.x}
+            cy={n.y}
+            r={n.isHub ? 10 : 7}
+            stroke={n.isHub ? 'var(--lime)' : 'var(--border-strong)'}
+            strokeOpacity="0.4"
+            fill="none"
+          />
+          <text
+            x={n.x + 13}
+            y={n.y + 4}
+            fill={n.color}
+            style={{ fontFamily: 'IBM Plex Mono', fontSize: 9.5, letterSpacing: 0.5 }}
+          >
+            {n.label}
+          </text>
+        </g>
+      ))}
 
       {/* Scan line */}
       <rect x="0" y="0" width="1000" height="40" fill="url(#nv-scan)" className="animate-scan-y" />

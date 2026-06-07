@@ -161,7 +161,7 @@ export default function Apply() {
                 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--lime)' }}
               >
                 <Check size={15} />
-                Plant visit requested. Your Owner will reach out to schedule.
+                Plant visit requested. Your Internal Lead will reach out to schedule.
               </motion.div>
             )}
 
@@ -270,7 +270,7 @@ export default function Apply() {
                                 Would you like to meet in person?
                               </div>
                               <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '14px' }}>
-                                Since you're based nearby, your Owner can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks.
+                                Since you're based nearby, your Internal Lead can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks.
                               </div>
                               <div style={{ display: 'flex', gap: '8px' }}>
                                 {[{ label: 'Yes, arrange a visit', value: true }, { label: 'No thanks', value: false }].map(opt => (
