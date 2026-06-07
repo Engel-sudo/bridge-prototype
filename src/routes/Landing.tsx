@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, X, Check, Clock, UserX, Lightbulb, Timer, UserCheck, Target } from 'lucide-react'
@@ -72,6 +73,18 @@ const goodRows = [
 export default function Landing() {
   const navigate = useNavigate()
   const login = useAuthStore(s => s.login)
+  const mouseGlowRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (mouseGlowRef.current) {
+        mouseGlowRef.current.style.left = `${e.clientX}px`
+        mouseGlowRef.current.style.top = `${e.clientY}px`
+      }
+    }
+    window.addEventListener('mousemove', onMove)
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
 
   function handleApplyNow() {
     login('startup', {})
@@ -81,6 +94,10 @@ export default function Landing() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
       style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: "'IBM Plex Sans', system-ui, sans-serif" }}>
+
+      {/* Grain + cursor glow */}
+      <div className="grain" />
+      <div ref={mouseGlowRef} style={{ position: 'fixed', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(200,240,0,0.05) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1, transform: 'translate(-50%,-50%)', left: '-400px', top: '-400px' }} />
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section style={{ position: 'relative', textAlign: 'center', padding: '84px 32px 36px', overflow: 'hidden' }}>

@@ -234,10 +234,7 @@ export default function Apply() {
     style.id = id
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap');
-      .ap-grain { pointer-events:none; position:fixed; inset:0; z-index:100; opacity:0.04;
-        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-        background-size:200px; }
-      .ap-reveal { opacity:0; transform:translateY(22px); transition:all 0.9s cubic-bezier(0.22,1,0.36,1); }
+.ap-reveal { opacity:0; transform:translateY(22px); transition:all 0.9s cubic-bezier(0.22,1,0.36,1); }
       .ap-reveal.in { opacity:1; transform:translateY(0); }
       .ap-lime-pulse { animation:ap-pulse 3s ease-in-out infinite; }
       @keyframes ap-pulse { 0%,100%{opacity:1;filter:drop-shadow(0 0 2px #D6FF00)} 50%{opacity:.4;filter:drop-shadow(0 0 10px #D6FF00)} }
@@ -365,7 +362,7 @@ export default function Apply() {
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
         style={{ minHeight: '100vh', background: '#050505', padding: '120px 40px 80px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}
       >
-        <div className="ap-grain" />
+        <div className="grain" />
         <div style={{ maxWidth: '560px', width: '100%' }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
             {/* Status badge */}
@@ -446,7 +443,7 @@ export default function Apply() {
   return (
     <div style={{ minHeight: '100vh', background: '#050505', position: 'relative' }}>
       {/* Grain + glow */}
-      <div className="ap-grain" />
+      <div className="grain" />
       <div ref={mouseGlowRef} style={{ position: 'fixed', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(214,255,0,0.055) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1, transform: 'translate(-50%,-50%)', transition: 'opacity 0.3s', left: '-400px', top: '-400px' }} />
 
       <div className="ap-main-grid" style={{ maxWidth: '1200px', margin: '0 auto', padding: '100px 40px 80px', display: 'grid', gap: '32px', position: 'relative', zIndex: 10 }}>
