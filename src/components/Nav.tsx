@@ -69,7 +69,7 @@ export default function Nav() {
       padding: '0 32px', height: '56px', gap: '8px',
     }}>
       {/* Logo */}
-      <Link to={role === 'admin' ? '/dashboard' : role === 'internal_lead' ? '/owner' : role === 'startup' ? (selectedAppId ? `/founder/${selectedAppId}` : '/apply') : role === 'pool_member' ? '/community' : '/login'}
+      <Link to="/login"
         style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', marginRight: '24px' }}>
         <div style={{ width: '28px', height: '28px', background: 'var(--lime)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '13px', color: '#0A0B0D', letterSpacing: '0.05em' }}>B</span>
