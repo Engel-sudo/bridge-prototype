@@ -1,12 +1,14 @@
 import { create } from 'zustand'
-import type { Application, PainPoint, Owner, SystemMetrics, Stage } from './types'
-import { seedApplications, seedOwners, seedPainPoints, seedMetrics } from './seed'
+import type { Application, PainPoint, Owner, SystemMetrics, Stage, PoolMember, CommunityEvent } from './types'
+import { seedApplications, seedOwners, seedPainPoints, seedMetrics, seedPoolMembers, seedCommunityEvents } from './seed'
 
 interface BridgeStore {
   applications: Application[]
   owners: Owner[]
   painPoints: PainPoint[]
   metrics: SystemMetrics
+  poolMembers: PoolMember[]
+  communityEvents: CommunityEvent[]
 
   addApplication: (app: Application) => void
   advanceStage: (appId: string) => void
@@ -14,6 +16,7 @@ interface BridgeStore {
   decide: (appId: string, outcome: 'go' | 'redirect') => void
   addPainPoint: (pp: PainPoint) => void
   matchPainPoint: (ppId: string, appId: string) => void
+  addToPool: (member: PoolMember) => void
   resetDemo: () => void
 }
 
@@ -39,6 +42,8 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
   owners: seedOwners,
   painPoints: seedPainPoints,
   metrics: seedMetrics,
+  poolMembers: seedPoolMembers,
+  communityEvents: seedCommunityEvents,
 
   addApplication: (app) =>
     set((state) => ({
@@ -110,6 +115,13 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
       ),
     })),
 
+  addToPool: (member) =>
+    set((state) => ({
+      poolMembers: state.poolMembers.some(m => m.id === member.id)
+        ? state.poolMembers
+        : [member, ...state.poolMembers],
+    })),
+
   // Restore all seed state — lets a presenter reset between testers without a
   // page reload. In-memory only, no storage touched.
   resetDemo: () =>
@@ -118,5 +130,7 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
       owners: seedOwners,
       painPoints: seedPainPoints,
       metrics: seedMetrics,
+      poolMembers: seedPoolMembers,
+      communityEvents: seedCommunityEvents,
     })),
 }))

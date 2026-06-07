@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, Zap, Check, X, ExternalLink } from 'lucide-react'
+import { ChevronRight, Zap, Check, X, ExternalLink, Users } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import StatusTimeline from '../components/StatusTimeline'
 import OwnerCard from '../components/OwnerCard'
@@ -38,7 +38,7 @@ const stageColor: Record<string, string> = {
 }
 
 export default function OwnerConsole() {
-  const { applications, owners, advanceStage, assignOwner, decide, metrics } = useBridgeStore()
+  const { applications, owners, advanceStage, assignOwner, decide, metrics, poolMembers, addToPool } = useBridgeStore()
   const owner = owners.find(o => o.id === 'o3') || owners[0]
   // Unassigned applications (ownerId null) land in the inbox so they can be claimed.
   const unassigned = applications.filter(a => a.ownerId === null)
@@ -47,6 +47,7 @@ export default function OwnerConsole() {
   const [selected, setSelected] = useState<Application | null>(queue[0] || null)
   const [advancing, setAdvancing] = useState(false)
   const [claiming, setClaiming] = useState(false)
+  const [addedToPool, setAddedToPool] = useState<string | null>(null)
 
   function handleAdvance(appId: string) {
     setAdvancing(true)
@@ -284,6 +285,55 @@ export default function OwnerConsole() {
                         {advancing ? 'Advancing…' : 'Advance Stage'}
                       </button>
                     ) : null}
+
+                    {/* Add to community pool — shown for redirected startups */}
+                    {selected.stage === 'decision_redirect' && (() => {
+                      const alreadyInPool = poolMembers.some(m => m.applicationId === selected.id)
+                      const justAdded = addedToPool === selected.id
+                      if (alreadyInPool || justAdded) {
+                        return (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.08em',
+                            color: 'var(--blue)', background: 'rgba(59,130,246,0.08)',
+                            border: '1px solid rgba(59,130,246,0.25)', padding: '5px 10px',
+                            borderRadius: 'var(--radius-sm)',
+                          }}>
+                            <Users size={11} />
+                            In community pool
+                          </span>
+                        )
+                      }
+                      return (
+                        <button
+                          onClick={() => {
+                            addToPool({
+                              id: `pm-${selected.id}`,
+                              name: selected.founderName,
+                              company: selected.companyName,
+                              type: 'startup',
+                              techArea: selected.technology,
+                              addedAt: new Date().toISOString().slice(0, 10),
+                              addedByName: owner.name,
+                              applicationId: selected.id,
+                              notes: `Added from BRIDGE pipeline. ${selected.notes}`,
+                            })
+                            setAddedToPool(selected.id)
+                          }}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600,
+                            padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                            color: 'var(--blue)', background: 'transparent',
+                            border: '1px solid rgba(59,130,246,0.4)',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          <Users size={14} />
+                          Add to community pool
+                        </button>
+                      )
+                    })()}
                   </div>
                 </div>
 

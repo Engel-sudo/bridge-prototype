@@ -1,4 +1,4 @@
-import type { Owner, Application, PainPoint, SystemMetrics } from './types'
+import type { Owner, Application, PainPoint, SystemMetrics, PoolMember, CommunityEvent } from './types'
 
 export const seedOwners: Owner[] = [
   {
@@ -226,6 +226,59 @@ export const seedPainPoints: PainPoint[] = [
     status: 'open',
     linkedApplicationId: null,
     submittedAt: '2026-06-02',
+  },
+]
+
+export const seedPoolMembers: PoolMember[] = [
+  {
+    id: 'pm1',
+    name: 'Elena Vogel',
+    company: 'SonoSense',
+    type: 'startup',
+    techArea: 'Ultrasonic structural integrity sensors',
+    addedAt: '2026-05-16',
+    addedByName: 'Maria Schenk',
+    applicationId: 'APP-2024-0029',
+    notes: 'Strong technology, wrong timing for current production roadmap. Referred to Tier 1 partner. Keep warm — body-weld integrity is still an open pain point.',
+  },
+  {
+    id: 'pm2',
+    name: 'Kai Bergmann',
+    type: 'contact',
+    techArea: 'Automotive AI & Tier 1 partner networks',
+    addedAt: '2026-05-30',
+    addedByName: 'Lukas Reinhardt',
+    notes: 'Automotive AI consultant with strong Tier 1 supplier relationships. Can broker introductions between BRIDGE startups and procurement. Not an applicant — a connector.',
+  },
+]
+
+export const seedCommunityEvents: CommunityEvent[] = [
+  {
+    id: 'evt1',
+    title: 'Startup Open Day — Ingolstadt',
+    date: '2026-07-10',
+    location: 'Audi Forum, Ingolstadt',
+    description: 'Meet Audi innovation leads and fellow community members. Live demos of current pilot projects. Open floor for new problem pitches.',
+    type: 'networking',
+    invitedMemberIds: ['pm1', 'pm2'],
+  },
+  {
+    id: 'evt2',
+    title: 'Deep Tech Workshop: Manufacturing Sensing',
+    date: '2026-08-05',
+    location: 'Production Hall B4 (restricted access)',
+    description: 'Hands-on session inside the production line. Community startups with sensing or inspection technology get direct exposure to the real environment and current pain points.',
+    type: 'workshop',
+    invitedMemberIds: ['pm1'],
+  },
+  {
+    id: 'evt3',
+    title: 'Corporate Campus Challenge #7 — Demo Day',
+    date: '2026-09-18',
+    location: 'Audi Forum, Ingolstadt',
+    description: 'Annual CCC demo day. Community members are invited as observers and future applicants. Watch the current cohort present to Audi leadership.',
+    type: 'demo_day',
+    invitedMemberIds: ['pm1', 'pm2'],
   },
 ]
 

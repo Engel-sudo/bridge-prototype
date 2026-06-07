@@ -51,6 +51,32 @@ export interface PainPoint {
   submittedAt: string
 }
 
+export type PoolMemberType = 'startup' | 'contact'
+
+export interface PoolMember {
+  id: string
+  name: string
+  company?: string
+  type: PoolMemberType
+  techArea?: string
+  addedAt: string
+  addedByName: string
+  applicationId?: string
+  notes?: string
+}
+
+export type CommunityEventType = 'workshop' | 'networking' | 'demo_day' | 'hackathon'
+
+export interface CommunityEvent {
+  id: string
+  title: string
+  date: string
+  location: string
+  description: string
+  type: CommunityEventType
+  invitedMemberIds: string[]
+}
+
 export interface SystemMetrics {
   activePilots: number
   implementations: number

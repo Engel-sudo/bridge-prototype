@@ -5,16 +5,18 @@ import { useAuthStore } from '../store/authStore'
 import { seedApplications } from '../store/seed'
 
 const ALL_LINKS = [
-  { to: '/dashboard', label: 'Dashboard',     mono: 'system',       roles: ['admin'],          requiresAppId: null },
-  { to: '/owner',     label: 'My Queue',       mono: 'internal lead',roles: ['internal_lead', 'admin'], requiresAppId: null },
-  { to: '/map',       label: 'Pain Map',       mono: 'pain points',  roles: ['internal_lead', 'admin'], requiresAppId: null },
+  { to: '/dashboard',  label: 'Dashboard',     mono: 'system',       roles: ['admin'],                          requiresAppId: null },
+  { to: '/owner',      label: 'My Queue',       mono: 'internal lead',roles: ['internal_lead', 'admin'],         requiresAppId: null },
+  { to: '/map',        label: 'Pain Map',       mono: 'pain points',  roles: ['internal_lead', 'admin'],         requiresAppId: null },
+  { to: '/community',  label: 'Community',      mono: 'pool member',  roles: ['internal_lead', 'admin'],         requiresAppId: null },
   // Apply: startup only, and only when they have NO existing application yet
-  { to: '/apply',     label: 'Apply',          mono: 'startup',      roles: ['startup'],        requiresAppId: false },
+  { to: '/apply',      label: 'Apply',          mono: 'startup',      roles: ['startup'],                        requiresAppId: false },
   // My Application: startup only, and only when they DO have an existing application
-  { to: '/founder',   label: 'My Application', mono: 'status',       roles: ['startup'],        requiresAppId: true },
+  { to: '/founder',    label: 'My Application', mono: 'status',       roles: ['startup'],                        requiresAppId: true },
+  { to: '/community',  label: 'Community',      mono: 'pool member',  roles: ['pool_member'],                    requiresAppId: null },
 ]
 
-function roleBadge(role: string | null, selectedAppId: string | null, selectedOwnerId: string | null) {
+function roleBadge(role: string | null, selectedAppId: string | null, selectedOwnerId: string | null, selectedMemberId: string | null) {
   if (!role) return null
   if (role === 'admin') return { label: 'ADMIN', color: 'var(--amber)', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)' }
   if (role === 'internal_lead') return { label: 'INTERNAL LEAD · Lukas Reinhardt', color: 'var(--blue)', bg: 'rgba(59,130,246,0.1)', border: 'rgba(59,130,246,0.25)' }
@@ -23,6 +25,9 @@ function roleBadge(role: string | null, selectedAppId: string | null, selectedOw
     const name = app ? app.companyName : 'New Application'
     return { label: `STARTUP · ${name}`, color: 'var(--lime)', bg: 'rgba(200,240,0,0.08)', border: 'rgba(200,240,0,0.25)' }
   }
+  if (role === 'pool_member') {
+    return { label: 'COMMUNITY', color: 'var(--blue)', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.25)' }
+  }
   return null
 }
 
@@ -30,7 +35,7 @@ export default function Nav() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const resetDemo = useBridgeStore(s => s.resetDemo)
-  const { role, selectedAppId, selectedOwnerId, logout } = useAuthStore()
+  const { role, selectedAppId, selectedOwnerId, selectedMemberId, logout } = useAuthStore()
 
   // Hide nav entirely on login screen
   if (pathname === '/login') return null
@@ -41,7 +46,7 @@ export default function Nav() {
     if (l.requiresAppId === false &&  selectedAppId) return false
     return true
   })
-  const badge = roleBadge(role, selectedAppId, selectedOwnerId)
+  const badge = roleBadge(role, selectedAppId, selectedOwnerId, selectedMemberId)
 
   // For startup: "My Application" links to their specific app if they have one
   function resolvedTo(to: string) {
@@ -64,7 +69,7 @@ export default function Nav() {
       padding: '0 32px', height: '56px', gap: '8px',
     }}>
       {/* Logo */}
-      <Link to={role === 'admin' ? '/dashboard' : role === 'internal_lead' ? '/owner' : role === 'startup' ? (selectedAppId ? `/founder/${selectedAppId}` : '/apply') : '/login'}
+      <Link to={role === 'admin' ? '/dashboard' : role === 'internal_lead' ? '/owner' : role === 'startup' ? (selectedAppId ? `/founder/${selectedAppId}` : '/apply') : role === 'pool_member' ? '/community' : '/login'}
         style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', marginRight: '24px' }}>
         <div style={{ width: '28px', height: '28px', background: 'var(--lime)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '13px', color: '#0A0B0D', letterSpacing: '0.05em' }}>B</span>
@@ -121,10 +126,21 @@ export default function Nav() {
         {role ? (
           <button
             onClick={handleLogout}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.color = 'var(--red)'
+              ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,45,70,0.5)'
+              ;(e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,45,70,0.06)'
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,45,70,0.75)'
+              ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,45,70,0.3)'
+              ;(e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,45,70,0.04)'
+            }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
               fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase',
-              color: 'var(--text-faint)', background: 'transparent', border: '1px solid var(--border)',
+              color: 'rgba(255,45,70,0.75)', background: 'rgba(255,45,70,0.04)',
+              border: '1px solid rgba(255,45,70,0.3)',
               padding: '5px 10px', borderRadius: 'var(--radius-sm)', transition: 'all 0.15s',
             }}
           >

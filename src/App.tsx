@@ -9,6 +9,7 @@ import FounderStatus from './routes/FounderStatus'
 import OwnerConsole from './routes/OwnerConsole'
 import PainPointMap from './routes/PainPointMap'
 import Dashboard from './routes/Dashboard'
+import Community from './routes/Community'
 
 export default function App() {
   return (
@@ -51,6 +52,12 @@ export default function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/community" element={
+            <ProtectedRoute allowedRoles={['pool_member', 'internal_lead', 'admin']}>
+              <Community />
             </ProtectedRoute>
           } />
 
