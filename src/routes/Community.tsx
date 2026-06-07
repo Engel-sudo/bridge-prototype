@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { Calendar, MapPin, Users, Lightbulb } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
@@ -196,8 +197,8 @@ export default function Community() {
               Community members can apply directly. You already know the process.
             </div>
           </div>
-          <a
-            href="/login"
+          <Link
+            to="/login"
             style={{
               fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px',
               color: '#0A0B0D', background: 'var(--lime)', border: 'none',
@@ -206,7 +207,7 @@ export default function Community() {
             }}
           >
             Apply to BRIDGE
-          </a>
+          </Link>
         </motion.div>
       </motion.div>
     </motion.div>

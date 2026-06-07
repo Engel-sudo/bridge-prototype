@@ -1,3 +1,4 @@
+import React from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { AlertCircle, Clock, Zap } from 'lucide-react'
@@ -41,7 +42,7 @@ function AreaChart({ data }: { data: number[] }) {
         <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
           Pipeline depth · applications active per week
         </span>
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)' }}>↑ trending up</span>
+        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)' }}>last 12 weeks</span>
       </div>
       <div style={{ position: 'relative', height: '88px' }}>
         <svg viewBox="0 0 800 180" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} preserveAspectRatio="none">
@@ -113,7 +114,7 @@ export default function Dashboard() {
     { label: 'Map',         badge: null,                            active: true,  route: '/map'   },
     { label: 'Pain Points', badge: String(painPoints.length),       active: false, route: '/map'   },
     { label: 'Startups',    badge: String(applications.length),     active: false, route: '/owner' },
-    { label: 'Internal Leads', badge: String(owners.length),         active: false, route: '/owner' },
+    { label: 'Internal Leads', badge: String(owners.length),        active: false, route: '/owner' },
   ]
 
   const tagStyle: Record<string, { color: string; bg: string }> = {
@@ -133,7 +134,7 @@ export default function Dashboard() {
 
   const kpis = [
     { label: 'Implementations',    value: String(metrics.implementations), context: 'idea to car · primary KPI',        color: 'var(--lime)',     spark: sparkData.implementations,  primary: true  },
-    { label: 'Active Pilots',      value: String(metrics.activePilots),    context: '↑ +2 this week',                   color: 'var(--text)',     spark: sparkData.pilots,           primary: false },
+    { label: 'Active Pilots',      value: String(metrics.activePilots),    context: 'running across departments',       color: 'var(--text)',     spark: sparkData.pilots,           primary: false },
     { label: 'Avg Time to Signal', value: `${avgSignal}d`,                 context: `target ${metrics.targetTimeToSignal}d · on track`, color: avgSignal <= 14 ? 'var(--lime)' : 'var(--amber)', spark: sparkData.signal, primary: false },
     { label: 'Pain Points Open',   value: String(openPP.length),           context: `${matchedCount} matched to startups`, color: 'var(--amber)', spark: sparkData.openPainPoints,   primary: false },
     { label: 'Total Pain Points',  value: String(painPoints.length),       context: 'submitted by employees',           color: 'var(--text-muted)', spark: sparkData.totalPainPoints, primary: false },
@@ -146,6 +147,33 @@ export default function Dashboard() {
     openPP.length > 0    ? { icon: <Clock       size={12} color="var(--blue)"  />, color: 'var(--blue)',  bg: 'rgba(59,130,246,0.08)',  border: 'rgba(59,130,246,0.2)',  text: `${openPP.length} pain point${openPP.length    > 1 ? 's' : ''} unmatched`,  sub: 'Waiting for a startup match' } : null,
   ]
   const alerts = rawAlerts.filter((a): a is Alert => a !== null)
+
+  const benchmarkPanel = (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.35 }}
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', marginBottom: '10px' }}>
+      <div style={{ padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)' }}>
+        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>The benchmark · why this matters</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
+        <div style={{ padding: '22px 26px' }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '2px' }}>BMW Startup Garage</div>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '12px' }}>Founded 2015</div>
+          <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '52px', color: 'var(--text)', lineHeight: 1, marginBottom: '5px' }}>32</div>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>completed projects in 2022</div>
+        </div>
+        <div style={{ background: 'var(--border)' }} />
+        <div style={{ padding: '22px 26px' }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '2px' }}>Audi A4nXT</div>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '12px' }}>Founded 2020</div>
+          <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '52px', color: 'var(--red)', lineHeight: 1, marginBottom: '5px' }}>~3</div>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '14px' }}>public wins in 4 years</div>
+          <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-faint)', lineHeight: 1.6, maxWidth: '380px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
+            Audi is ranked #8 globally by brand value. Top-tier founders are bypassing it for BMW, which gives a supplier number in week six.
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
 
   return (
     <motion.div
@@ -186,6 +214,9 @@ export default function Dashboard() {
         </motion.div>
       )}
 
+      {/* ── BENCHMARK ─────────────────────────────────────── */}
+      {benchmarkPanel}
+
       {/* ── KPI STRIP ─────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.35 }}
         style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '10px' }}>
@@ -225,7 +256,6 @@ export default function Dashboard() {
 
               {/* Main content */}
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {/* Sub-header — time toggle replaced with static label */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
                   <div>
                     <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block' }}>Map / overview</span>
@@ -239,10 +269,10 @@ export default function Dashboard() {
                 {/* Mini KPI row */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--border)', flexShrink: 0 }}>
                   {[
-                    { k: 'Pilots',        v: String(metrics.activePilots)     },
-                    { k: 'Internal Leads', v: String(owners.length)             },
-                    { k: 'Pain points',   v: String(painPoints.length)         },
-                    { k: 'To production', v: String(metrics.implementations)   },
+                    { k: 'Pilots',         v: String(metrics.activePilots)   },
+                    { k: 'Internal Leads', v: String(owners.length)           },
+                    { k: 'Pain points',    v: String(painPoints.length)       },
+                    { k: 'To production',  v: String(metrics.implementations) },
                   ].map(s => (
                     <div key={s.k} style={{ background: 'var(--bg)', padding: '9px 12px' }}>
                       <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '3px' }}>{s.k}</div>
@@ -302,7 +332,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Deps — 4 cols, row 2 */}
+        {/* Dept bars — 4 cols, row 2 */}
         <div style={{ gridColumn: 'span 4' }}>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', height: '100%' }}>
             <div style={{ padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)' }}>
@@ -330,9 +360,9 @@ export default function Dashboard() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.35 }}
         style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '10px' }}>
         {[
-          { num: '01', name: 'The Door',  stat: '48h',                                    caption: 'named contact guarantee',       body: 'Every founder gets a name, not a form. Signal within 2 weeks.',                              color: 'var(--blue)'  },
-          { num: '02', name: 'The Internal Lead', stat: String(metrics.implementationsThisQuarter), caption: 'implementations this quarter', body: 'One named Audi employee is responsible for each startup end-to-end. KPI is implementation.',               color: 'var(--lime)'  },
-          { num: '03', name: 'The Map',   stat: String(painPoints.length),                 caption: 'pain points submitted',         body: 'Any employee can surface a problem. Pilots visible across all silos.',                       color: 'var(--amber)' },
+          { num: '01', name: 'The Door',          stat: '48h',                                    caption: 'named contact guarantee',       body: 'Every founder gets a name, not a form. Signal within 2 weeks.',                                         color: 'var(--blue)'  },
+          { num: '02', name: 'The Internal Lead', stat: String(metrics.implementationsThisQuarter), caption: 'implementations this quarter', body: 'One named Audi employee is responsible for each startup end-to-end. KPI is implementation.',              color: 'var(--lime)'  },
+          { num: '03', name: 'The Map',            stat: String(painPoints.length),                caption: 'pain points submitted',         body: 'Any employee can surface a problem. Pilots visible across all silos.',                                    color: 'var(--amber)' },
         ].map((p, i) => (
           <motion.div key={p.num} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 + i * 0.05, duration: 0.35 }}
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderTop: `2px solid ${p.color}`, borderRadius: 'var(--radius)', padding: '18px 20px' }}>
@@ -342,32 +372,6 @@ export default function Dashboard() {
             <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>{p.body}</div>
           </motion.div>
         ))}
-      </motion.div>
-
-      {/* ── BENCHMARK ─────────────────────────────────────── */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.35 }}
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
-        <div style={{ padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)' }}>
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>The benchmark</span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
-          <div style={{ padding: '22px 26px' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '2px' }}>BMW Startup Garage</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '12px' }}>Founded 2015</div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '52px', color: 'var(--text)', lineHeight: 1, marginBottom: '5px' }}>32</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>completed projects in 2022</div>
-          </div>
-          <div style={{ background: 'var(--border)' }} />
-          <div style={{ padding: '22px 26px' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '2px' }}>Audi A4nXT</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '12px' }}>Founded 2020</div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '52px', color: 'var(--red)', lineHeight: 1, marginBottom: '5px' }}>~3</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '14px' }}>public wins in 4 years</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-faint)', lineHeight: 1.6, maxWidth: '380px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-              Audi is ranked #8 globally by brand value. Top-tier founders are bypassing it for BMW, which gives a supplier number in week six.
-            </div>
-          </div>
-        </div>
       </motion.div>
     </motion.div>
   )
