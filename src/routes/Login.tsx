@@ -219,18 +219,51 @@ export default function Login() {
                     )}
                   </AnimatePresence>
 
-                  {/* Apply link when no error yet */}
+                  {/* Quick-pick name chips */}
                   {!founderError && (
-                    <button
-                      onClick={handleNewStartup}
-                      style={{
-                        marginTop: '10px', background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                        fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)',
-                        letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '3px',
-                      }}
-                    >
-                      No application yet? Apply as a new startup →
-                    </button>
+                    <div style={{ marginTop: '12px' }}>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
+                        Or pick a name
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {SEED_APPS.map(app => (
+                          <button
+                            key={app.id}
+                            onClick={() => { login('startup', { appId: app.id }); navigate(`/founder/${app.id}`) }}
+                            style={{
+                              fontFamily: 'IBM Plex Sans', fontSize: '12px', fontWeight: 500,
+                              color: 'var(--text-muted)', background: 'var(--surface-2)',
+                              border: '1px solid var(--border)', borderRadius: '20px',
+                              padding: '5px 12px', cursor: 'pointer', transition: 'all 0.15s',
+                            }}
+                            onMouseEnter={e => {
+                              const b = e.currentTarget as HTMLButtonElement
+                              b.style.borderColor = 'rgba(200,240,0,0.5)'
+                              b.style.color = 'var(--text)'
+                              b.style.background = 'rgba(200,240,0,0.06)'
+                            }}
+                            onMouseLeave={e => {
+                              const b = e.currentTarget as HTMLButtonElement
+                              b.style.borderColor = 'var(--border)'
+                              b.style.color = 'var(--text-muted)'
+                              b.style.background = 'var(--surface-2)'
+                            }}
+                          >
+                            {app.founder}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={handleNewStartup}
+                        style={{
+                          marginTop: '10px', background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                          fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)',
+                          letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '3px',
+                        }}
+                      >
+                        No application yet? Apply as a new startup →
+                      </button>
+                    </div>
                   )}
                 </div>
               </motion.div>
