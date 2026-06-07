@@ -150,123 +150,122 @@ export default function Login() {
                 transition={{ duration: 0.25 }}
                 style={{ overflow: 'hidden' }}
               >
-                <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
-                    Enter your name
-                  </div>
+                <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                  {/* Name input row */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={founderName}
-                      placeholder="e.g. Jonas Weber"
-                      onChange={e => { setFounderName(e.target.value); setFounderError(false) }}
-                      onKeyDown={e => { if (e.key === 'Enter') handleFounderSubmit() }}
-                      style={{
-                        flex: 1, fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text)',
-                        background: 'var(--surface-2)', border: `1px solid ${founderError ? 'var(--red)' : 'var(--border)'}`,
-                        borderRadius: 'var(--radius-sm)', padding: '10px 14px',
-                        outline: 'none', transition: 'border-color 0.15s',
-                      }}
-                      onFocus={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'rgba(200,240,0,0.5)' }}
-                      onBlur={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'var(--border)' }}
-                      autoFocus
-                    />
+                  {/* ── Apply now (primary) ── */}
+                  <div>
+                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                      New to BRIDGE?
+                    </div>
                     <button
-                      onClick={handleFounderSubmit}
+                      onClick={handleNewStartup}
                       style={{
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        background: 'var(--lime)', border: 'none', borderRadius: 'var(--radius-sm)',
-                        padding: '10px 18px', cursor: 'pointer', transition: 'opacity 0.15s',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        width: '100%', background: 'rgba(200,240,0,0.08)',
+                        border: '1px solid rgba(200,240,0,0.35)', borderRadius: 'var(--radius-sm)',
+                        padding: '14px 18px', cursor: 'pointer', transition: 'all 0.15s',
                       }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,240,0,0.14)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,240,0,0.08)' }}
                     >
-                      <ArrowRight size={16} color="#0A0B0D" />
+                      <div>
+                        <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '15px', color: 'var(--lime)' }}>Apply now</div>
+                        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '2px' }}>48h to a name · 2 weeks to a yes or no</div>
+                      </div>
+                      <ArrowRight size={16} color="var(--lime)" />
                     </button>
                   </div>
 
-                  {/* Error state */}
-                  <AnimatePresence>
-                    {founderError && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        style={{ marginTop: '10px' }}
-                      >
-                        <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--red)', marginBottom: '10px' }}>
-                          No application found for "{founderName}".
-                        </div>
-                        <button
-                          onClick={handleNewStartup}
-                          style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            background: 'transparent', border: '1px dashed var(--border)',
-                            borderRadius: 'var(--radius-sm)', padding: '10px 14px', cursor: 'pointer',
-                            transition: 'border-color 0.15s', textAlign: 'left', width: '100%',
-                          }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(200,240,0,0.4)' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)' }}
-                        >
-                          <div>
-                            <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px', color: 'var(--lime)' }}>Apply as new startup</div>
-                            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '1px' }}>Submit a new application to BRIDGE</div>
-                          </div>
-                          <ArrowRight size={14} color="var(--lime)" />
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {/* Divider */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', color: 'var(--text-faint)', textTransform: 'uppercase' }}>Already applied?</span>
+                    <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+                  </div>
 
-                  {/* Quick-pick name chips */}
-                  {!founderError && (
-                    <div style={{ marginTop: '12px' }}>
-                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
-                        Or pick a name
-                      </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {SEED_APPS.map(app => (
-                          <button
-                            key={app.id}
-                            onClick={() => { login('startup', { appId: app.id }); navigate(`/founder/${app.id}`) }}
-                            style={{
-                              fontFamily: 'IBM Plex Sans', fontSize: '12px', fontWeight: 500,
-                              color: 'var(--text-muted)', background: 'var(--surface-2)',
-                              border: '1px solid var(--border)', borderRadius: '20px',
-                              padding: '5px 12px', cursor: 'pointer', transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={e => {
-                              const b = e.currentTarget as HTMLButtonElement
-                              b.style.borderColor = 'rgba(200,240,0,0.5)'
-                              b.style.color = 'var(--text)'
-                              b.style.background = 'rgba(200,240,0,0.06)'
-                            }}
-                            onMouseLeave={e => {
-                              const b = e.currentTarget as HTMLButtonElement
-                              b.style.borderColor = 'var(--border)'
-                              b.style.color = 'var(--text-muted)'
-                              b.style.background = 'var(--surface-2)'
-                            }}
-                          >
-                            {app.founder}
-                          </button>
-                        ))}
-                      </div>
-                      <button
-                        onClick={handleNewStartup}
+                  {/* ── Login as existing founder ── */}
+                  <div>
+                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                      Log in as existing founder
+                    </div>
+
+                    {/* Name input */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={founderName}
+                        placeholder="Enter your name"
+                        onChange={e => { setFounderName(e.target.value); setFounderError(false) }}
+                        onKeyDown={e => { if (e.key === 'Enter') handleFounderSubmit() }}
                         style={{
-                          marginTop: '10px', background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                          fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)',
-                          letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '3px',
+                          flex: 1, fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text)',
+                          background: 'var(--surface-2)', border: `1px solid ${founderError ? 'var(--red)' : 'var(--border)'}`,
+                          borderRadius: 'var(--radius-sm)', padding: '10px 14px',
+                          outline: 'none', transition: 'border-color 0.15s',
                         }}
+                        onFocus={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'rgba(200,240,0,0.5)' }}
+                        onBlur={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'var(--border)' }}
+                      />
+                      <button
+                        onClick={handleFounderSubmit}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          background: 'var(--lime)', border: 'none', borderRadius: 'var(--radius-sm)',
+                          padding: '10px 18px', cursor: 'pointer', transition: 'opacity 0.15s',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
                       >
-                        No application yet? Apply as a new startup →
+                        <ArrowRight size={16} color="#0A0B0D" />
                       </button>
                     </div>
-                  )}
+
+                    {/* Error */}
+                    <AnimatePresence>
+                      {founderError && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          style={{ marginTop: '8px', fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--red)' }}
+                        >
+                          No application found for "{founderName}".
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Name chips */}
+                    <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {SEED_APPS.map(app => (
+                        <button
+                          key={app.id}
+                          onClick={() => { login('startup', { appId: app.id }); navigate(`/founder/${app.id}`) }}
+                          style={{
+                            fontFamily: 'IBM Plex Sans', fontSize: '12px', fontWeight: 500,
+                            color: 'var(--text-muted)', background: 'var(--surface-2)',
+                            border: '1px solid var(--border)', borderRadius: '20px',
+                            padding: '5px 12px', cursor: 'pointer', transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={e => {
+                            const b = e.currentTarget as HTMLButtonElement
+                            b.style.borderColor = 'rgba(200,240,0,0.5)'
+                            b.style.color = 'var(--text)'
+                            b.style.background = 'rgba(200,240,0,0.06)'
+                          }}
+                          onMouseLeave={e => {
+                            const b = e.currentTarget as HTMLButtonElement
+                            b.style.borderColor = 'var(--border)'
+                            b.style.color = 'var(--text-muted)'
+                            b.style.background = 'var(--surface-2)'
+                          }}
+                        >
+                          {app.founder}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
               </motion.div>
             )}

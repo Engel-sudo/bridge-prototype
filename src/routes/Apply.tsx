@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, CheckCircle, Check } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useBridgeStore } from '../store/store'
+import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import type { Application } from '../store/types'
 
@@ -59,6 +60,7 @@ export default function Apply() {
   const [appId, setAppId] = useState('')
   const [done, setDone] = useState(false)
   const { addApplication } = useBridgeStore()
+  const loginAuth = useAuthStore(s => s.login)
   const navigate = useNavigate()
 
   function canNext() {
@@ -95,6 +97,7 @@ export default function Apply() {
       teamSize: parseInt(data.teamSize) || 1,
     }
     addApplication(app)
+    loginAuth('startup', { appId: id })
     setDone(true)
   }
 
