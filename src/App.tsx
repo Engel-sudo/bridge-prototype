@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Nav from './components/Nav'
+import ProtectedRoute from './components/ProtectedRoute'
+import Login from './routes/Login'
 import Landing from './routes/Landing'
 import Apply from './routes/Apply'
 import FounderStatus from './routes/FounderStatus'
@@ -14,14 +16,45 @@ export default function App() {
       <Nav />
       <AnimatePresence mode="wait">
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Landing />} />
-          <Route path="/apply" element={<Apply />} />
-          <Route path="/founder" element={<FounderStatus />} />
-          <Route path="/founder/:id" element={<FounderStatus />} />
-          <Route path="/owner" element={<OwnerConsole />} />
-          <Route path="/map" element={<PainPointMap />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+
+          <Route path="/apply" element={
+            <ProtectedRoute allowedRoles={['startup']}>
+              <Apply />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/founder" element={
+            <ProtectedRoute allowedRoles={['startup', 'internal_lead', 'admin']}>
+              <FounderStatus />
+            </ProtectedRoute>
+          } />
+          <Route path="/founder/:id" element={
+            <ProtectedRoute allowedRoles={['startup', 'internal_lead', 'admin']}>
+              <FounderStatus />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/owner" element={
+            <ProtectedRoute allowedRoles={['internal_lead', 'admin']}>
+              <OwnerConsole />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/map" element={
+            <ProtectedRoute allowedRoles={['internal_lead', 'admin']}>
+              <PainPointMap />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/dashboard" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AnimatePresence>
     </BrowserRouter>

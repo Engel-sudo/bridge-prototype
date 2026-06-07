@@ -10,7 +10,7 @@ interface TimelineStage {
 const STAGES: TimelineStage[] = [
   { key: 'submitted', label: 'Submitted' },
   { key: 'named_contact', label: 'Named Contact', sublabel: '48h' },
-  { key: 'owner_assigned', label: 'Owner Assigned' },
+  { key: 'owner_assigned', label: 'Internal Lead Assigned' },
   { key: 'in_review', label: 'In Review' },
   { key: 'signal_sent', label: '2-Week Signal', sublabel: '14 days' },
   { key: 'decision_go', label: 'Decision: Go' },
