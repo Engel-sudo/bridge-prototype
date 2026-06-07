@@ -1,26 +1,47 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, CheckCircle, Check } from 'lucide-react'
+import { Check, CheckCircle, ShieldCheck } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import type { Application } from '../store/types'
 
-const STEPS = [
-  { title: 'Your startup', subtitle: 'Tell us who you are' },
-  { title: 'The technology', subtitle: 'What problem are you solving?' },
-  { title: 'The ask', subtitle: 'What do you need from Audi?' },
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const MONO = "'JetBrains Mono', monospace"
+const SANS = "'Inter', sans-serif"
+const LIME = '#D6FF00'
+const LIME_DIM = 'rgba(214, 255, 0, 0.12)'
+const LIME_BORDER = 'rgba(214, 255, 0, 0.25)'
+const GLASS_BG = 'rgba(10, 10, 10, 0.65)'
+const SURFACE = '#0e0e0e'
+const MUTED = '#8A8A8A'
+const ON_SURFACE = '#e5e2e1'
+const BORDER_SUBTLE = 'rgba(255, 255, 255, 0.05)'
+const BORDER_MED = 'rgba(255, 255, 255, 0.10)'
+
+const TERMINAL_LOGS = [
+  'UPLINK_ENCRYPTED_SHA256',
+  'FETCHING_AUDI_NODE_09...',
+  'VALIDATING_ISO_CHECKSUM',
+  'TRL_VERIFICATION_PENDING',
+  'SYNCING_WITH_GATEKEEPER',
+  'ACCESS_LAYER_LOCKED',
+  'STRESS_TEST_PARSING...',
+  'COMPLIANCE_VECTOR_MATCH',
+  'NDR_LOCK_ACTIVE',
+  'GDPR_ISOLATION_VERIFIED',
+  'PATENT_VECTOR_SCANNING',
 ]
 
-const REGIONS = ['Bavaria', 'Baden-Württemberg', 'Hesse', 'Other Germany', 'Outside Germany'] as const
-type Region = typeof REGIONS[number]
-const NEARBY: Region[] = ['Bavaria', 'Baden-Württemberg']
+const REGIONS = ['Bavaria', 'Baden-Württemberg', 'Hesse', 'Other Germany', 'Outside Germany']
+const NEARBY = ['Bavaria', 'Baden-Württemberg']
 
 interface FormData {
   founderName: string
   companyName: string
-  region: Region | ''
+  region: string
   wantsVisit: boolean | null
   teamSize: string
   funding: string
@@ -28,6 +49,15 @@ interface FormData {
   targetDepartment: string
   stage: string
   ask: string
+  trl: number
+  milestones: string
+  monthsToMarket: string
+  apiStandards: string
+  complianceCert: string
+  hasEdgeArch: boolean
+  hasCloudNative: boolean
+  partnerType: string
+  timeline: string
 }
 
 const EMPTY: FormData = {
@@ -41,11 +71,20 @@ const EMPTY: FormData = {
   targetDepartment: '',
   stage: '',
   ask: '',
+  trl: 0,
+  milestones: '',
+  monthsToMarket: '',
+  apiStandards: '',
+  complianceCert: 'None / Self-Audit',
+  hasEdgeArch: false,
+  hasCloudNative: false,
+  partnerType: '',
+  timeline: '',
 }
 
 function generateId() {
   const num = Math.floor(Math.random() * 900) + 100
-  return `APP-2026-0${num}`
+  return `B-DD-${num}-ALPHA`
 }
 
 function addDays(days: number) {
@@ -54,8 +93,128 @@ function addDays(days: number) {
   return d.toISOString().slice(0, 10)
 }
 
+// ─── Subcomponents ─────────────────────────────────────────────────────────────
+
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ fontFamily: MONO, fontSize: '11px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '10px' }}>
+      {children}
+    </p>
+  )
+}
+
+function ApplyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      style={{
+        width: '100%', background: SURFACE, border: `1px solid ${BORDER_MED}`,
+        borderRadius: '2px', padding: '13px 16px', fontSize: '13px',
+        color: ON_SURFACE, fontFamily: SANS, outline: 'none',
+        transition: 'border-color 0.15s',
+        ...props.style,
+      }}
+      onFocus={e => { e.currentTarget.style.borderColor = LIME_BORDER }}
+      onBlur={e => { e.currentTarget.style.borderColor = BORDER_MED }}
+    />
+  )
+}
+
+function ApplyTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      {...props}
+      style={{
+        width: '100%', background: SURFACE, border: `1px solid ${BORDER_MED}`,
+        borderRadius: '2px', padding: '13px 16px', fontSize: '13px',
+        color: ON_SURFACE, fontFamily: SANS, outline: 'none', resize: 'vertical',
+        minHeight: '100px', lineHeight: '1.65', transition: 'border-color 0.15s',
+        ...props.style,
+      }}
+      onFocus={e => { e.currentTarget.style.borderColor = LIME_BORDER }}
+      onBlur={e => { e.currentTarget.style.borderColor = BORDER_MED }}
+    />
+  )
+}
+
+function ApplySelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select
+      {...props}
+      style={{
+        width: '100%', background: SURFACE, border: `1px solid ${BORDER_MED}`,
+        borderRadius: '2px', padding: '13px 16px', fontSize: '13px',
+        color: ON_SURFACE, fontFamily: SANS, outline: 'none',
+        appearance: 'none', cursor: 'pointer', transition: 'border-color 0.15s',
+        ...props.style,
+      }}
+      onFocus={e => { e.currentTarget.style.borderColor = LIME_BORDER }}
+      onBlur={e => { e.currentTarget.style.borderColor = BORDER_MED }}
+    />
+  )
+}
+
+function SectionHeader({ num, title }: { num: string; title: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '32px' }}>
+      <span style={{ fontFamily: MONO, color: LIME, fontSize: '18px', fontWeight: 700, letterSpacing: '-0.02em' }}>{num}</span>
+      <h2 style={{ fontFamily: MONO, fontSize: '13px', color: ON_SURFACE, textTransform: 'uppercase', letterSpacing: '0.2em', margin: 0 }}>{title}</h2>
+      <div style={{ flex: 1, height: '1px', background: BORDER_SUBTLE }} />
+    </div>
+  )
+}
+
+function GlassCard({ children, style, className }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
+  return (
+    <div className={className} style={{
+      background: GLASS_BG, backdropFilter: 'blur(24px)',
+      border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px',
+      transition: 'border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+      ...style,
+    }}>
+      {children}
+    </div>
+  )
+}
+
+// ─── Portal Node SVG ───────────────────────────────────────────────────────────
+
+function PortalNode({ nodeRef }: { nodeRef: React.RefObject<HTMLDivElement | null> }) {
+  return (
+    <div style={{ perspective: '1000px' }}>
+      <div
+        ref={nodeRef}
+        style={{ transformStyle: 'preserve-3d', transition: 'transform 0.12s ease-out', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '160px', position: 'relative' }}
+      >
+        <svg viewBox="0 0 160 160" style={{ width: '140px', height: '140px', filter: 'drop-shadow(0 0 12px rgba(214,255,0,0.18))' }}>
+          <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(214,255,0,0.06)" strokeWidth="1" />
+          <circle cx="80" cy="80" r="50" fill="none" stroke="rgba(214,255,0,0.10)" strokeWidth="1" strokeDasharray="4 6" />
+          <circle cx="80" cy="80" r="32" fill="none" stroke="rgba(214,255,0,0.18)" strokeWidth="1" />
+          <circle cx="80" cy="80" r="14" fill="rgba(214,255,0,0.08)" stroke="rgba(214,255,0,0.35)" strokeWidth="1" />
+          <circle cx="80" cy="80" r="5" fill={LIME} />
+          {/* Orbit nodes */}
+          <circle cx="80" cy="30" r="3.5" fill={LIME} opacity="0.9" />
+          <circle cx="122" cy="60" r="2.5" fill={LIME} opacity="0.6" />
+          <circle cx="108" cy="120" r="2" fill={LIME} opacity="0.5" />
+          <circle cx="38" cy="100" r="2.5" fill={LIME} opacity="0.6" />
+          {/* Connectors */}
+          <line x1="80" y1="66" x2="80" y2="33" stroke={LIME} strokeWidth="0.5" opacity="0.35" />
+          <line x1="89" y1="74" x2="119" y2="62" stroke={LIME} strokeWidth="0.5" opacity="0.25" />
+          <line x1="74" y1="87" x2="42" y2="98" stroke={LIME} strokeWidth="0.5" opacity="0.25" />
+          {/* Crosshair */}
+          <line x1="66" y1="80" x2="74" y2="80" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
+          <line x1="86" y1="80" x2="94" y2="80" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
+          <line x1="80" y1="66" x2="80" y2="74" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
+          <line x1="80" y1="86" x2="80" y2="94" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
+        </svg>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Component ─────────────────────────────────────────────────────────────
+
 export default function Apply() {
-  const [step, setStep] = useState(0)
   const [data, setData] = useState<FormData>(EMPTY)
   const [appId, setAppId] = useState('')
   const [done, setDone] = useState(false)
@@ -63,21 +222,114 @@ export default function Apply() {
   const loginAuth = useAuthStore(s => s.login)
   const navigate = useNavigate()
 
-  function canNext() {
-    if (step === 0) return data.founderName.trim() && data.companyName.trim() && data.region
-    if (step === 1) return data.technology.trim()
-    return data.ask.trim()
-  }
+  const mouseGlowRef = useRef<HTMLDivElement>(null)
+  const node3dRef = useRef<HTMLDivElement>(null)
+  const terminalRef = useRef<HTMLDivElement>(null)
 
-  function handleNext() {
-    if (step < STEPS.length - 1) {
-      setStep(s => s + 1)
-    } else {
-      submit()
+  // Inject page-scoped CSS once
+  useEffect(() => {
+    const id = 'apply-v2-styles'
+    if (document.getElementById(id)) return
+    const style = document.createElement('style')
+    style.id = id
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap');
+      .ap-grain { pointer-events:none; position:fixed; inset:0; z-index:100; opacity:0.04;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size:200px; }
+      .ap-reveal { opacity:0; transform:translateY(22px); transition:all 0.9s cubic-bezier(0.22,1,0.36,1); }
+      .ap-reveal.in { opacity:1; transform:translateY(0); }
+      .ap-lime-pulse { animation:ap-pulse 3s ease-in-out infinite; }
+      @keyframes ap-pulse { 0%,100%{opacity:1;filter:drop-shadow(0 0 2px #D6FF00)} 50%{opacity:.4;filter:drop-shadow(0 0 10px #D6FF00)} }
+      .ap-glitch:hover { animation:ap-glitch-anim 0.18s infinite; background:#e1ff33 !important; }
+      @keyframes ap-glitch-anim { 0%{transform:translate(0)} 25%{transform:translate(-1px,1px)} 50%{transform:translate(1px,-1px)} 75%{transform:translate(-1px,-1px)} 100%{transform:translate(0)} }
+      @media (prefers-reduced-motion: reduce) {
+        .ap-glitch:hover { animation:none; }
+        .ap-reveal { transition:none; }
+        .ap-lime-pulse { animation:none; }
+      }
+      .ap-trl { padding:11px 0; border:1px solid rgba(255,255,255,0.1); border-radius:3px; background:transparent; color:#e5e2e1; font-family:'JetBrains Mono',monospace; font-size:12px; cursor:pointer; transition:all 0.15s; text-align:center; }
+      .ap-trl:hover { border-color:rgba(214,255,0,0.4); color:#D6FF00; }
+      .ap-trl.sel { border-color:rgba(214,255,0,0.5); background:rgba(214,255,0,0.1); color:#D6FF00; box-shadow:0 0 10px rgba(214,255,0,0.1); }
+      .ap-check { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid rgba(255,255,255,0.05); border-radius:3px; cursor:pointer; transition:background 0.15s; }
+      .ap-check:hover { background:rgba(255,255,255,0.02); }
+      .ap-scroll::-webkit-scrollbar { width:2px; }
+      .ap-scroll::-webkit-scrollbar-track { background:transparent; }
+      .ap-scroll::-webkit-scrollbar-thumb { background:rgba(214,255,0,0.3); }
+      .ap-ring { transition:stroke-dashoffset 0.8s ease-in-out; transform:rotate(-90deg); transform-origin:50% 50%; }
+      .ap-glass-card:hover { border-color:rgba(214,255,0,0.12) !important; }
+      /* ── Responsive layout ─────────────────────────────────────── */
+      .ap-main-grid { grid-template-columns: 220px 1fr 220px; }
+      .ap-form-2col { grid-template-columns: 1fr 1fr; }
+      .ap-trl-grid  { grid-template-columns: repeat(9, 1fr); }
+      @media (max-width: 1200px) {
+        .ap-main-grid { grid-template-columns: 200px 1fr; }
+        .ap-right-aside { display: none !important; }
+      }
+      @media (max-width: 900px) {
+        .ap-main-grid { grid-template-columns: 1fr; }
+        .ap-left-aside { display: none !important; }
+      }
+      @media (max-width: 640px) {
+        .ap-form-2col { grid-template-columns: 1fr; }
+        .ap-trl-grid  { grid-template-columns: repeat(5, 1fr); }
+      }
+    `
+    document.head.appendChild(style)
+  }, [])
+
+  // Mouse glow + 3D node tilt
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (mouseGlowRef.current) {
+        mouseGlowRef.current.style.left = `${e.clientX}px`
+        mouseGlowRef.current.style.top = `${e.clientY}px`
+      }
+      if (node3dRef.current) {
+        const r = node3dRef.current.getBoundingClientRect()
+        const rx = (r.top + r.height / 2 - e.clientY) / 15
+        const ry = (e.clientX - r.left - r.width / 2) / 15
+        node3dRef.current.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`
+      }
     }
-  }
+    window.addEventListener('mousemove', onMove)
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
+
+  // Terminal log
+  useEffect(() => {
+    const id = setInterval(() => {
+      const t = terminalRef.current
+      if (!t) return
+      const p = document.createElement('p')
+      p.style.cssText = `font-size:8px;opacity:0.3;font-family:JetBrains Mono,monospace;color:#8A8A8A;text-transform:uppercase;letter-spacing:0.1em;margin:0;line-height:1.8;`
+      p.textContent = `> ${TERMINAL_LOGS[Math.floor(Math.random() * TERMINAL_LOGS.length)]}`
+      t.appendChild(p)
+      t.scrollTop = t.scrollHeight
+      if (t.children.length > 22) t.removeChild(t.children[0])
+    }, 2200)
+    return () => clearInterval(id)
+  }, [])
+
+  // Scroll reveal
+  useEffect(() => {
+    const els = document.querySelectorAll('.ap-reveal')
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in') }),
+      { threshold: 0.06 }
+    )
+    els.forEach(el => obs.observe(el))
+    return () => obs.disconnect()
+  }, [done])
+
+  const s1Done = !!(data.founderName && data.companyName && data.region)
+  const s2Done = !!(data.trl > 0 && data.stage)
+  const s3Done = !!(data.technology)
+  const s4Done = !!(data.ask)
+  const canSubmit = !!(s1Done && data.technology && data.ask)
 
   function submit() {
+    if (!canSubmit) return
     const id = generateId()
     setAppId(id)
     const app: Application = {
@@ -93,294 +345,547 @@ export default function Apply() {
       ownerId: null,
       signalDeadline: addDays(14),
       notes: data.ask,
-      funding: data.stage || 'Undisclosed',
+      funding: data.funding || 'Undisclosed',
       teamSize: parseInt(data.teamSize) || 1,
     }
     addApplication(app)
     loginAuth('startup', { appId: id })
     setDone(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      style={{ padding: '80px 40px 60px', maxWidth: '640px', margin: '0 auto' }}
-    >
-      <AnimatePresence mode="wait">
-        {done ? (
-          <motion.div
-            key="done"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.35 }}
-          >
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1, type: 'spring', stiffness: 260, damping: 20 }}
-              >
-                <CheckCircle size={56} color="var(--lime)" style={{ margin: '0 auto 16px' }} />
-              </motion.div>
-              <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
-                Your application is in.
-              </h1>
-              <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '15px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                You'll hear from a named Audi contact within 48 hours.<br />
-                We'll give you a yes or no within 2 weeks. A real decision, on a real deadline.
-              </p>
+  const completedSections = [s1Done, s2Done, s3Done, s4Done].filter(Boolean).length
+  const progressPct = Math.round((completedSections / 4) * 100)
+
+  // ─── Done Screen ─────────────────────────────────────────────────────────────
+
+  if (done) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
+        style={{ minHeight: '100vh', background: '#050505', padding: '120px 40px 80px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}
+      >
+        <div className="ap-grain" />
+        <div style={{ maxWidth: '560px', width: '100%' }}>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
+            {/* Status badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: MONO, fontSize: '11px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.2em', border: `1px solid ${LIME_BORDER}`, padding: '6px 12px', borderRadius: '2px', background: LIME_DIM }}>
+                <span className="ap-lime-pulse" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: LIME }} />
+                Application Logged
+              </span>
             </div>
 
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--lime)', borderRadius: 'var(--radius)', padding: '28px', marginBottom: '24px' }}>
-              <span className="kicker">application ID</span>
-              <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '32px', color: 'var(--lime)', marginBottom: '24px' }}>{appId}</div>
+            <div style={{ marginBottom: '8px', fontFamily: MONO, fontSize: '11px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Session ID</div>
+            <h1 style={{ fontFamily: MONO, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 40px)', color: LIME, letterSpacing: '-0.01em', marginBottom: '16px', lineHeight: 1.1 }}>
+              {appId}
+            </h1>
+            <p style={{ fontFamily: SANS, fontSize: '14px', color: MUTED, lineHeight: 1.7, marginBottom: '40px' }}>
+              Your application is in the queue. A named Audi contact will reach out within 48 hours —<br />
+              a real yes or no within <strong style={{ color: ON_SURFACE }}>14 days</strong>.
+            </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', marginTop: '4px' }}>
-                {[
-                  { label: '48h', desc: 'Named contact assigned', color: 'var(--lime)' },
-                  { label: `By ${addDays(14)}`, desc: 'Yes or no signal', color: 'var(--lime)' },
-                ].map(({ label, desc, color }, i) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.12 }}
-                    style={{ background: 'var(--surface)', padding: '16px' }}
-                  >
-                    <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '22px', color, lineHeight: 1, marginBottom: '4px' }}>{label}</div>
-                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{desc}</div>
-                  </motion.div>
-                ))}
-              </div>
+            {/* Timeline cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: BORDER_SUBTLE, marginBottom: '24px', borderRadius: '4px', overflow: 'hidden' }}>
+              {[
+                { val: '48h', desc: 'Named contact assigned' },
+                { val: addDays(14), desc: 'Decision deadline' },
+              ].map(({ val, desc }, i) => (
+                <motion.div
+                  key={val} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.12 }}
+                  style={{ background: '#0e0e0e', padding: '20px 24px' }}
+                >
+                  <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: '20px', color: LIME, marginBottom: '6px', letterSpacing: '-0.01em' }}>{val}</div>
+                  <div style={{ fontFamily: MONO, fontSize: '10px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{desc}</div>
+                </motion.div>
+              ))}
             </div>
 
             {data.wantsVisit === true && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--lime)' }}
+                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ delay: 0.45 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontFamily: SANS, fontSize: '12px', color: LIME, background: LIME_DIM, border: `1px solid ${LIME_BORDER}`, padding: '12px 16px', borderRadius: '3px' }}
               >
-                <Check size={15} />
-                Plant visit requested. Your Internal Lead will reach out to schedule.
+                <Check size={14} />
+                Plant visit requested — your Internal Lead will reach out to schedule.
               </motion.div>
             )}
 
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <button className="btn-secondary" onClick={() => navigate(`/founder/${appId}`)}>
-                Track application
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => navigate(`/founder/${appId}`)}
+                style={{ flex: 1, padding: '14px', background: LIME, color: '#050505', fontFamily: MONO, fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+              >
+                Track Application
               </button>
-              <button className="btn-secondary" onClick={() => { setDone(false); setStep(0); setData(EMPTY) }}>
-                Submit another
+              <button
+                onClick={() => { setDone(false); setData(EMPTY) }}
+                style={{ padding: '14px 20px', background: 'transparent', color: MUTED, fontFamily: MONO, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.16em', border: `1px solid ${BORDER_MED}`, borderRadius: '2px', cursor: 'pointer' }}
+              >
+                New
               </button>
+            </div>
+
+            {/* Footer note */}
+            <div style={{ marginTop: '40px', padding: '16px', borderTop: `1px solid ${BORDER_SUBTLE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>{appId}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <ShieldCheck size={10} />
+                AES-256
+              </div>
             </div>
           </motion.div>
-        ) : (
-          <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <DemoHint persona="You are a startup founder" hint="Fill the 3 steps and submit. You'll get a tracked application you can follow in the Founder view." />
+        </div>
+      </motion.div>
+    )
+  }
 
-            {/* Header */}
-            <div style={{ marginBottom: '36px' }}>
-              <span className="kicker">apply to bridge</span>
-              <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 36px)', color: 'var(--text)', lineHeight: 1.1 }}>
-                The Door
-              </h1>
-              <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
-                48h to a name. 2 weeks to a yes or no.
-              </p>
+  // ─── Main Form View ──────────────────────────────────────────────────────────
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#050505', position: 'relative' }}>
+      {/* Grain + glow */}
+      <div className="ap-grain" />
+      <div ref={mouseGlowRef} style={{ position: 'fixed', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(214,255,0,0.055) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1, transform: 'translate(-50%,-50%)', transition: 'opacity 0.3s', left: '-400px', top: '-400px' }} />
+
+      <div className="ap-main-grid" style={{ maxWidth: '1200px', margin: '0 auto', padding: '100px 40px 80px', display: 'grid', gap: '32px', position: 'relative', zIndex: 10 }}>
+
+        {/* ── Left Sidebar ──────────────────────────────────────────────── */}
+        <aside className="ap-left-aside" style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'sticky', top: '100px', height: 'fit-content' }}>
+
+          {/* Portal Node */}
+          <GlassCard style={{ padding: '20px', overflow: 'hidden', cursor: 'crosshair' }} className="ap-glass-card">
+            <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '12px' }}>Portal Status</p>
+            <PortalNode nodeRef={node3dRef} />
+            <div style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, paddingTop: '12px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', marginBottom: '6px' }}>
+                <span>Signal Strength</span>
+                <span style={{ color: LIME }}>98.4%</span>
+              </div>
+              <div style={{ height: '2px', background: BORDER_SUBTLE, borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: '98.4%', background: LIME }} />
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* Progress Nav */}
+          <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
+            <h3 style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: '24px' }}>Your Progress</h3>
+
+            {/* Completion ring */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ position: 'relative', width: '40px', height: '40px', flexShrink: 0 }}>
+                <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+                  <circle cx="50" cy="50" r="42" fill="transparent" stroke={BORDER_SUBTLE} strokeWidth="8" />
+                  <circle cx="50" cy="50" r="42" fill="transparent" stroke={LIME} strokeWidth="8"
+                    strokeDasharray="263.9" strokeDashoffset={263.9 * (1 - progressPct / 100)}
+                    className="ap-ring" />
+                </svg>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: '9px', color: LIME }}>
+                  {progressPct}%
+                </div>
+              </div>
+              <div>
+                <p style={{ fontFamily: MONO, fontSize: '11px', color: ON_SURFACE, fontWeight: 600 }}>{completedSections}/4</p>
+                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Sections done</p>
+              </div>
             </div>
 
-            {/* Step indicators */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '32px', gap: '0' }}>
-              {STEPS.map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', flex: i < STEPS.length - 1 ? '1' : '0 0 auto' }}>
+            <nav style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '7px', top: '4px', bottom: '4px', width: '1px', background: BORDER_SUBTLE }} />
+              {[
+                { num: '01', label: 'Startup Profile', done: s1Done },
+                { num: '02', label: 'Growth & Scale', done: s2Done },
+                { num: '03', label: 'Tech Stack', done: s3Done },
+                { num: '04', label: 'Ready to Scale', done: s4Done },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: i < 3 ? '16px' : 0, opacity: item.done ? 1 : 0.45, transition: 'opacity 0.3s', position: 'relative', zIndex: 1 }}>
                   <div style={{
-                    width: '28px', height: '28px', borderRadius: '4px',
-                    background: i < step ? 'var(--lime)' : i === step ? 'rgba(200,240,0,0.15)' : 'var(--surface-2)',
-                    border: `2px solid ${i <= step ? 'var(--lime)' : 'var(--border-strong)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    width: '15px', height: '15px', borderRadius: '50%', flexShrink: 0,
+                    border: `1px solid ${item.done ? LIME : 'rgba(255,255,255,0.2)'}`,
+                    background: item.done ? LIME_DIM : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: item.done ? `0 0 8px rgba(214,255,0,0.25)` : 'none',
                   }}>
-                    {i < step ? (
-                      <CheckCircle size={14} color="#0A0B0D" />
-                    ) : (
-                      <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '12px', color: i === step ? 'var(--lime)' : 'var(--text-faint)' }}>{i + 1}</span>
-                    )}
+                    {item.done && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: LIME }} />}
                   </div>
-                  {i < STEPS.length - 1 && (
-                    <div style={{ flex: 1, height: '2px', background: i < step ? 'var(--lime)' : 'var(--border)', margin: '0 8px' }} />
-                  )}
+                  <div>
+                    <p style={{ fontFamily: MONO, fontSize: '9px', color: item.done ? LIME : MUTED, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1px' }}>{item.num}</p>
+                    <p style={{ fontFamily: MONO, fontSize: '11px', color: item.done ? ON_SURFACE : MUTED, textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: item.done ? 600 : 400 }}>{item.label}</p>
+                  </div>
+                </div>
+              ))}
+            </nav>
+          </GlassCard>
+
+          {/* Protocol Log */}
+          <GlassCard style={{ padding: '16px', background: 'rgba(0,0,0,0.7)', border: `1px solid rgba(214,255,0,0.06)` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h5 style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Protocol Log</h5>
+              <span style={{ fontFamily: MONO, fontSize: '8px', color: LIME, animation: 'ap-pulse 2s ease-in-out infinite' }}>UPLINKING</span>
+            </div>
+            <div ref={terminalRef} className="ap-scroll" style={{ height: '130px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {Array.from({ length: 8 }, (_, i) => (
+                <p key={i} style={{ fontFamily: MONO, fontSize: '8px', opacity: 0.25, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0, lineHeight: '1.8' }}>
+                  &gt; {TERMINAL_LOGS[i % TERMINAL_LOGS.length]}
+                </p>
+              ))}
+            </div>
+          </GlassCard>
+        </aside>
+
+        {/* ── Center Form ────────────────────────────────────────────────── */}
+        <section style={{ minWidth: 0 }}>
+          <DemoHint persona="You are a startup founder" hint="Fill in the 4 sections below and submit. You'll get a tracked application you can follow in the Founder view." />
+
+          {/* Page header */}
+          <div className="ap-reveal in" style={{ position: 'relative', padding: '40px', border: `1px solid ${BORDER_SUBTLE}`, background: '#0a0a0a', overflow: 'hidden', borderRadius: '4px', marginBottom: '40px' }}>
+            <div style={{ position: 'absolute', top: '12px', right: '16px', fontFamily: MONO, fontSize: '40px', color: 'rgba(214,255,0,0.05)', lineHeight: 1 }}>⬡</div>
+            <div style={{ fontFamily: MONO, fontSize: '9px', color: LIME, letterSpacing: '0.5em', textTransform: 'uppercase', marginBottom: '14px' }}>Venture Intake // Level 2</div>
+            <h1 style={{ fontFamily: SANS, fontWeight: 800, fontSize: 'clamp(24px,3.5vw,36px)', color: ON_SURFACE, marginBottom: '16px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              Venture Intake
+            </h1>
+            <p style={{ fontFamily: SANS, fontSize: '13px', color: MUTED, lineHeight: 1.75, borderLeft: `3px solid rgba(214,255,0,0.3)`, paddingLeft: '18px', maxWidth: '480px' }}>
+              A multi-layered technical audit designed for enterprise-grade integration.
+              Responses are cryptographically secured and routed to the Audi AG Procurement Node.
+            </p>
+          </div>
+
+          <form onSubmit={e => { e.preventDefault(); submit() }} style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+
+            {/* ── Section 01: Startup Profile ───────────────────────────── */}
+            <section className="ap-reveal in">
+              <SectionHeader num="01" title="Startup Profile" />
+              <div className="ap-form-2col" style={{ display: 'grid', gap: '20px' }}>
+                <div>
+                  <Label>Legal Company Name *</Label>
+                  <ApplyInput placeholder="Your startup name" value={data.companyName} onChange={e => setData(d => ({ ...d, companyName: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Founder Full Name *</Label>
+                  <ApplyInput placeholder="Jonas Weber" value={data.founderName} onChange={e => setData(d => ({ ...d, founderName: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Region *</Label>
+                  <ApplySelect value={data.region} onChange={e => setData(d => ({ ...d, region: e.target.value, wantsVisit: null }))}>
+                    <option value="">Select region…</option>
+                    {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </ApplySelect>
+                </div>
+                <div>
+                  <Label>Team Size</Label>
+                  <ApplyInput type="number" placeholder="6" value={data.teamSize} onChange={e => setData(d => ({ ...d, teamSize: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Funding Stage</Label>
+                  <ApplySelect value={data.funding} onChange={e => setData(d => ({ ...d, funding: e.target.value }))}>
+                    <option value="">Select…</option>
+                    <option>Pre-seed</option>
+                    <option>Seed</option>
+                    <option>Series A</option>
+                    <option>Bootstrapped</option>
+                  </ApplySelect>
+                </div>
+                <div>
+                  <Label>Target Department at Audi</Label>
+                  <ApplySelect value={data.targetDepartment} onChange={e => setData(d => ({ ...d, targetDepartment: e.target.value }))}>
+                    <option value="">Select if known…</option>
+                    <option>Production</option>
+                    <option>Quality</option>
+                    <option>Logistics</option>
+                    <option>R&D</option>
+                    <option>Procurement</option>
+                    <option>Not sure yet</option>
+                  </ApplySelect>
+                </div>
+              </div>
+
+              {/* Inline visit prompt for nearby regions */}
+              <AnimatePresence>
+                {NEARBY.includes(data.region) && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }} style={{ overflow: 'hidden', marginTop: '20px' }}
+                  >
+                    <div style={{ background: SURFACE, border: `1px solid ${BORDER_MED}`, borderLeft: `3px solid ${LIME}`, borderRadius: '3px', padding: '18px 20px' }}>
+                      <p style={{ fontFamily: SANS, fontWeight: 600, fontSize: '13px', color: ON_SURFACE, marginBottom: '6px' }}>Would you like to meet in person?</p>
+                      <p style={{ fontFamily: SANS, fontSize: '12px', color: MUTED, lineHeight: 1.6, marginBottom: '14px' }}>
+                        You're nearby — your Internal Lead can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks.
+                      </p>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {[{ label: 'Yes, arrange a visit', val: true }, { label: 'No thanks', val: false }].map(opt => (
+                          <button key={String(opt.val)} type="button" onClick={() => setData(d => ({ ...d, wantsVisit: opt.val }))}
+                            style={{
+                              fontFamily: SANS, fontSize: '12px', fontWeight: 600, padding: '8px 16px',
+                              borderRadius: '2px', cursor: 'pointer', transition: 'all 0.15s',
+                              background: data.wantsVisit === opt.val ? (opt.val ? LIME_DIM : SURFACE) : 'transparent',
+                              border: `1px solid ${data.wantsVisit === opt.val ? (opt.val ? LIME_BORDER : BORDER_MED) : BORDER_MED}`,
+                              color: data.wantsVisit === opt.val ? (opt.val ? LIME : ON_SURFACE) : MUTED,
+                            }}>
+                            {opt.val && data.wantsVisit === true && <Check size={12} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />}
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </section>
+
+            {/* ── Section 02: Growth & Scale ────────────────────────────── */}
+            <section className="ap-reveal" style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderColor: 'rgba(214,255,0,0.04)', borderRadius: '6px', padding: '32px' }}>
+              <SectionHeader num="02" title="Growth & Scale" />
+
+              <div style={{ marginBottom: '28px' }}>
+                <Label>Technology Readiness Level (TRL)</Label>
+                <div className="ap-trl-grid" style={{ display: 'grid', gap: '6px' }}>
+                  {Array.from({ length: 9 }, (_, i) => i + 1).map(n => (
+                    <button
+                      key={n} type="button"
+                      className={`ap-trl${data.trl === n ? ' sel' : ''}`}
+                      onClick={() => setData(d => ({ ...d, trl: n }))}
+                    >
+                      T{n}
+                    </button>
+                  ))}
+                </div>
+                {data.trl > 0 && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontFamily: MONO, fontSize: '9px', color: LIME, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                    TRL {data.trl} — {['Basic principles observed', 'Technology concept formulated', 'Experimental proof of concept', 'Validated in lab environment', 'Validated in relevant environment', 'Demonstrated in relevant environment', 'System prototype demonstrated', 'System complete & qualified', 'Operational in live environment'][data.trl - 1]}
+                  </motion.p>
+                )}
+              </div>
+
+              <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
+                <div>
+                  <Label>Current Stage</Label>
+                  <ApplySelect value={data.stage} onChange={e => setData(d => ({ ...d, stage: e.target.value }))}>
+                    <option value="">Select…</option>
+                    <option>Prototype / Lab POC</option>
+                    <option>Pilot (Active Testing)</option>
+                    <option>Series Production Ready</option>
+                    <option>Commercial Scale Deployment</option>
+                  </ApplySelect>
+                </div>
+                <div>
+                  <Label>Months to Market</Label>
+                  <ApplyInput type="number" placeholder="e.g. 18" value={data.monthsToMarket} onChange={e => setData(d => ({ ...d, monthsToMarket: e.target.value }))} />
+                </div>
+              </div>
+              <div>
+                <Label>Major Milestones — Next 24 Months</Label>
+                <ApplyTextarea placeholder="Detailed roadmap trajectory…" value={data.milestones} onChange={e => setData(d => ({ ...d, milestones: e.target.value }))} />
+              </div>
+            </section>
+
+            {/* ── Section 03: Tech Stack ────────────────────────────────── */}
+            <section className="ap-reveal">
+              <SectionHeader num="03" title="Tech Stack" />
+
+              <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
+                {/* Infrastructure */}
+                <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
+                  <h4 style={{ fontFamily: MONO, fontSize: '8px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.25em', marginBottom: '16px' }}>Hosting & Infrastructure</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                    {[
+                      { key: 'hasEdgeArch', label: 'Native Edge Architecture' },
+                      { key: 'hasCloudNative', label: 'Cloud Native (K8s)' },
+                    ].map(({ key, label }) => (
+                      <label key={key} className="ap-check" style={{ cursor: 'pointer' }}>
+                        <span style={{ fontFamily: MONO, fontSize: '9px', color: ON_SURFACE, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
+                        <input type="checkbox" checked={(data as unknown as Record<string, boolean>)[key]}
+                          onChange={e => setData(d => ({ ...d, [key]: e.target.checked }))}
+                          style={{ accentColor: LIME, width: '14px', height: '14px' }} />
+                      </label>
+                    ))}
+                  </div>
+                  <Label>API Standards</Label>
+                  <ApplyInput placeholder="gRPC, REST, GraphQL…" value={data.apiStandards} onChange={e => setData(d => ({ ...d, apiStandards: e.target.value }))} />
+                </GlassCard>
+
+                {/* Compliance */}
+                <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
+                  <h4 style={{ fontFamily: MONO, fontSize: '8px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.25em', marginBottom: '16px' }}>Compliance & Security</h4>
+                  <div style={{ marginBottom: '12px' }}>
+                    <Label>Certification</Label>
+                    <ApplySelect value={data.complianceCert} onChange={e => setData(d => ({ ...d, complianceCert: e.target.value }))}>
+                      <option>TISAX Label: ACTIVE</option>
+                      <option>ISO 27001 Certified</option>
+                      <option>SOC 2 Type II</option>
+                      <option>None / Self-Audit</option>
+                    </ApplySelect>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', border: `1px solid ${BORDER_SUBTLE}`, background: 'rgba(214,255,0,0.03)', borderRadius: '3px' }}>
+                    <span style={{ fontFamily: MONO, fontSize: '9px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.1em' }}>GDPR Data Isolation</span>
+                    <CheckCircle size={14} color={LIME} />
+                  </div>
+                </GlassCard>
+              </div>
+
+              <div>
+                <Label>Technology / Product Description *</Label>
+                <ApplyTextarea placeholder="Describe what you build and how it works — be specific about the technical approach" value={data.technology} onChange={e => setData(d => ({ ...d, technology: e.target.value }))} />
+              </div>
+            </section>
+
+            {/* ── Section 04: Ready to Scale ────────────────────────────── */}
+            <section className="ap-reveal" style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px', padding: '32px' }}>
+              <SectionHeader num="04" title="Ready to Scale" />
+
+              <div style={{ marginBottom: '20px' }}>
+                <Label>What do you need from Audi? *</Label>
+                <ApplyTextarea
+                  style={{ minHeight: '120px' }}
+                  placeholder="Pilot opportunity? Data access? Co-development? Plant access? Be specific — vague asks get slow responses."
+                  value={data.ask}
+                  onChange={e => setData(d => ({ ...d, ask: e.target.value }))}
+                />
+              </div>
+              <div className="ap-form-2col" style={{ display: 'grid', gap: '20px' }}>
+                <div>
+                  <Label>Desired Partnership Type</Label>
+                  <ApplySelect value={data.partnerType} onChange={e => setData(d => ({ ...d, partnerType: e.target.value }))}>
+                    <option value="">Select…</option>
+                    <option>Pilot / POC</option>
+                    <option>Co-development</option>
+                    <option>Data partnership</option>
+                    <option>Supplier integration</option>
+                    <option>Licensing / IP deal</option>
+                    <option>Not sure yet</option>
+                  </ApplySelect>
+                </div>
+                <div>
+                  <Label>Expected Integration Timeline</Label>
+                  <ApplySelect value={data.timeline} onChange={e => setData(d => ({ ...d, timeline: e.target.value }))}>
+                    <option value="">Select…</option>
+                    <option>Under 3 months</option>
+                    <option>3–6 months</option>
+                    <option>6–12 months</option>
+                    <option>12–24 months</option>
+                    <option>Longer / custom</option>
+                  </ApplySelect>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Submit ────────────────────────────────────────────────── */}
+            <div className="ap-reveal" style={{ paddingTop: '8px' }}>
+              <button
+                type="submit"
+                className="ap-glitch"
+                disabled={!canSubmit}
+                style={{
+                  width: '100%', padding: '22px', background: canSubmit ? LIME : 'rgba(214,255,0,0.25)',
+                  color: '#050505', fontFamily: MONO, fontWeight: 800, fontSize: '11px',
+                  textTransform: 'uppercase', letterSpacing: '0.4em', border: 'none',
+                  borderRadius: '2px', cursor: canSubmit ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+                  transition: 'background 0.2s, opacity 0.2s',
+                  opacity: canSubmit ? 1 : 0.5,
+                  boxShadow: canSubmit ? '0 20px 50px rgba(214,255,0,0.12)' : 'none',
+                }}
+              >
+                Submit Application
+                <ShieldCheck size={16} />
+              </button>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 8px', opacity: 0.35 }}>
+                <span style={{ fontFamily: MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.16em', color: MUTED }}>Session_ID: {generateId()}</span>
+                <div style={{ display: 'flex', gap: '24px', fontFamily: MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: MUTED }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: LIME, display: 'inline-block' }} />
+                    AES-256
+                  </span>
+                  <span>NDR_LOCK_ACTIVE</span>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        {/* ── Right Sidebar ──────────────────────────────────────────────── */}
+        <aside className="ap-right-aside" style={{ position: 'sticky', top: '100px', height: 'fit-content', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+          {/* Evaluation benchmarks */}
+          <GlassCard style={{ padding: '24px', position: 'relative', overflow: 'hidden' }} className="ap-glass-card">
+            <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', background: 'rgba(214,255,0,0.04)', borderRadius: '50%', filter: 'blur(60px)' }} />
+            <h2 style={{ fontFamily: MONO, fontSize: '9px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: '28px' }}>Evaluation Benchmarks</h2>
+
+            {/* Progress ring */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px' }}>
+              <div style={{ position: 'relative', width: '56px', height: '56px', flexShrink: 0 }}>
+                <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+                  <circle cx="50" cy="50" r="42" fill="transparent" stroke={BORDER_SUBTLE} strokeWidth="10" />
+                  <circle cx="50" cy="50" r="42" fill="transparent" stroke={LIME} strokeWidth="10"
+                    strokeDasharray="263.9" strokeDashoffset="65.9" className="ap-ring" />
+                </svg>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: '9px', color: ON_SURFACE }}>75%</div>
+              </div>
+              <div>
+                <h4 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', color: ON_SURFACE, lineHeight: 1.2, marginBottom: '2px' }}>Architecture</h4>
+                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Fidelity Index</p>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+              {[
+                { val: '14-Day', desc: 'Decision Signal', dim: false },
+                { val: 'Zero Friction', desc: 'Intake Protocol', dim: true },
+                { val: '48h', desc: 'Contact Assignment', dim: true },
+              ].map(({ val, desc, dim }) => (
+                <div key={val} style={{ paddingLeft: '12px', borderLeft: `1px solid ${dim ? BORDER_MED : LIME_BORDER}`, opacity: dim ? 0.45 : 1 }}>
+                  <h4 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '15px', color: ON_SURFACE, lineHeight: 1.2 }}>{val}</h4>
+                  <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: '2px' }}>{desc}</p>
                 </div>
               ))}
             </div>
 
-            {/* Step content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.25 }}
-              >
-                <div style={{ marginBottom: '24px' }}>
-                  <h2 style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '20px', color: 'var(--text)', marginBottom: '4px' }}>
-                    {STEPS[step].title}
-                  </h2>
-                  <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)' }}>
-                    {STEPS[step].subtitle}
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {step === 0 && (
-                    <>
-                      <div>
-                        <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Full name *</label>
-                        <input className="input" placeholder="Jonas Weber" value={data.founderName} onChange={e => setData(d => ({ ...d, founderName: e.target.value }))} />
-                      </div>
-                      <div>
-                        <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Company name *</label>
-                        <input className="input" placeholder="Your startup name" value={data.companyName} onChange={e => setData(d => ({ ...d, companyName: e.target.value }))} />
-                      </div>
-                      <div>
-                        <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Where is your startup based? *</label>
-                        <select className="input" value={data.region} onChange={e => setData(d => ({ ...d, region: e.target.value as Region, wantsVisit: null }))}>
-                          <option value="">Select a region…</option>
-                          {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                        </select>
-                      </div>
-
-                      {/* Inline visit prompt — only for nearby regions */}
-                      <AnimatePresence>
-                        {NEARBY.includes(data.region as Region) && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            style={{ overflow: 'hidden' }}
-                          >
-                            <div style={{
-                              background: 'var(--surface)',
-                              border: '1px solid var(--border)',
-                              borderLeft: '3px solid var(--lime)',
-                              borderRadius: 'var(--radius-sm)',
-                              padding: '16px 18px',
-                            }}>
-                              <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px', color: 'var(--text)', marginBottom: '4px' }}>
-                                Would you like to meet in person?
-                              </div>
-                              <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '14px' }}>
-                                Since you're based nearby, your Internal Lead can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks.
-                              </div>
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                {[{ label: 'Yes, arrange a visit', value: true }, { label: 'No thanks', value: false }].map(opt => (
-                                  <button
-                                    key={String(opt.value)}
-                                    type="button"
-                                    onClick={() => setData(d => ({ ...d, wantsVisit: opt.value }))}
-                                    style={{
-                                      fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600,
-                                      padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
-                                      transition: 'all 0.15s',
-                                      background: data.wantsVisit === opt.value
-                                        ? (opt.value ? 'rgba(200,240,0,0.15)' : 'var(--surface-2)')
-                                        : 'transparent',
-                                      border: `1px solid ${data.wantsVisit === opt.value
-                                        ? (opt.value ? 'var(--lime)' : 'var(--border-strong)')
-                                        : 'var(--border-strong)'}`,
-                                      color: data.wantsVisit === opt.value
-                                        ? (opt.value ? 'var(--lime)' : 'var(--text)')
-                                        : 'var(--text-muted)',
-                                    }}
-                                  >
-                                    {opt.value && data.wantsVisit === true && <Check size={13} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />}
-                                    {opt.label}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                        <div>
-                          <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Team size</label>
-                          <input className="input" type="number" placeholder="6" value={data.teamSize} onChange={e => setData(d => ({ ...d, teamSize: e.target.value }))} />
-                        </div>
-                        <div>
-                          <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Funding stage</label>
-                          <select className="input" value={data.stage} onChange={e => setData(d => ({ ...d, stage: e.target.value }))}>
-                            <option value="">Select…</option>
-                            <option>Pre-seed</option>
-                            <option>Seed</option>
-                            <option>Series A</option>
-                            <option>Bootstrapped</option>
-                          </select>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {step === 1 && (
-                    <>
-                      <div>
-                        <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Technology / product *</label>
-                        <textarea className="input" placeholder="Describe what you build and how it works" value={data.technology} onChange={e => setData(d => ({ ...d, technology: e.target.value }))} />
-                      </div>
-                      <div>
-                        <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Target department at Audi</label>
-                        <select className="input" value={data.targetDepartment} onChange={e => setData(d => ({ ...d, targetDepartment: e.target.value }))}>
-                          <option value="">Select if known…</option>
-                          <option>Production</option>
-                          <option>Quality</option>
-                          <option>Logistics</option>
-                          <option>R&D</option>
-                          <option>Procurement</option>
-                          <option>Not sure yet</option>
-                        </select>
-                      </div>
-                    </>
-                  )}
-
-                  {step === 2 && (
-                    <div>
-                      <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>What do you need? *</label>
-                      <textarea
-                        className="input"
-                        style={{ minHeight: '120px' }}
-                        placeholder="Pilot opportunity? Data access? Co-development? Be specific. Vague asks get slow responses."
-                        value={data.ask}
-                        onChange={e => setData(d => ({ ...d, ask: e.target.value }))}
-                      />
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Navigation */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '32px' }}>
-              {step > 0 ? (
-                <button className="btn-secondary" onClick={() => setStep(s => s - 1)}>
-                  Back
-                </button>
-              ) : <div />}
-              <button
-                className="btn-primary"
-                onClick={handleNext}
-                disabled={!canNext()}
-                style={{ opacity: canNext() ? 1 : 0.4 }}
-              >
-                {step === STEPS.length - 1 ? 'Submit application' : 'Continue'}
-                <ChevronRight size={14} />
-              </button>
+            <div style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, paddingTop: '16px' }}>
+              <div style={{ padding: '12px', border: `1px solid rgba(214,255,0,0.08)`, background: 'rgba(214,255,0,0.02)', borderRadius: '2px' }}>
+                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, lineHeight: 1.7, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  Responses evaluated using Audi-specific compliance weights. Audit Logic V4.1.
+                </p>
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+          </GlassCard>
+
+          {/* Contact authority */}
+          <GlassCard style={{ padding: '16px', border: `1px solid rgba(214,255,0,0.04)` }} className="ap-glass-card">
+            <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: '12px' }}>Your Point of Contact</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '3px', background: 'rgba(214,255,0,0.06)', border: `1px solid ${BORDER_MED}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 700, color: LIME }}>MT</span>
+              </div>
+              <div>
+                <h5 style={{ fontFamily: SANS, fontSize: '12px', fontWeight: 700, color: ON_SURFACE }}>Marcus Thorne</h5>
+                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Principal Gateway Audits</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* Uplink status */}
+          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', fontFamily: MONO, fontSize: '9px', color: LIME, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            <span className="ap-lime-pulse" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: LIME, flexShrink: 0 }} />
+            UPLINK_STABLE
+          </div>
+        </aside>
+      </div>
+
+      {/* Footer */}
+      <footer style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, background: SURFACE, marginTop: '48px', position: 'relative', zIndex: 10 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontFamily: SANS, fontWeight: 800, fontSize: '22px', color: ON_SURFACE, opacity: 0.25, letterSpacing: '-0.02em' }}>BRIDGE</div>
+          <div style={{ display: 'flex', gap: '32px' }}>
+            {['Manual_V.2', 'Audit_Standards', 'Compliance_Vector', 'Node_Status'].map(link => (
+              <span key={link} style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.16em', cursor: 'pointer', opacity: 0.6 }}>{link}</span>
+            ))}
+          </div>
+          <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.16em', opacity: 0.3 }}>© 2024 BRIDGE. OPERATED FOR AUDI AG.</p>
+        </div>
+      </footer>
+    </div>
   )
 }

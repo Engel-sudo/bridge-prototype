@@ -215,7 +215,37 @@ select.input {
   animation: scan-y 6s linear infinite;
 }
 
-/* Scrollbar */
+/* ── Responsive grid utilities ─────────────────────────────────── */
+.grid-3-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid-2-col {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 768px) {
+  .grid-3-col,
+  .grid-2-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Focus visible (keyboard nav) ──────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

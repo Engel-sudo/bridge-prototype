@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, X, Check, Clock, UserX, Lightbulb, Timer, UserCheck, Target } from 'lucide-react'
+import { useAuthStore } from '../store/authStore'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -70,6 +71,12 @@ const goodRows = [
 
 export default function Landing() {
   const navigate = useNavigate()
+  const login = useAuthStore(s => s.login)
+
+  function handleApplyNow() {
+    login('startup', {})
+    navigate('/apply')
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
@@ -116,14 +123,14 @@ export default function Landing() {
 
           {/* CTAs */}
           <motion.div {...fadeUp(0.22)} style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '34px' }}>
-            <button onClick={() => navigate('/login')} style={{
+            <button onClick={handleApplyNow} style={{
               display: 'inline-flex', alignItems: 'center', gap: '9px',
               fontFamily: "'IBM Plex Sans', system-ui", fontWeight: 600, fontSize: '15px',
               padding: '13px 24px', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-              background: 'var(--lime)', color: '#0A0B0D', transition: 'opacity 0.15s, transform 0.12s',
+              background: 'var(--lime)', color: '#0A0B0D', transition: 'opacity 0.15s, transform 0.15s',
             }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.03)' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
             >
               Apply now <ArrowRight size={17} />
             </button>
@@ -188,7 +195,7 @@ export default function Landing() {
             </div>
 
             {/* Station cards — overlap bridge */}
-            <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px', marginTop: '-44px', zIndex: 2 }}>
+            <div className="grid-3-col" style={{ position: 'relative', display: 'grid', gap: '18px', marginTop: '-44px', zIndex: 2 }}>
               {stations.map((s, i) => (
                 <motion.div key={s.step}
                   initial={{ opacity: 0, y: 20 }}
@@ -229,7 +236,7 @@ export default function Landing() {
       {/* ── COMPARE ──────────────────────────────────────────────────── */}
       <section style={{ padding: '14px 0 96px' }}>
         <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="grid-2-col" style={{ display: 'grid', gap: '16px' }}>
 
             {/* Bad */}
             <motion.div {...inView(0)} style={{ borderRadius: 'var(--radius)', padding: '30px 30px 32px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
@@ -289,14 +296,14 @@ export default function Landing() {
                 Apply in five minutes. We'll point you to a real person.
               </p>
               <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginTop: '34px' }}>
-                <button onClick={() => navigate('/login')} style={{
+                <button onClick={handleApplyNow} style={{
                   display: 'inline-flex', alignItems: 'center', gap: '9px',
                   fontFamily: "'IBM Plex Sans', system-ui", fontWeight: 600, fontSize: '15px',
                   padding: '13px 24px', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-                  background: 'var(--lime)', color: '#0A0B0D', transition: 'opacity 0.15s',
+                  background: 'var(--lime)', color: '#0A0B0D', transition: 'opacity 0.15s, transform 0.15s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.03)' }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
                 >
                   Start your application <ArrowRight size={17} />
                 </button>
