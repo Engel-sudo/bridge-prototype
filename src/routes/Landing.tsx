@@ -289,6 +289,51 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── BENCHMARK STRIP ──────────────────────────────────────────── */}
+      <section style={{ padding: '0 0 64px' }}>
+        <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
+          <motion.div {...inView(0)} style={{
+            display: 'grid', gridTemplateColumns: '1fr 1px 1fr',
+            border: '1px solid var(--border)', borderRadius: 'var(--radius)',
+            background: 'var(--surface)', overflow: 'hidden',
+          }}>
+            {/* BMW */}
+            <div style={{ padding: '28px 36px' }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
+                BMW Startup Garage · est. 2015
+              </div>
+              <div style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--text)', lineHeight: 1, marginBottom: '6px' }}>
+                32
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+                completed startup projects in 2022
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ background: 'var(--border)' }} />
+
+            {/* Audi */}
+            <div style={{ padding: '28px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
+                  Audi A4nXT · est. 2020
+                </div>
+                <div style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--red)', lineHeight: 1, marginBottom: '6px' }}>
+                  ~3
+                </div>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+                  public wins in 4 years
+                </div>
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.6, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+                Audi is ranked #8 globally by brand value. Top-tier founders are routing around it for BMW, which gives a supplier number in week six. BRIDGE fixes that.
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ────────────────────────────────────────────────── */}
       <section style={{ padding: '0 0 110px' }}>
         <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>

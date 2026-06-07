@@ -222,33 +222,6 @@ export default function Dashboard() {
   ]
   const alerts = rawAlerts.filter((a): a is Alert => a !== null)
 
-  const benchmarkPanel = (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.35 }}
-      style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', marginBottom: '10px' }}>
-      <div style={{ padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)' }}>
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>The benchmark · why this matters</span>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr' }}>
-        <div style={{ padding: '22px 26px' }}>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '2px' }}>BMW Startup Garage</div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '12px' }}>Founded 2015</div>
-          <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '52px', color: 'var(--text)', lineHeight: 1, marginBottom: '5px' }}>32</div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>completed projects in 2022</div>
-        </div>
-        <div style={{ background: 'var(--border)' }} />
-        <div style={{ padding: '22px 26px' }}>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '2px' }}>Audi A4nXT</div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '12px' }}>Founded 2020</div>
-          <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '52px', color: 'var(--red)', lineHeight: 1, marginBottom: '5px' }}>~3</div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '14px' }}>public wins in 4 years</div>
-          <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-faint)', lineHeight: 1.6, maxWidth: '380px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-            Audi is ranked #8 globally by brand value. Top-tier founders are bypassing it for BMW, which gives a supplier number in week six.
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -287,9 +260,6 @@ export default function Dashboard() {
           ))}
         </motion.div>
       )}
-
-      {/* ── BENCHMARK ─────────────────────────────────────── */}
-      {benchmarkPanel}
 
       {/* ── KPI STRIP ─────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.35 }}
