@@ -290,7 +290,7 @@ export default function Apply() {
   const s2Done = !!(data.trl > 0 && data.stage)
   const s3Done = !!(data.technology)
   const s4Done = !!(data.ask)
-  const canSubmit = !!(s1Done && data.technology && data.ask)
+  const canSubmit = !!(s1Done && s2Done && s3Done && s4Done)
 
   function handleSubmitAttempt(e: React.FormEvent) {
     e.preventDefault()
