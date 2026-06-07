@@ -179,38 +179,6 @@ function GlassCard({ children, style, className }: { children: React.ReactNode; 
 
 // ─── Portal Node SVG ───────────────────────────────────────────────────────────
 
-function PortalNode({ nodeRef }: { nodeRef: React.RefObject<HTMLDivElement | null> }) {
-  return (
-    <div style={{ perspective: '1000px' }}>
-      <div
-        ref={nodeRef}
-        style={{ transformStyle: 'preserve-3d', transition: 'transform 0.12s ease-out', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '160px', position: 'relative' }}
-      >
-        <svg viewBox="0 0 160 160" style={{ width: '140px', height: '140px', filter: 'drop-shadow(0 0 12px rgba(214,255,0,0.18))' }}>
-          <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(214,255,0,0.06)" strokeWidth="1" />
-          <circle cx="80" cy="80" r="50" fill="none" stroke="rgba(214,255,0,0.10)" strokeWidth="1" strokeDasharray="4 6" />
-          <circle cx="80" cy="80" r="32" fill="none" stroke="rgba(214,255,0,0.18)" strokeWidth="1" />
-          <circle cx="80" cy="80" r="14" fill="rgba(214,255,0,0.08)" stroke="rgba(214,255,0,0.35)" strokeWidth="1" />
-          <circle cx="80" cy="80" r="5" fill={LIME} />
-          {/* Orbit nodes */}
-          <circle cx="80" cy="30" r="3.5" fill={LIME} opacity="0.9" />
-          <circle cx="122" cy="60" r="2.5" fill={LIME} opacity="0.6" />
-          <circle cx="108" cy="120" r="2" fill={LIME} opacity="0.5" />
-          <circle cx="38" cy="100" r="2.5" fill={LIME} opacity="0.6" />
-          {/* Connectors */}
-          <line x1="80" y1="66" x2="80" y2="33" stroke={LIME} strokeWidth="0.5" opacity="0.35" />
-          <line x1="89" y1="74" x2="119" y2="62" stroke={LIME} strokeWidth="0.5" opacity="0.25" />
-          <line x1="74" y1="87" x2="42" y2="98" stroke={LIME} strokeWidth="0.5" opacity="0.25" />
-          {/* Crosshair */}
-          <line x1="66" y1="80" x2="74" y2="80" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
-          <line x1="86" y1="80" x2="94" y2="80" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
-          <line x1="80" y1="66" x2="80" y2="74" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
-          <line x1="80" y1="86" x2="80" y2="94" stroke={LIME} strokeWidth="0.5" opacity="0.4" />
-        </svg>
-      </div>
-    </div>
-  )
-}
 
 // ─── Main Component ─────────────────────────────────────────────────────────────
 
@@ -218,12 +186,16 @@ export default function Apply() {
   const [data, setData] = useState<FormData>(EMPTY)
   const [appId, setAppId] = useState('')
   const [done, setDone] = useState(false)
+  const [attempted, setAttempted] = useState(false)
+  const sec1Ref = useRef<HTMLElement>(null)
+  const sec2Ref = useRef<HTMLElement>(null)
+  const sec3Ref = useRef<HTMLElement>(null)
+  const sec4Ref = useRef<HTMLElement>(null)
   const { addApplication } = useBridgeStore()
   const loginAuth = useAuthStore(s => s.login)
   const navigate = useNavigate()
 
   const mouseGlowRef = useRef<HTMLDivElement>(null)
-  const node3dRef = useRef<HTMLDivElement>(null)
   const terminalRef = useRef<HTMLDivElement>(null)
 
   // Inject page-scoped CSS once
@@ -254,6 +226,7 @@ export default function Apply() {
       .ap-scroll::-webkit-scrollbar-track { background:transparent; }
       .ap-scroll::-webkit-scrollbar-thumb { background:rgba(214,255,0,0.3); }
       .ap-ring { transition:stroke-dashoffset 0.8s ease-in-out; transform:rotate(-90deg); transform-origin:50% 50%; }
+      .ap-error-ring { box-shadow: 0 0 0 1px rgba(255,45,70,0.45), 0 0 24px rgba(255,45,70,0.07) !important; border-radius: 6px; }
       .ap-glass-card:hover { border-color:rgba(214,255,0,0.12) !important; }
       /* ── Responsive layout ─────────────────────────────────────── */
       .ap-main-grid { grid-template-columns: 220px 1fr 220px; }
@@ -281,12 +254,6 @@ export default function Apply() {
       if (mouseGlowRef.current) {
         mouseGlowRef.current.style.left = `${e.clientX}px`
         mouseGlowRef.current.style.top = `${e.clientY}px`
-      }
-      if (node3dRef.current) {
-        const r = node3dRef.current.getBoundingClientRect()
-        const rx = (r.top + r.height / 2 - e.clientY) / 15
-        const ry = (e.clientX - r.left - r.width / 2) / 15
-        node3dRef.current.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`
       }
     }
     window.addEventListener('mousemove', onMove)
@@ -324,6 +291,18 @@ export default function Apply() {
   const s3Done = !!(data.technology)
   const s4Done = !!(data.ask)
   const canSubmit = !!(s1Done && data.technology && data.ask)
+
+  function handleSubmitAttempt(e: React.FormEvent) {
+    e.preventDefault()
+    if (canSubmit) { submit(); return }
+    setAttempted(true)
+    const firstIncomplete =
+      !s1Done ? sec1Ref :
+      !s2Done ? sec2Ref :
+      !s3Done ? sec3Ref :
+      !s4Done ? sec4Ref : null
+    firstIncomplete?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
   function submit() {
     if (!canSubmit) return
@@ -451,11 +430,10 @@ export default function Apply() {
         {/* ── Left Sidebar ──────────────────────────────────────────────── */}
         <aside className="ap-left-aside" style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'sticky', top: '100px', height: 'fit-content' }}>
 
-          {/* Portal Node */}
-          <GlassCard style={{ padding: '20px', overflow: 'hidden', cursor: 'crosshair' }} className="ap-glass-card">
+          {/* Portal Status */}
+          <GlassCard style={{ padding: '20px', overflow: 'hidden' }} className="ap-glass-card">
             <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '12px' }}>Portal Status</p>
-            <PortalNode nodeRef={node3dRef} />
-            <div style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, paddingTop: '12px', marginTop: '8px' }}>
+            <div style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, paddingTop: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', marginBottom: '6px' }}>
                 <span>Signal Strength</span>
                 <span style={{ color: LIME }}>98.4%</span>
@@ -549,10 +527,10 @@ export default function Apply() {
             </p>
           </div>
 
-          <form onSubmit={e => { e.preventDefault(); submit() }} style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+          <form onSubmit={handleSubmitAttempt} style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
 
             {/* ── Section 01: Startup Profile ───────────────────────────── */}
-            <section className="ap-reveal in">
+            <section ref={sec1Ref} className={`ap-reveal in${attempted && !s1Done ? ' ap-error-ring' : ''}`}>
               <SectionHeader num="01" title="Startup Profile" />
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px' }}>
                 <div>
@@ -632,7 +610,7 @@ export default function Apply() {
             </section>
 
             {/* ── Section 02: Growth & Scale ────────────────────────────── */}
-            <section className="ap-reveal" style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderColor: 'rgba(214,255,0,0.04)', borderRadius: '6px', padding: '32px' }}>
+            <section ref={sec2Ref} className={`ap-reveal${attempted && !s2Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderColor: 'rgba(214,255,0,0.04)', borderRadius: '6px', padding: '32px' }}>
               <SectionHeader num="02" title="Growth & Scale" />
 
               <div style={{ marginBottom: '28px' }}>
@@ -678,7 +656,7 @@ export default function Apply() {
             </section>
 
             {/* ── Section 03: Tech Stack ────────────────────────────────── */}
-            <section className="ap-reveal">
+            <section ref={sec3Ref} className={`ap-reveal${attempted && !s3Done ? ' ap-error-ring' : ''}`}>
               <SectionHeader num="03" title="Tech Stack" />
 
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
@@ -728,7 +706,7 @@ export default function Apply() {
             </section>
 
             {/* ── Section 04: Ready to Scale ────────────────────────────── */}
-            <section className="ap-reveal" style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px', padding: '32px' }}>
+            <section ref={sec4Ref} className={`ap-reveal${attempted && !s4Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px', padding: '32px' }}>
               <SectionHeader num="04" title="Ready to Scale" />
 
               <div style={{ marginBottom: '20px' }}>
@@ -772,15 +750,14 @@ export default function Apply() {
               <button
                 type="submit"
                 className="ap-glitch"
-                disabled={!canSubmit}
                 style={{
                   width: '100%', padding: '22px', background: canSubmit ? LIME : 'rgba(214,255,0,0.25)',
                   color: '#050505', fontFamily: MONO, fontWeight: 800, fontSize: '11px',
                   textTransform: 'uppercase', letterSpacing: '0.4em', border: 'none',
-                  borderRadius: '2px', cursor: canSubmit ? 'pointer' : 'not-allowed',
+                  borderRadius: '2px', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
                   transition: 'background 0.2s, opacity 0.2s',
-                  opacity: canSubmit ? 1 : 0.5,
+                  opacity: canSubmit ? 1 : 0.6,
                   boxShadow: canSubmit ? '0 20px 50px rgba(214,255,0,0.12)' : 'none',
                 }}
               >
