@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { AlertCircle, Clock, Zap, ChevronRight, X } from 'lucide-react'
+import { AlertCircle, Clock, Zap, ChevronRight, X, Filter } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import DemoHint from '../components/DemoHint'
 import type { Application } from '../store/types'
@@ -95,6 +95,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const { metrics, applications, painPoints, owners } = useBridgeStore()
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null)
+  const [ppFilter, setPpFilter] = useState<'all' | 'open' | 'matched' | 'in_pilot'>('all')
 
   const stageCount = (s: string) => applications.filter(a => a.stage === s).length
   const unassigned  = applications.filter(a => a.ownerId === null)
@@ -583,6 +584,115 @@ export default function Dashboard() {
             <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>{p.body}</div>
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* ── PAIN POINTS PANEL ─────────────────────────────── */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.35 }}>
+        {/* Panel header */}
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 18px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Filter size={12} color="var(--text-faint)" />
+              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+                Pain points · {painPoints.length} total
+              </span>
+            </div>
+            {/* Status filter tabs */}
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {([['all', 'All'], ['open', 'Open'], ['matched', 'Matched'], ['in_pilot', 'In Pilot']] as const).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setPpFilter(val)}
+                  style={{
+                    fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase',
+                    padding: '4px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid',
+                    borderColor: ppFilter === val ? 'var(--lime)' : 'var(--border)',
+                    background: ppFilter === val ? 'rgba(200,240,0,0.1)' : 'transparent',
+                    color: ppFilter === val ? 'var(--lime)' : 'var(--text-faint)',
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => navigate('/map')}
+              style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '12px', color: 'var(--lime)', background: 'transparent', border: '1px solid rgba(200,240,0,0.3)', padding: '5px 12px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(200,240,0,0.07)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              Submit pain point <ChevronRight size={12} />
+            </button>
+          </div>
+
+          {/* Pain point rows */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))' }}>
+            <AnimatePresence>
+              {painPoints
+                .filter(pp => ppFilter === 'all' || pp.status === ppFilter)
+                .map((pp, i) => {
+                  const linkedApp = pp.linkedApplicationId ? applications.find(a => a.id === pp.linkedApplicationId) : null
+                  const statusColors: Record<string, { color: string; bg: string }> = {
+                    open:     { color: 'var(--amber)', bg: 'rgba(245,158,11,0.1)' },
+                    matched:  { color: 'var(--blue)',  bg: 'rgba(59,130,246,0.1)' },
+                    in_pilot: { color: 'var(--lime)',  bg: 'rgba(200,240,0,0.1)'  },
+                  }
+                  const sc = statusColors[pp.status] ?? { color: 'var(--text-faint)', bg: 'transparent' }
+                  return (
+                    <motion.div
+                      key={pp.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ delay: i * 0.02, duration: 0.2 }}
+                      style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}
+                    >
+                      {/* Header row */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '6px' }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '3px' }}>
+                            {pp.department}
+                          </span>
+                          <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px', color: 'var(--text)', lineHeight: 1.35 }}>
+                            {pp.title}
+                          </div>
+                        </div>
+                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: sc.color, background: sc.bg, padding: '2px 7px', borderRadius: '3px', flexShrink: 0, border: `1px solid ${sc.color}30` }}>
+                          {pp.status.replace('_', ' ')}
+                        </span>
+                      </div>
+
+                      {/* Description */}
+                      {pp.description && (
+                        <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {pp.description}
+                        </p>
+                      )}
+
+                      {/* Footer row */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.04em' }}>
+                          {pp.submittedBy} · {pp.submittedAt}
+                        </span>
+                        {linkedApp && (
+                          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)' }} />
+                            {linkedApp.companyName}
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+                  )
+                })}
+            </AnimatePresence>
+            {painPoints.filter(pp => ppFilter === 'all' || pp.status === ppFilter).length === 0 && (
+              <div style={{ gridColumn: '1/-1', padding: '40px', textAlign: 'center', fontFamily: 'IBM Plex Mono', fontSize: '11px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>
+                No pain points match this filter.
+              </div>
+            )}
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   )
