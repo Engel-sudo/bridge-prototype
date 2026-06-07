@@ -151,18 +151,6 @@ export default function Landing() {
             >
               Apply now <ArrowRight size={17} />
             </button>
-            <a href="#how" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '9px',
-              fontFamily: "'IBM Plex Sans', system-ui", fontWeight: 600, fontSize: '15px',
-              padding: '13px 24px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
-              background: 'transparent', color: 'var(--text)', border: '1px solid var(--border-strong)',
-              textDecoration: 'none', transition: 'border-color 0.15s, background 0.15s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--text-muted)'; (e.currentTarget as HTMLAnchorElement).style.background = 'var(--surface-2)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--border-strong)'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
-            >
-              See how it works
-            </a>
           </motion.div>
         </div>
       </section>
