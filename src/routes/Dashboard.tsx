@@ -13,7 +13,7 @@ const isOverdue = (a: Application) =>
   !['decision_go', 'decision_redirect', 'matched_pain_owner', 'path_to_production'].includes(a.stage)
 
 // ── Sparkline ──────────────────────────────────────────────────────────────
-function Sparkline({ data, color = '#C8F000' }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = '#D6FF00' }: { data: number[]; color?: string }) {
   const max = Math.max(...data)
   const min = Math.min(...data)
   const range = max - min || 1
@@ -39,7 +39,7 @@ function AreaChart({ data }: { data: number[] }) {
   return (
     <div style={{ padding: '14px 16px 10px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
           Pipeline depth · applications active per week
         </span>
       </div>
@@ -47,19 +47,19 @@ function AreaChart({ data }: { data: number[] }) {
         <svg viewBox="0 0 800 180" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} preserveAspectRatio="none">
           <defs>
             <linearGradient id="ag" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#C8F000" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#C8F000" stopOpacity="0" />
+              <stop offset="0%" stopColor="#D6FF00" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#D6FF00" stopOpacity="0" />
             </linearGradient>
           </defs>
           {[60, 120].map(y => <line key={y} x1="0" x2="800" y1={y} y2={y} stroke="var(--border)" strokeWidth="1" strokeDasharray="4 8" />)}
           <path d={areaPath} fill="url(#ag)" />
-          <path d={linePath} stroke="#C8F000" strokeWidth="2" fill="none" strokeLinejoin="round" />
-          <circle cx="800" cy="28" r="4" fill="#C8F000" />
+          <path d={linePath} stroke="#D6FF00" strokeWidth="2" fill="none" strokeLinejoin="round" />
+          <circle cx="800" cy="28" r="4" fill="#D6FF00" />
         </svg>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
         {['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'].map((w, i) => (
-          <span key={w} style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', color: i === 11 ? 'var(--lime)' : 'var(--text-faint)' }}>
+          <span key={w} style={{ fontFamily: 'JetBrains Mono', fontSize: '8px', color: i === 11 ? 'var(--lime)' : 'var(--text-faint)' }}>
             {i % 2 === 0 ? w : ''}
           </span>
         ))}
@@ -73,11 +73,11 @@ function Chrome({ title, badge, children }: { title: string; badge?: string; chi
   return (
     <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', background: 'var(--surface)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)', flexShrink: 0 }}>
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{title}</span>
+        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{title}</span>
         {badge && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)', display: 'inline-block', boxShadow: '0 0 5px var(--lime)' }} />
-            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.1em', color: 'var(--lime)' }}>{badge}</span>
+            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.1em', color: 'var(--lime)' }}>{badge}</span>
           </div>
         )}
       </div>
@@ -116,7 +116,7 @@ export default function Dashboard() {
   ]
 
   const tagStyle: Record<string, { color: string; bg: string }> = {
-    new:        { color: 'var(--lime)',  bg: 'rgba(200,240,0,0.1)'  },
+    new:        { color: 'var(--lime)',  bg: 'rgba(214,255,0,0.1)'  },
     matched:    { color: 'var(--blue)',  bg: 'rgba(59,130,246,0.1)' },
     'in pilot': { color: 'var(--amber)', bg: 'rgba(245,158,11,0.1)' },
   }
@@ -231,12 +231,12 @@ export default function Dashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
         <div>
           <span className="kicker">system overview · bridge</span>
-          <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '26px', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.01em' }}>Dashboard</h1>
-          <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
+          <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '26px', color: 'var(--text)', lineHeight: 1.1, letterSpacing: '-0.01em' }}>Dashboard</h1>
+          <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
             Audi doesn't need more startups. It needs a system that doesn't lose them.
           </p>
         </div>
-        <p style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
+        <p style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
           Activity exists. Shared intelligence does not.
         </p>
       </div>
@@ -249,8 +249,8 @@ export default function Dashboard() {
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: a.bg, border: `1px solid ${a.border}`, borderRadius: 'var(--radius-sm)', padding: '8px 12px', flex: '1 1 auto' }}>
               {a.icon}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '12px', color: a.color }}>{a.text}</span>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', display: 'block', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.sub}</span>
+                <span style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '12px', color: a.color }}>{a.text}</span>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', display: 'block', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.sub}</span>
               </div>
             </div>
           ))}
@@ -269,7 +269,7 @@ export default function Dashboard() {
               onClick={() => setSelectedKpi(isSelected ? null : k.label)}
               style={{
                 background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
-                border: `1px solid ${isSelected ? detail.accentColor : k.primary ? 'rgba(200,240,0,0.25)' : 'var(--border)'}`,
+                border: `1px solid ${isSelected ? detail.accentColor : k.primary ? 'rgba(214,255,0,0.25)' : 'var(--border)'}`,
                 borderTop: `2px solid ${isSelected ? detail.accentColor : k.primary ? 'var(--lime)' : 'var(--border)'}`,
                 borderRadius: 'var(--radius)',
                 padding: '14px 16px',
@@ -281,17 +281,17 @@ export default function Dashboard() {
               onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface)' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: isSelected ? detail.accentColor : 'var(--text-faint)' }}>{k.label}</span>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: isSelected ? detail.accentColor : 'var(--text-faint)' }}>{k.label}</span>
                 {isSelected
                   ? <X size={11} color="var(--text-faint)" />
                   : <ChevronRight size={11} color="var(--text-faint)" style={{ opacity: 0.5 }} />
                 }
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
-                <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '32px', color: k.color, lineHeight: 1 }}>{k.value}</div>
+                <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '32px', color: k.color, lineHeight: 1 }}>{k.value}</div>
                 <Sparkline data={k.spark} color={k.color === 'var(--text)' ? '#F2F4F7' : k.color === 'var(--text-muted)' ? '#9AA3B2' : k.color} />
               </div>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>{k.context}</div>
+              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>{k.context}</div>
             </div>
           )
         })}
@@ -321,25 +321,25 @@ export default function Dashboard() {
               {/* Left: description */}
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase', color: activePanelDetail.accentColor }}>{selectedKpi}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase', color: activePanelDetail.accentColor }}>{selectedKpi}</span>
                   {activePanelDetail.target && (
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', background: 'var(--surface-2)', border: '1px solid var(--border)', padding: '3px 8px', borderRadius: '4px', letterSpacing: '0.06em' }}>
+                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', background: 'var(--surface-2)', border: '1px solid var(--border)', padding: '3px 8px', borderRadius: '4px', letterSpacing: '0.06em' }}>
                       target: {activePanelDetail.target}
                     </span>
                   )}
                 </div>
-                <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text)', lineHeight: 1.65, marginBottom: '14px' }}>
+                <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text)', lineHeight: 1.65, marginBottom: '14px' }}>
                   {activePanelDetail.description}
                 </p>
                 <div style={{ paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '6px' }}>Why this matters</span>
-                  <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                  <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '6px' }}>Why this matters</span>
+                  <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                     {activePanelDetail.why}
                   </p>
                 </div>
                 <button
                   onClick={() => navigate(activePanelDetail.route)}
-                  style={{ marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '12px', color: activePanelDetail.accentColor, background: 'transparent', border: `1px solid ${activePanelDetail.accentColor}40`, padding: '7px 14px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'background 0.15s' }}
+                  style={{ marginTop: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'Inter', fontWeight: 600, fontSize: '12px', color: activePanelDetail.accentColor, background: 'transparent', border: `1px solid ${activePanelDetail.accentColor}40`, padding: '7px 14px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'background 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.background = `${activePanelDetail.accentColor}12`)}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
@@ -349,19 +349,19 @@ export default function Dashboard() {
 
               {/* Right: live data rows */}
               <div>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '10px' }}>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '10px' }}>
                   {activePanelDetail.rows.length > 0 ? 'Live data' : 'No records yet'}
                 </span>
                 {activePanelDetail.rows.length === 0 ? (
-                  <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.6 }}>
+                  <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.6 }}>
                     Nothing to show yet — data will appear here as the pipeline grows.
                   </p>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     {activePanelDetail.rows.map((row, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', borderRadius: 'var(--radius-sm)', background: i % 2 === 0 ? 'var(--surface-2)' : 'transparent' }}>
-                        <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.label}</span>
-                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: row.color, flexShrink: 0, marginLeft: '12px', letterSpacing: '0.04em' }}>{row.value}</span>
+                        <span style={{ fontFamily: 'Inter', fontSize: '12px', color: 'var(--text-muted)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.label}</span>
+                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: row.color, flexShrink: 0, marginLeft: '12px', letterSpacing: '0.04em' }}>{row.value}</span>
                       </div>
                     ))}
                   </div>
@@ -382,19 +382,19 @@ export default function Dashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', height: '100%' }}>
               {/* Sidebar nav */}
               <div style={{ borderRight: '1px solid var(--border)', padding: '14px 10px' }}>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '3px', paddingLeft: '6px' }}>Workspace</div>
-                <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '13px', color: 'var(--text)', marginBottom: '12px', paddingLeft: '6px' }}>Audi · Ingolstadt</div>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '8px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '3px', paddingLeft: '6px' }}>Workspace</div>
+                <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '13px', color: 'var(--text)', marginBottom: '12px', paddingLeft: '6px' }}>Audi · Ingolstadt</div>
                 {navItems.map(item => (
                   <div
                     key={item.label}
                     onClick={() => navigate(item.route)}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', borderRadius: 'var(--radius-sm)', marginBottom: '1px', cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s', background: item.active ? 'rgba(200,240,0,0.07)' : 'transparent', border: item.active ? '1px solid rgba(200,240,0,0.15)' : '1px solid transparent' }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', borderRadius: 'var(--radius-sm)', marginBottom: '1px', cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s', background: item.active ? 'rgba(214,255,0,0.07)' : 'transparent', border: item.active ? '1px solid rgba(214,255,0,0.15)' : '1px solid transparent' }}
                     onMouseEnter={e => { if (!item.active) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.04)' }}
                     onMouseLeave={e => { if (!item.active) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
                   >
-                    <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: item.active ? 'var(--text)' : 'var(--text-muted)' }}>{item.label}</span>
+                    <span style={{ fontFamily: 'Inter', fontSize: '12px', color: item.active ? 'var(--text)' : 'var(--text-muted)' }}>{item.label}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      {item.badge && <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: item.active ? 'var(--lime)' : 'var(--text-faint)' }}>{item.badge}</span>}
+                      {item.badge && <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: item.active ? 'var(--lime)' : 'var(--text-faint)' }}>{item.badge}</span>}
                       <ChevronRight size={10} color={item.active ? 'var(--lime)' : 'var(--text-faint)'} style={{ opacity: 0.6 }} />
                     </div>
                   </div>
@@ -405,8 +405,8 @@ export default function Dashboard() {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
                   <div>
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block' }}>Map / overview</span>
-                    <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>Innovation visibility</span>
+                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block' }}>Map / overview</span>
+                    <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>Innovation visibility</span>
                   </div>
                 </div>
 
@@ -425,8 +425,8 @@ export default function Dashboard() {
                       onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface)'}
                       onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--bg)'}
                     >
-                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '3px' }}>{s.k}</div>
-                      <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '20px', color: 'var(--text)', lineHeight: 1 }}>{s.v}</div>
+                      <div style={{ fontFamily: 'JetBrains Mono', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '3px' }}>{s.k}</div>
+                      <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '20px', color: 'var(--text)', lineHeight: 1 }}>{s.v}</div>
                     </div>
                   ))}
                 </div>
@@ -436,7 +436,7 @@ export default function Dashboard() {
 
                 {/* Stage breakdown */}
                 <div style={{ padding: '10px 14px', flexShrink: 0 }}>
-                  <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '7px' }}>Applications by stage</span>
+                  <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '7px' }}>Applications by stage</span>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     {[
                       { label: 'Named Contact', stage: 'named_contact',    color: 'var(--blue)'  },
@@ -448,8 +448,8 @@ export default function Dashboard() {
                       return (
                         <div key={stage} onClick={() => navigate('/owner')} style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
                           <div style={{ width: 6, height: 6, borderRadius: '1px', background: color }} />
-                          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.04em' }}>{label}</span>
-                          <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '13px', color: count > 0 ? 'var(--text)' : 'var(--text-faint)' }}>{count}</span>
+                          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.04em' }}>{label}</span>
+                          <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '13px', color: count > 0 ? 'var(--text)' : 'var(--text-faint)' }}>{count}</span>
                         </div>
                       )
                     })}
@@ -468,10 +468,10 @@ export default function Dashboard() {
               onClick={() => navigate('/map')}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>Live pain feed</span>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>Live pain feed</span>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)', display: 'inline-block', boxShadow: '0 0 4px var(--lime)' }} />
               </div>
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '3px' }}>
                 View all <ChevronRight size={11} />
               </span>
             </div>
@@ -484,10 +484,10 @@ export default function Dashboard() {
                 onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text)', lineHeight: 1.4, marginBottom: '3px' }}>{item.text}</div>
-                  <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', textTransform: 'uppercase', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>{item.dept}</span>
+                  <div style={{ fontFamily: 'Inter', fontSize: '12px', color: 'var(--text)', lineHeight: 1.4, marginBottom: '3px' }}>{item.text}</div>
+                  <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', textTransform: 'uppercase', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>{item.dept}</span>
                 </div>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: tagStyle[item.tag]?.color || 'var(--text-faint)', background: tagStyle[item.tag]?.bg || 'transparent', padding: '2px 6px', borderRadius: '3px', flexShrink: 0, border: `1px solid ${tagStyle[item.tag]?.color || 'var(--border)'}25` }}>{item.tag}</span>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: tagStyle[item.tag]?.color || 'var(--text-faint)', background: tagStyle[item.tag]?.bg || 'transparent', padding: '2px 6px', borderRadius: '3px', flexShrink: 0, border: `1px solid ${tagStyle[item.tag]?.color || 'var(--border)'}25` }}>{item.tag}</span>
               </div>
             ))}
           </div>
@@ -500,8 +500,8 @@ export default function Dashboard() {
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)', cursor: 'pointer' }}
               onClick={() => navigate('/map')}
             >
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>Pain points by dept</span>
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>Pain points by dept</span>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--lime)', display: 'flex', alignItems: 'center', gap: '3px' }}>
                 View map <ChevronRight size={11} />
               </span>
             </div>
@@ -509,8 +509,8 @@ export default function Dashboard() {
               {deps.map(dep => (
                 <div key={dep.label} style={{ marginBottom: '11px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)' }}>{dep.label}</span>
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)' }}>{dep.pct}%</span>
+                    <span style={{ fontFamily: 'Inter', fontSize: '12px', color: 'var(--text-muted)' }}>{dep.label}</span>
+                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)' }}>{dep.pct}%</span>
                   </div>
                   <div style={{ height: '3px', background: 'var(--surface-2)', borderRadius: '2px', overflow: 'hidden' }}>
                     <motion.div initial={{ width: 0 }} animate={{ width: `${dep.pct}%` }} transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
@@ -539,12 +539,12 @@ export default function Dashboard() {
             whileHover={{ backgroundColor: 'var(--surface-2)' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: p.color }}>{p.num} · {p.name}</span>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: p.color }}>{p.num} · {p.name}</span>
               <ChevronRight size={13} color={p.color} style={{ opacity: 0.7 }} />
             </div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '36px', color: p.color, lineHeight: 1, marginBottom: '4px' }}>{p.stat}</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '10px' }}>{p.caption}</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>{p.body}</div>
+            <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '36px', color: p.color, lineHeight: 1, marginBottom: '4px' }}>{p.stat}</div>
+            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginBottom: '10px' }}>{p.caption}</div>
+            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>{p.body}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -556,7 +556,7 @@ export default function Dashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 18px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)', flexWrap: 'wrap', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Filter size={12} color="var(--text-faint)" />
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
                 Pain points · {painPoints.length} total
               </span>
             </div>
@@ -567,10 +567,10 @@ export default function Dashboard() {
                   key={val}
                   onClick={() => setPpFilter(val)}
                   style={{
-                    fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase',
+                    fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase',
                     padding: '4px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid',
                     borderColor: ppFilter === val ? 'var(--lime)' : 'var(--border)',
-                    background: ppFilter === val ? 'rgba(200,240,0,0.1)' : 'transparent',
+                    background: ppFilter === val ? 'rgba(214,255,0,0.1)' : 'transparent',
                     color: ppFilter === val ? 'var(--lime)' : 'var(--text-faint)',
                     cursor: 'pointer', transition: 'all 0.15s',
                   }}
@@ -581,8 +581,8 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => navigate('/map')}
-              style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '12px', color: 'var(--lime)', background: 'transparent', border: '1px solid rgba(200,240,0,0.3)', padding: '5px 12px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(200,240,0,0.07)')}
+              style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '12px', color: 'var(--lime)', background: 'transparent', border: '1px solid rgba(214,255,0,0.3)', padding: '5px 12px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(214,255,0,0.07)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               Submit pain point <ChevronRight size={12} />
@@ -599,7 +599,7 @@ export default function Dashboard() {
                   const statusColors: Record<string, { color: string; bg: string }> = {
                     open:     { color: 'var(--amber)', bg: 'rgba(245,158,11,0.1)' },
                     matched:  { color: 'var(--blue)',  bg: 'rgba(59,130,246,0.1)' },
-                    in_pilot: { color: 'var(--lime)',  bg: 'rgba(200,240,0,0.1)'  },
+                    in_pilot: { color: 'var(--lime)',  bg: 'rgba(214,255,0,0.1)'  },
                   }
                   const sc = statusColors[pp.status] ?? { color: 'var(--text-faint)', bg: 'transparent' }
                   return (
@@ -614,32 +614,32 @@ export default function Dashboard() {
                       {/* Header row */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '6px' }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '3px' }}>
+                          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '3px' }}>
                             {pp.department}
                           </span>
-                          <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px', color: 'var(--text)', lineHeight: 1.35 }}>
+                          <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '13px', color: 'var(--text)', lineHeight: 1.35 }}>
                             {pp.title}
                           </div>
                         </div>
-                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: sc.color, background: sc.bg, padding: '2px 7px', borderRadius: '3px', flexShrink: 0, border: `1px solid ${sc.color}30` }}>
+                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: sc.color, background: sc.bg, padding: '2px 7px', borderRadius: '3px', flexShrink: 0, border: `1px solid ${sc.color}30` }}>
                           {pp.status.replace('_', ' ')}
                         </span>
                       </div>
 
                       {/* Description */}
                       {pp.description && (
-                        <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        <p style={{ fontFamily: 'Inter', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {pp.description}
                         </p>
                       )}
 
                       {/* Footer row */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.04em' }}>
+                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.04em' }}>
                           {pp.submittedBy} · {pp.submittedAt}
                         </span>
                         {linkedApp && (
-                          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)' }} />
                             {linkedApp.companyName}
                           </span>
@@ -650,7 +650,7 @@ export default function Dashboard() {
                 })}
             </AnimatePresence>
             {painPoints.filter(pp => ppFilter === 'all' || pp.status === ppFilter).length === 0 && (
-              <div style={{ gridColumn: '1/-1', padding: '40px', textAlign: 'center', fontFamily: 'IBM Plex Mono', fontSize: '11px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>
+              <div style={{ gridColumn: '1/-1', padding: '40px', textAlign: 'center', fontFamily: 'JetBrains Mono', fontSize: '11px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>
                 No pain points match this filter.
               </div>
             )}

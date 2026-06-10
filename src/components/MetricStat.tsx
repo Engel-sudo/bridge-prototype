@@ -25,7 +25,7 @@ export default function MetricStat({ kicker, value, caption, accent = 'lime', si
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
       <span className="kicker">{kicker}</span>
       <span style={{
-        fontFamily: 'Archivo',
+        fontFamily: 'Inter',
         fontWeight: 800,
         fontSize: sizes[size],
         lineHeight: 1,
@@ -34,7 +34,7 @@ export default function MetricStat({ kicker, value, caption, accent = 'lime', si
         {value}
       </span>
       {caption && (
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
+        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
           {caption}
         </span>
       )}

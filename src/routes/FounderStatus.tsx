@@ -48,11 +48,11 @@ export default function FounderStatus() {
         style={{ padding: '120px 40px 60px', maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}
       >
         <span className="kicker">founder view</span>
-        <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>
+        <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>
           Application not found
         </h1>
-        <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px' }}>
-          No application matches <span style={{ fontFamily: 'IBM Plex Mono', color: 'var(--text)' }}>{id}</span>. Check the link from your confirmation.
+        <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px' }}>
+          No application matches <span style={{ fontFamily: 'JetBrains Mono', color: 'var(--text)' }}>{id}</span>. Check the link from your confirmation.
         </p>
         <Link to="/apply" className="btn-primary" style={{ textDecoration: 'none' }}>Apply to BRIDGE</Link>
       </motion.div>
@@ -78,17 +78,17 @@ export default function FounderStatus() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '36px' }}>
         <span className="kicker">founder view</span>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
+          <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
             {app.companyName}
           </h1>
           <span style={{
-            fontFamily: 'IBM Plex Mono', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase',
+            fontFamily: 'JetBrains Mono', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase',
             color: 'var(--blue)', background: 'rgba(59,130,246,0.12)', padding: '4px 10px', borderRadius: '4px',
           }}>
             External
           </span>
         </div>
-        <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
+        <div style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
           {app.technology} · {app.founderName}
         </div>
       </motion.div>
@@ -113,7 +113,7 @@ export default function FounderStatus() {
               {isGo && <CheckCircle size={20} color="var(--lime)" />}
               {isRedirect && <XCircle size={20} color="var(--red)" />}
               {!isGo && !isRedirect && <Clock size={20} color="var(--amber)" />}
-              <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '20px', color: isGo ? 'var(--lime)' : isRedirect ? 'var(--red)' : 'var(--text)' }}>
+              <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '20px', color: isGo ? 'var(--lime)' : isRedirect ? 'var(--red)' : 'var(--text)' }}>
                 {currentLabel}
               </span>
             </div>
@@ -129,43 +129,43 @@ export default function FounderStatus() {
                 padding: '14px 20px',
                 textAlign: 'center',
               }}>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
                   Signal overdue
                 </div>
-                <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: 'var(--red)', lineHeight: 1 }}>
+                <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '36px', color: 'var(--red)', lineHeight: 1 }}>
                   {Math.abs(daysLeft)}
                 </div>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>days past deadline</div>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>days past deadline</div>
               </div>
             ) : (
               <div style={{
-                background: 'rgba(200,240,0,0.06)',
-                border: '1px solid rgba(200,240,0,0.2)',
+                background: 'rgba(214,255,0,0.06)',
+                border: '1px solid rgba(214,255,0,0.2)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '14px 20px',
                 textAlign: 'center',
               }}>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
                   2-week signal in
                 </div>
-                <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '36px', color: daysLeft <= 3 ? 'var(--red)' : 'var(--lime)', lineHeight: 1 }}>
+                <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '36px', color: daysLeft <= 3 ? 'var(--red)' : 'var(--lime)', lineHeight: 1 }}>
                   {daysLeft}
                 </div>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>days remaining</div>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>days remaining</div>
               </div>
             )
           )}
 
           {isGo && (
             <div style={{
-              background: 'rgba(200,240,0,0.1)',
+              background: 'rgba(214,255,0,0.1)',
               border: '1px solid var(--lime)',
               borderRadius: 'var(--radius-sm)',
               padding: '14px 20px',
               textAlign: 'center',
             }}>
-              <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '20px', color: 'var(--lime)' }}>GO</div>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.08em' }}>signal sent</div>
+              <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '20px', color: 'var(--lime)' }}>GO</div>
+              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.08em' }}>signal sent</div>
             </div>
           )}
 
@@ -177,8 +177,8 @@ export default function FounderStatus() {
               padding: '14px 20px',
               textAlign: 'center',
             }}>
-              <div style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '20px', color: 'var(--red)' }}>REDIRECT</div>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>with referral</div>
+              <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '20px', color: 'var(--red)' }}>REDIRECT</div>
+              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>with referral</div>
             </div>
           )}
         </div>
@@ -202,8 +202,8 @@ export default function FounderStatus() {
           ].map(({ label, done, value }) => (
             <div key={label} style={{ background: 'var(--surface)', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</div>
-                <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: done ? 'var(--lime)' : 'var(--text-muted)', marginTop: '2px' }}>{value}</div>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</div>
+                <div style={{ fontFamily: 'Inter', fontSize: '13px', color: done ? 'var(--lime)' : 'var(--text-muted)', marginTop: '2px' }}>{value}</div>
               </div>
               <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: done ? 'var(--lime)' : 'var(--border-strong)' }} />
             </div>
@@ -212,8 +212,8 @@ export default function FounderStatus() {
 
         {/* Next step */}
         <div style={{ marginTop: '16px', padding: '12px 16px', background: 'var(--surface-2)', borderRadius: 'var(--radius-sm)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', flexShrink: 0, marginTop: '1px' }}>Next</span>
-          <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', flexShrink: 0, marginTop: '1px' }}>Next</span>
+          <span style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
             {NEXT_STEP[app.stage]}
           </span>
         </div>
@@ -230,13 +230,13 @@ export default function FounderStatus() {
               width: '44px', height: '44px', borderRadius: 'var(--radius-sm)',
               background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <span style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '13px', color: 'var(--lime)' }}>TBA</span>
+              <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '13px', color: 'var(--lime)' }}>TBA</span>
             </div>
             <div>
-              <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
+              <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
                 Your Internal Lead is being assigned.
               </div>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginTop: '2px' }}>
+              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginTop: '2px' }}>
                 A named Audi contact within 48 hours.
               </div>
             </div>
@@ -257,8 +257,8 @@ export default function FounderStatus() {
           { label: 'Days remaining', value: `${Math.max(0, 14 - app.daysInProcess)} of 14` },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: 'var(--surface)', padding: '14px 16px' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{label}</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text)' }}>{value}</div>
+            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{label}</div>
+            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text)' }}>{value}</div>
           </div>
         ))}
       </motion.div>

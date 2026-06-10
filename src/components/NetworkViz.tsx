@@ -144,7 +144,7 @@ export default function NetworkViz() {
           y={22}
           textAnchor="middle"
           fill="var(--text-faint)"
-          style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, letterSpacing: 3 }}
+          style={{ fontFamily: 'JetBrains Mono', fontSize: 9, letterSpacing: 3 }}
         >
           {c.label}
         </text>
@@ -157,7 +157,7 @@ export default function NetworkViz() {
           y={155}
           textAnchor="middle"
           fill="var(--text-faint)"
-          style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: 1 }}
+          style={{ fontFamily: 'JetBrains Mono', fontSize: 10, letterSpacing: 1 }}
         >
           No matches yet
         </text>
@@ -219,7 +219,7 @@ export default function NetworkViz() {
             x={n.x + 13}
             y={n.y + 4}
             fill={n.color}
-            style={{ fontFamily: 'IBM Plex Mono', fontSize: 9.5, letterSpacing: 0.5 }}
+            style={{ fontFamily: 'JetBrains Mono', fontSize: 9.5, letterSpacing: 0.5 }}
           >
             {n.label}
           </text>

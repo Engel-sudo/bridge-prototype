@@ -93,18 +93,18 @@ export default function Landing() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
-      style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: "'IBM Plex Sans', system-ui, sans-serif" }}>
+      style={{ background: 'var(--bg)', color: 'var(--text)', fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Grain + cursor glow */}
       <div className="grain" />
-      <div ref={mouseGlowRef} style={{ position: 'fixed', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(200,240,0,0.05) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1, transform: 'translate(-50%,-50%)', left: '-400px', top: '-400px' }} />
+      <div ref={mouseGlowRef} style={{ position: 'fixed', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(214,255,0,0.05) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1, transform: 'translate(-50%,-50%)', left: '-400px', top: '-400px' }} />
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section style={{ position: 'relative', textAlign: 'center', padding: '84px 32px 36px', overflow: 'hidden' }}>
         {/* Grid background */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: 'linear-gradient(rgba(200,240,0,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(200,240,0,0.035) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(214,255,0,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(214,255,0,0.035) 1px, transparent 1px)',
           backgroundSize: '44px 44px',
           WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 25%, #000, transparent)',
           maskImage: 'radial-gradient(ellipse 70% 70% at 50% 25%, #000, transparent)',
@@ -114,7 +114,7 @@ export default function Landing() {
           {/* Eyebrow */}
           <motion.span {...fadeUp(0.05)} style={{
             display: 'inline-flex', alignItems: 'center', gap: '9px',
-            fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.16em', fontSize: '12px', color: 'var(--lime)',
+            fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.16em', fontSize: '12px', color: 'var(--lime)',
             marginBottom: '24px',
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--lime)', display: 'inline-block' }} />
@@ -123,7 +123,7 @@ export default function Landing() {
 
           {/* H1 */}
           <motion.h1 {...fadeUp(0.1)} style={{
-            fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900,
+            fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 900,
             fontSize: 'clamp(40px, 7vw, 76px)', lineHeight: 1.02, letterSpacing: '-0.02em',
             color: 'var(--text)', marginBottom: '0',
           }}>
@@ -134,9 +134,9 @@ export default function Landing() {
           <motion.div {...fadeUp(0.22)} style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '34px' }}>
             <button onClick={handleApplyNow} style={{
               display: 'inline-flex', alignItems: 'center', gap: '9px',
-              fontFamily: "'IBM Plex Sans', system-ui", fontWeight: 600, fontSize: '15px',
+              fontFamily: "'Inter', system-ui", fontWeight: 600, fontSize: '15px',
               padding: '13px 24px', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-              background: 'var(--lime)', color: '#0A0B0D', transition: 'opacity 0.15s, transform 0.15s',
+              background: 'var(--lime)', color: '#050505', transition: 'opacity 0.15s, transform 0.15s',
             }}
               onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.03)' }}
               onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
@@ -153,7 +153,7 @@ export default function Landing() {
 
           {/* "Three steps across" label */}
           <motion.div {...inView(0)} style={{ textAlign: 'center', marginBottom: '14px' }}>
-            <span style={{ fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>
               Three steps across
             </span>
           </motion.div>
@@ -162,12 +162,12 @@ export default function Landing() {
             {/* Endpoints */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '18px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <span style={{ fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>You start here</span>
-                <span style={{ fontFamily: "'Archivo', system-ui", fontWeight: 800, fontSize: 'clamp(20px, 3vw, 30px)', lineHeight: 1 }}>Your startup</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>You start here</span>
+                <span style={{ fontFamily: "'Inter', system-ui", fontWeight: 800, fontSize: 'clamp(20px, 3vw, 30px)', lineHeight: 1 }}>Your startup</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right', alignItems: 'flex-end' }}>
-                <span style={{ fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>You end here</span>
-                <span style={{ fontFamily: "'Archivo', system-ui", fontWeight: 800, fontSize: 'clamp(20px, 3vw, 30px)', lineHeight: 1, color: 'var(--lime)' }}>In an Audi</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>You end here</span>
+                <span style={{ fontFamily: "'Inter', system-ui", fontWeight: 800, fontSize: 'clamp(20px, 3vw, 30px)', lineHeight: 1, color: 'var(--lime)' }}>In an Audi</span>
               </div>
             </div>
 
@@ -210,18 +210,18 @@ export default function Landing() {
                   onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface)')}
                 >
                   {/* Node circle with step badge */}
-                  <div style={{ position: 'relative', width: '54px', height: '54px', margin: '0 auto 16px', borderRadius: '50%', background: 'rgba(200,240,0,0.10)', border: '1px solid rgba(200,240,0,0.4)', display: 'grid', placeItems: 'center', color: 'var(--lime)' }}>
+                  <div style={{ position: 'relative', width: '54px', height: '54px', margin: '0 auto 16px', borderRadius: '50%', background: 'rgba(214,255,0,0.10)', border: '1px solid rgba(214,255,0,0.4)', display: 'grid', placeItems: 'center', color: 'var(--lime)' }}>
                     {s.icon}
                     <span style={{
                       position: 'absolute', top: '-9px', right: '-9px',
                       width: '24px', height: '24px', borderRadius: '50%',
-                      background: 'var(--lime)', color: '#0A0B0D',
-                      fontFamily: "'Archivo', system-ui", fontWeight: 800, fontSize: '13px',
+                      background: 'var(--lime)', color: '#050505',
+                      fontFamily: "'Inter', system-ui", fontWeight: 800, fontSize: '13px',
                       display: 'grid', placeItems: 'center',
                     }}>{s.step}</span>
                   </div>
-                  <h3 style={{ fontFamily: "'Archivo', system-ui", fontWeight: 800, fontSize: '20px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{s.h3}</h3>
-                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '10px', color: 'var(--lime)', marginTop: '6px' }}>{s.name}</div>
+                  <h3 style={{ fontFamily: "'Inter', system-ui", fontWeight: 800, fontSize: '20px', letterSpacing: '-0.01em', color: 'var(--text)' }}>{s.h3}</h3>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '10px', color: 'var(--lime)', marginTop: '6px' }}>{s.name}</div>
                   <p style={{ marginTop: '10px', fontSize: '14.5px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{s.body}</p>
                 </motion.div>
               ))}
@@ -237,7 +237,7 @@ export default function Landing() {
 
             {/* Bad */}
             <motion.div {...inView(0)} style={{ borderRadius: 'var(--radius)', padding: '30px 30px 32px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '11px', marginBottom: '20px', color: '#FF6173' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '11px', marginBottom: '20px', color: '#FF6173' }}>
                 <X size={22} strokeWidth={2.2} /> The old way
               </span>
               {badRows.map((row, i) => (
@@ -251,10 +251,10 @@ export default function Landing() {
             {/* Good */}
             <motion.div {...inView(0.08)} style={{
               borderRadius: 'var(--radius)', padding: '30px 30px 32px',
-              border: '1px solid rgba(200,240,0,0.45)',
-              background: 'linear-gradient(180deg, rgba(200,240,0,0.05), var(--surface))',
+              border: '1px solid rgba(214,255,0,0.45)',
+              background: 'linear-gradient(180deg, rgba(214,255,0,0.05), var(--surface))',
             }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '11px', marginBottom: '20px', color: 'var(--lime)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '11px', marginBottom: '20px', color: 'var(--lime)' }}>
                 <Check size={22} strokeWidth={2.2} /> With BRIDGE
               </span>
               {goodRows.map((row, i) => (
@@ -279,13 +279,13 @@ export default function Landing() {
           }}>
             {/* BMW */}
             <div style={{ padding: '28px 36px' }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
                 BMW Startup Garage · est. 2015
               </div>
-              <div style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--text)', lineHeight: 1, marginBottom: '6px' }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--text)', lineHeight: 1, marginBottom: '6px' }}>
                 32
               </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
                 completed startup projects in 2022
               </div>
             </div>
@@ -296,17 +296,17 @@ export default function Landing() {
             {/* Audi */}
             <div style={{ padding: '28px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
                   Audi A4nXT · est. 2020
                 </div>
-                <div style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--red)', lineHeight: 1, marginBottom: '6px' }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--red)', lineHeight: 1, marginBottom: '6px' }}>
                   ~3
                 </div>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
                   public wins in 4 years
                 </div>
               </div>
-              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.6, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.6, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
                 Audi is ranked #8 globally by brand value. Top-tier founders are routing around it for BMW, which gives a supplier number in week six. BRIDGE fixes that.
               </div>
             </div>
@@ -325,13 +325,13 @@ export default function Landing() {
             {/* Grid bg */}
             <div style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
-              backgroundImage: 'linear-gradient(rgba(200,240,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(200,240,0,0.04) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(214,255,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(214,255,0,0.04) 1px, transparent 1px)',
               backgroundSize: '40px 40px',
               WebkitMaskImage: 'radial-gradient(ellipse 60% 80% at 50% 50%, #000, transparent)',
               maskImage: 'radial-gradient(ellipse 60% 80% at 50% 50%, #000, transparent)',
             }} />
             <div style={{ position: 'relative' }}>
-              <h2 style={{ fontFamily: "'Archivo', system-ui", fontWeight: 900, fontSize: 'clamp(30px, 4.5vw, 50px)', lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--text)' }}>
+              <h2 style={{ fontFamily: "'Inter', system-ui", fontWeight: 900, fontSize: 'clamp(30px, 4.5vw, 50px)', lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--text)' }}>
                 Built something good?<br /><span style={{ color: 'var(--lime)' }}>Audi wants to see it.</span>
               </h2>
               <p style={{ margin: '16px auto 0', maxWidth: '560px', fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text-muted)', lineHeight: 1.5 }}>
@@ -340,9 +340,9 @@ export default function Landing() {
               <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginTop: '34px' }}>
                 <button onClick={handleApplyNow} style={{
                   display: 'inline-flex', alignItems: 'center', gap: '9px',
-                  fontFamily: "'IBM Plex Sans', system-ui", fontWeight: 600, fontSize: '15px',
+                  fontFamily: "'Inter', system-ui", fontWeight: 600, fontSize: '15px',
                   padding: '13px 24px', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-                  background: 'var(--lime)', color: '#0A0B0D', transition: 'opacity 0.15s, transform 0.15s',
+                  background: 'var(--lime)', color: '#050505', transition: 'opacity 0.15s, transform 0.15s',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.03)' }}
                   onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
@@ -358,11 +358,11 @@ export default function Landing() {
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
       <footer style={{ borderTop: '1px solid var(--border)', padding: '28px 0' }}>
         <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '11px', fontFamily: "'Archivo', system-ui", fontWeight: 800, letterSpacing: '0.04em', fontSize: '17px', color: 'var(--text)' }}>
-            <span style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--lime)', display: 'grid', placeItems: 'center', color: '#0A0B0D', fontWeight: 900, fontSize: '17px' }}>B</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '11px', fontFamily: "'Inter', system-ui", fontWeight: 800, letterSpacing: '0.04em', fontSize: '17px', color: 'var(--text)' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--lime)', display: 'grid', placeItems: 'center', color: '#050505', fontWeight: 900, fontSize: '17px' }}>B</span>
             BRIDGE
           </div>
-          <span style={{ fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)' }}>
             Audi · Corporate Campus Challenge
           </span>
         </div>

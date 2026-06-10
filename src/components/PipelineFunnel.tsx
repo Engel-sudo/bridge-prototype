@@ -23,7 +23,7 @@ export default function PipelineFunnel() {
         const isLast = i === stages.length - 1
         return (
           <div key={stage.label} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '120px', fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ width: '120px', fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', textAlign: 'right', flexShrink: 0 }}>
               {stage.label}
             </div>
             <div style={{ flex: 1, height: isLast ? '20px' : '14px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden', position: 'relative' }}>
@@ -33,13 +33,13 @@ export default function PipelineFunnel() {
                 background: isLast ? 'var(--lime)' : stage.color,
                 borderRadius: '2px',
                 opacity: isLast ? 1 : 0.75,
-                boxShadow: isLast ? '0 0 12px rgba(200,240,0,0.3)' : 'none',
+                boxShadow: isLast ? '0 0 12px rgba(214,255,0,0.3)' : 'none',
                 transition: 'width 0.6s ease',
               }} />
             </div>
             <div style={{
               width: '28px',
-              fontFamily: 'Archivo',
+              fontFamily: 'Inter',
               fontWeight: 700,
               fontSize: isLast ? '18px' : '14px',
               color: isLast ? 'var(--lime)' : 'var(--text)',

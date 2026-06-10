@@ -64,10 +64,10 @@ export default function PainPointMap() {
         <span className="kicker">the map</span>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
               Pain Point Map
             </h1>
-            <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
+            <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
               Any Audi employee can surface a problem. Pilots visible across all silos.
             </p>
           </div>
@@ -97,29 +97,29 @@ export default function PainPointMap() {
                   animate={{ opacity: 1, scale: 1 }}
                   style={{ textAlign: 'center', padding: '24px 0' }}
                 >
-                  <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '24px', color: 'var(--lime)' }}>Submitted.</div>
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', marginTop: '6px', letterSpacing: '0.08em' }}>Pain point added to the map.</div>
+                  <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '24px', color: 'var(--lime)' }}>Submitted.</div>
+                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', marginTop: '6px', letterSpacing: '0.08em' }}>Pain point added to the map.</div>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                     <div>
-                      <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Your name *</label>
+                      <label style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Your name *</label>
                       <input className="input" placeholder="e.g. Anna Richter" value={form.submittedBy} onChange={e => setForm(f => ({ ...f, submittedBy: e.target.value }))} required />
                     </div>
                     <div>
-                      <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Department *</label>
+                      <label style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Department *</label>
                       <select className="input" value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))}>
                         {DEPARTMENTS.filter(d => d !== 'All').map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Pain point title *</label>
+                    <label style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Pain point title *</label>
                     <input className="input" placeholder="Describe the problem in one sentence" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
                   </div>
                   <div>
-                    <label style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Description</label>
+                    <label style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Description</label>
                     <textarea className="input" placeholder="What's the impact? What have you tried?" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} style={{ minHeight: '80px' }} />
                   </div>
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
@@ -142,7 +142,7 @@ export default function PainPointMap() {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Filter size={12} color="var(--text-faint)" />
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Filter:</span>
+          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Filter:</span>
         </div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {DEPARTMENTS.map(d => (
@@ -150,10 +150,10 @@ export default function PainPointMap() {
               key={d}
               onClick={() => setDeptFilter(d)}
               style={{
-                fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.08em',
+                fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.08em',
                 padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid',
                 borderColor: deptFilter === d ? 'var(--lime)' : 'var(--border-strong)',
-                background: deptFilter === d ? 'rgba(200,240,0,0.1)' : 'transparent',
+                background: deptFilter === d ? 'rgba(214,255,0,0.1)' : 'transparent',
                 color: deptFilter === d ? 'var(--lime)' : 'var(--text-faint)',
                 cursor: 'pointer', transition: 'all 0.15s',
               }}
@@ -168,10 +168,10 @@ export default function PainPointMap() {
               key={s.value}
               onClick={() => setStatusFilter(s.value)}
               style={{
-                fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.08em',
+                fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.08em',
                 padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid',
                 borderColor: statusFilter === s.value ? 'var(--lime)' : 'var(--border-strong)',
-                background: statusFilter === s.value ? 'rgba(200,240,0,0.1)' : 'transparent',
+                background: statusFilter === s.value ? 'rgba(214,255,0,0.1)' : 'transparent',
                 color: statusFilter === s.value ? 'var(--lime)' : 'var(--text-faint)',
                 cursor: 'pointer', transition: 'all 0.15s',
               }}
@@ -203,7 +203,7 @@ export default function PainPointMap() {
           ))}
         </AnimatePresence>
         {filtered.length === 0 && (
-          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '48px', color: 'var(--text-faint)', fontFamily: 'IBM Plex Mono', fontSize: '12px', letterSpacing: '0.1em' }}>
+          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '48px', color: 'var(--text-faint)', fontFamily: 'JetBrains Mono', fontSize: '12px', letterSpacing: '0.1em' }}>
             No pain points match current filters.
           </div>
         )}

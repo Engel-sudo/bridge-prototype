@@ -23,7 +23,7 @@ function roleBadge(role: string | null, selectedAppId: string | null, selectedOw
   if (role === 'startup') {
     const app = selectedAppId ? seedApplications.find(a => a.id === selectedAppId) : null
     const name = app ? app.companyName : 'New Application'
-    return { label: `STARTUP · ${name}`, color: 'var(--lime)', bg: 'rgba(200,240,0,0.08)', border: 'rgba(200,240,0,0.25)' }
+    return { label: `STARTUP · ${name}`, color: 'var(--lime)', bg: 'rgba(214,255,0,0.08)', border: 'rgba(214,255,0,0.25)' }
   }
   if (role === 'pool_member') {
     return { label: 'COMMUNITY', color: 'var(--blue)', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.25)' }
@@ -63,7 +63,7 @@ export default function Nav() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: 'rgba(10,11,13,0.92)', backdropFilter: 'blur(12px)',
+      background: 'rgba(5,5,5,0.92)', backdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--border)',
       display: 'flex', alignItems: 'center',
       padding: '0 32px', height: '56px', gap: '8px',
@@ -72,9 +72,9 @@ export default function Nav() {
       <Link to="/login"
         style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', marginRight: '24px' }}>
         <div style={{ width: '28px', height: '28px', background: 'var(--lime)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '13px', color: '#0A0B0D', letterSpacing: '0.05em' }}>B</span>
+          <span style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '13px', color: '#050505', letterSpacing: '0.05em' }}>B</span>
         </div>
-        <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '15px', color: 'var(--text)', letterSpacing: '0.08em' }}>BRIDGE</span>
+        <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '15px', color: 'var(--text)', letterSpacing: '0.08em' }}>BRIDGE</span>
       </Link>
 
       {/* Role-scoped links */}
@@ -85,11 +85,11 @@ export default function Nav() {
           <Link key={to} to={href} style={{
             textDecoration: 'none', padding: '6px 14px', borderRadius: 'var(--radius-sm)',
             border: active ? '1px solid var(--lime)' : '1px solid transparent',
-            background: active ? 'rgba(200,240,0,0.08)' : 'transparent',
+            background: active ? 'rgba(214,255,0,0.08)' : 'transparent',
             display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px', transition: 'all 0.15s',
           }}>
-            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase', color: active ? 'var(--lime)' : 'var(--text-faint)' }}>{mono}</span>
-            <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 500, color: active ? 'var(--text)' : 'var(--text-muted)' }}>{label}</span>
+            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase', color: active ? 'var(--lime)' : 'var(--text-faint)' }}>{mono}</span>
+            <span style={{ fontFamily: 'Inter', fontSize: '13px', fontWeight: 500, color: active ? 'var(--text)' : 'var(--text-muted)' }}>{label}</span>
           </Link>
         )
       })}
@@ -98,7 +98,7 @@ export default function Nav() {
         {/* Role badge */}
         {badge && (
           <span style={{
-            fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase',
+            fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase',
             color: badge.color, background: badge.bg, border: `1px solid ${badge.border}`,
             padding: '4px 10px', borderRadius: 'var(--radius-sm)', whiteSpace: 'nowrap',
           }}>
@@ -138,7 +138,7 @@ export default function Nav() {
             }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
-              fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase',
+              fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase',
               color: 'rgba(255,45,70,0.75)', background: 'rgba(255,45,70,0.04)',
               border: '1px solid rgba(255,45,70,0.3)',
               padding: '5px 10px', borderRadius: 'var(--radius-sm)', transition: 'all 0.15s',
@@ -150,7 +150,7 @@ export default function Nav() {
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--lime)', boxShadow: '0 0 6px var(--lime)' }} />
-            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>PROTOTYPE · CCC7</span>
+            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>PROTOTYPE · CCC7</span>
           </div>
         )}
       </div>

@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --bg:            #0A0B0D;
-  --surface:       #121419;
-  --surface-2:     #181B22;
-  --border:        #262B34;
-  --border-strong: #3A424E;
+  --bg:            #050505;
+  --surface:       #0a0a0a;
+  --surface-2:     #111111;
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
 
-  --text:          #F2F4F7;
-  --text-muted:    #9AA3B2;
-  --text-faint:    #5C6675;
+  --text:          #e5e2e1;
+  --text-muted:    #8A8A8A;
+  --text-faint:    #555555;
 
-  --lime:          #C8F000;
-  --lime-dim:      #8FA800;
+  --lime:          #D6FF00;
+  --lime-dim:      rgba(214, 255, 0, 0.12);
 
   --red:           #FF2D46;
-  --red-dim:       #7A1622;
+  --red-dim:       rgba(255, 45, 70, 0.1);
 
   --blue:          #3B82F6;
   --amber:         #F59E0B;
 
-  --radius:        10px;
-  --radius-sm:     6px;
-  --shadow:        0 8px 30px rgba(0,0,0,0.45);
-  --grid:          rgba(255,255,255,0.04);
+  --radius:        6px;
+  --radius-sm:     3px;
+  --shadow:        0 8px 30px rgba(0,0,0,0.6);
+  --grid:          rgba(255,255,255,0.03);
 }
 
 * {
@@ -35,7 +35,7 @@
 html, body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -43,11 +43,11 @@ html, body {
 
 /* Typography utilities */
 .font-display {
-  font-family: 'Archivo', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .font-mono-label {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -55,7 +55,7 @@ html, body {
 }
 
 .kicker {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -65,7 +65,7 @@ html, body {
 }
 
 .metric-number {
-  font-family: 'Archivo', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 800;
   font-size: clamp(40px, 6vw, 72px);
   line-height: 1;
@@ -88,8 +88,8 @@ html, body {
 /* Buttons */
 .btn-primary {
   background: var(--lime);
-  color: #0A0B0D;
-  font-family: 'IBM Plex Sans', sans-serif;
+  color: #050505;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 14px;
   padding: 10px 20px;
@@ -110,7 +110,7 @@ html, body {
 .btn-secondary {
   background: transparent;
   color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 14px;
   padding: 10px 20px;
@@ -159,7 +159,7 @@ html, body {
 .rail-node.active {
   background: var(--bg);
   border-color: var(--lime);
-  box-shadow: 0 0 8px rgba(200, 240, 0, 0.4);
+  box-shadow: 0 0 8px rgba(214, 255, 0, 0.4);
 }
 
 .rail-node.blocked {
@@ -174,7 +174,7 @@ html, body {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   padding: 10px 14px;
   width: 100%;

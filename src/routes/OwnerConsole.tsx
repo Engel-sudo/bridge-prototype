@@ -43,7 +43,7 @@ function Initials({ name, color }: { name: string; color: string }) {
       width: 36, height: 36, borderRadius: '8px', flexShrink: 0,
       background: `${color}18`, border: `1px solid ${color}40`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'Archivo', fontWeight: 800, fontSize: '13px', color,
+      fontFamily: 'Inter', fontWeight: 800, fontSize: '13px', color,
     }}>
       {initials}
     </div>
@@ -107,10 +107,10 @@ export default function OwnerConsole() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '28px' }}>
         <span className="kicker">internal lead console</span>
-        <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(24px, 3.5vw, 38px)', color: 'var(--text)', lineHeight: 1.1 }}>
+        <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 3.5vw, 38px)', color: 'var(--text)', lineHeight: 1.1 }}>
           Startup Queue
         </h1>
-        <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+        <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
           {queue.length} startups · {unassigned.length} unclaimed · {queue.filter(isOverdue).length} overdue
         </p>
       </motion.div>
@@ -138,13 +138,13 @@ export default function OwnerConsole() {
           { kicker: 'Avg days to signal',  value: `${owner.avgDaysToSignal}d`,    color: owner.avgDaysToSignal <= 14 ? 'var(--lime)' : 'var(--amber)', caption: 'target: 14 days' },
         ].map(item => (
           <div key={item.kicker} style={{ background: 'var(--surface)', padding: '18px 20px' }}>
-            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '4px' }}>
+            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '4px' }}>
               {item.kicker}
             </span>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '28px', color: item.color, lineHeight: 1 }}>
+            <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '28px', color: item.color, lineHeight: 1 }}>
               {item.value}
             </div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', marginTop: '4px', letterSpacing: '0.08em' }}>
+            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', marginTop: '4px', letterSpacing: '0.08em' }}>
               {item.caption}
             </div>
           </div>
@@ -189,27 +189,27 @@ export default function OwnerConsole() {
                   {/* Content */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px', marginBottom: '4px' }}>
-                      <span style={{ fontFamily: 'IBM Plex Sans', fontWeight: 700, fontSize: '13px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '13px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {app.companyName}
                       </span>
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: overdue ? 'var(--red)' : 'var(--text-faint)', flexShrink: 0 }}>
+                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: overdue ? 'var(--red)' : 'var(--text-faint)', flexShrink: 0 }}>
                         day {app.daysInProcess}
                       </span>
                     </div>
 
                     {/* Tech tag + stage badge */}
                     <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: pp ? '6px' : 0 }}>
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', background: 'var(--surface-2)', border: '1px solid var(--border)', padding: '1px 6px', borderRadius: '3px', letterSpacing: '0.04em' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', background: 'var(--surface-2)', border: '1px solid var(--border)', padding: '1px 6px', borderRadius: '3px', letterSpacing: '0.04em' }}>
                         {app.technology}
                       </span>
                       <span style={{
-                        fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                        fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase',
                         color: accentColor, background: `${accentColor}18`, padding: '1px 6px', borderRadius: '3px',
                       }}>
                         {isUnassigned ? 'Unclaimed' : STAGE_LABELS[app.stage]}
                       </span>
                       {overdue && (
-                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--red)', background: 'rgba(255,45,70,0.1)', padding: '1px 6px', borderRadius: '3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--red)', background: 'rgba(255,45,70,0.1)', padding: '1px 6px', borderRadius: '3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                           <AlertCircle size={9} /> overdue
                         </span>
                       )}
@@ -219,7 +219,7 @@ export default function OwnerConsole() {
                     {pp && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px', paddingTop: '6px', borderTop: '1px solid var(--border)' }}>
                         <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)', flexShrink: 0 }} />
-                        <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontFamily: 'Inter', fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {pp.title}
                         </span>
                       </div>
@@ -251,20 +251,20 @@ export default function OwnerConsole() {
                     <Initials name={selected.companyName} color={selected.ownerId === null ? 'var(--amber)' : stageColor[selected.stage] || 'var(--lime)'} />
                     <div>
                       <span className="kicker" style={{ marginBottom: '2px' }}>{selected.id}</span>
-                      <h2 style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '22px', color: 'var(--text)', lineHeight: 1.1 }}>
+                      <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '22px', color: 'var(--text)', lineHeight: 1.1 }}>
                         {selected.companyName}
                       </h2>
-                      <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
+                      <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
                         {selected.technology} · {selected.founderName}
                       </div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: isOverdue(selected) ? 'var(--red)' : 'var(--text-faint)', letterSpacing: '0.08em' }}>
+                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: isOverdue(selected) ? 'var(--red)' : 'var(--text-faint)', letterSpacing: '0.08em' }}>
                       day {selected.daysInProcess} · signal by {selected.signalDeadline}
                     </span>
                     {isOverdue(selected) && (
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', textTransform: 'uppercase', color: 'var(--red)', background: 'rgba(255,45,70,0.1)', padding: '3px 8px', borderRadius: '3px' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', textTransform: 'uppercase', color: 'var(--red)', background: 'rgba(255,45,70,0.1)', padding: '3px 8px', borderRadius: '3px' }}>
                         Overdue
                       </span>
                     )}
@@ -286,7 +286,7 @@ export default function OwnerConsole() {
                         <button
                           onClick={() => handleDecide(selected.id, 'redirect')}
                           disabled={advancing}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--red)', background: 'transparent', border: '1px solid var(--red)', opacity: advancing ? 0.7 : 1 }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'Inter', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--red)', background: 'transparent', border: '1px solid var(--red)', opacity: advancing ? 0.7 : 1 }}
                         >
                           <X size={14} /> Redirect
                         </button>
@@ -303,7 +303,7 @@ export default function OwnerConsole() {
                       const justAdded = addedToPool === selected.id
                       if (alreadyInPool || justAdded) {
                         return (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.08em', color: 'var(--blue)', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.25)', padding: '5px 10px', borderRadius: 'var(--radius-sm)' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.08em', color: 'var(--blue)', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.25)', padding: '5px 10px', borderRadius: 'var(--radius-sm)' }}>
                             <Users size={11} /> In community pool
                           </span>
                         )
@@ -314,7 +314,7 @@ export default function OwnerConsole() {
                             addToPool({ id: `pm-${selected.id}`, name: selected.founderName, company: selected.companyName, type: 'startup', techArea: selected.technology, addedAt: new Date().toISOString().slice(0, 10), addedByName: owner.name, applicationId: selected.id, notes: `Added from BRIDGE pipeline. ${selected.notes}` })
                             setAddedToPool(selected.id)
                           }}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'IBM Plex Sans', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--blue)', background: 'transparent', border: '1px solid rgba(59,130,246,0.4)', transition: 'all 0.15s' }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'Inter', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--blue)', background: 'transparent', border: '1px solid rgba(59,130,246,0.4)', transition: 'all 0.15s' }}
                         >
                           <Users size={14} /> Add to community pool
                         </button>
@@ -343,8 +343,8 @@ export default function OwnerConsole() {
                       { label: 'Submitted', value: selected.submittedAt },
                     ].map(({ label, value }) => (
                       <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</span>
-                        <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text)' }}>{value}</span>
+                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</span>
+                        <span style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text)' }}>{value}</span>
                       </div>
                     ))}
                   </div>
@@ -366,17 +366,17 @@ export default function OwnerConsole() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                     <span className="kicker" style={{ margin: 0 }}>linked pain point</span>
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(200,240,0,0.1)', padding: '2px 8px', borderRadius: '3px' }}>
+                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(214,255,0,0.1)', padding: '2px 8px', borderRadius: '3px' }}>
                       {selectedPP.status.replace('_', ' ')}
                     </span>
                   </div>
-                  <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '14px', color: 'var(--text)', marginBottom: '4px' }}>
+                  <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '14px', color: 'var(--text)', marginBottom: '4px' }}>
                     {selectedPP.title}
                   </div>
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginBottom: '8px' }}>
+                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginBottom: '8px' }}>
                     {selectedPP.department} · submitted by {selectedPP.submittedBy}
                   </div>
-                  <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+                  <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
                     {selectedPP.description}
                   </p>
                 </motion.div>
@@ -385,7 +385,7 @@ export default function OwnerConsole() {
               {/* Notes */}
               <div className="card" style={{ padding: '16px' }}>
                 <span className="kicker" style={{ marginBottom: '8px', display: 'block' }}>notes</span>
-                <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                   {selected.notes}
                 </p>
               </div>

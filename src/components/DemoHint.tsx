@@ -23,10 +23,10 @@ export default function DemoHint({ persona, hint }: Props) {
     }}>
       <Lightbulb size={14} color="var(--lime)" style={{ flexShrink: 0 }} />
       <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '4px 10px', alignItems: 'baseline' }}>
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--lime)' }}>
+        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--lime)' }}>
           {persona}
         </span>
-        <span style={{ fontFamily: 'IBM Plex Sans', fontSize: '12px', color: 'var(--text-muted)' }}>
+        <span style={{ fontFamily: 'Inter', fontSize: '12px', color: 'var(--text-muted)' }}>
           {hint}
         </span>
       </div>

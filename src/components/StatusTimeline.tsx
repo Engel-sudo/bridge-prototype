@@ -66,7 +66,7 @@ export default function StatusTimeline({ current, compact }: Props) {
                 <motion.div
                   className={`rail-node ${status}`}
                   initial={false}
-                  animate={status === 'active' ? { boxShadow: ['0 0 6px rgba(200,240,0,0.3)', '0 0 14px rgba(200,240,0,0.7)', '0 0 6px rgba(200,240,0,0.3)'] } : {}}
+                  animate={status === 'active' ? { boxShadow: ['0 0 6px rgba(214,255,0,0.3)', '0 0 14px rgba(214,255,0,0.7)', '0 0 6px rgba(214,255,0,0.3)'] } : {}}
                   transition={{ duration: 1.5, repeat: Infinity }}
                   style={{
                     background: status === 'done' ? 'var(--lime)' : status === 'active' ? 'var(--bg)' : status === 'blocked' ? 'var(--red)' : 'var(--bg)',
@@ -76,7 +76,7 @@ export default function StatusTimeline({ current, compact }: Props) {
                 {!compact && (
                   <div style={{ textAlign: 'center', minWidth: '70px', maxWidth: '80px' }}>
                     <div style={{
-                      fontFamily: 'IBM Plex Mono',
+                      fontFamily: 'JetBrains Mono',
                       fontSize: '9px',
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
@@ -87,7 +87,7 @@ export default function StatusTimeline({ current, compact }: Props) {
                       {stage.label}
                     </div>
                     {stage.sublabel && (
-                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '8px', color: 'var(--lime)', marginTop: '2px' }}>
+                      <div style={{ fontFamily: 'JetBrains Mono', fontSize: '8px', color: 'var(--lime)', marginTop: '2px' }}>
                         {stage.sublabel}
                       </div>
                     )}

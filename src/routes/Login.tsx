@@ -88,9 +88,9 @@ export default function Login() {
       >
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '36px', height: '36px', background: 'var(--lime)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: '16px', color: '#0A0B0D' }}>B</span>
+            <span style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '16px', color: '#050505' }}>B</span>
           </div>
-          <span style={{ fontFamily: 'Archivo', fontWeight: 800, fontSize: '20px', color: 'var(--text)', letterSpacing: '0.06em' }}>BRIDGE</span>
+          <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '20px', color: 'var(--text)', letterSpacing: '0.06em' }}>BRIDGE</span>
         </Link>
       </motion.div>
 
@@ -101,10 +101,10 @@ export default function Login() {
         transition={{ delay: 0.05, duration: 0.4 }}
         style={{ textAlign: 'center', marginBottom: '40px' }}
       >
-        <h1 style={{ fontFamily: 'Archivo', fontWeight: 900, fontSize: 'clamp(22px, 4vw, 32px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '10px' }}>
+        <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(22px, 4vw, 32px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '10px' }}>
           Who are you in this system?
         </h1>
-        <p style={{ fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text-muted)', maxWidth: '400px' }}>
+        <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', maxWidth: '400px' }}>
           Choose your role to enter the view relevant to you.
         </p>
       </motion.div>
@@ -121,8 +121,8 @@ export default function Login() {
         <div
           style={{
             ...tileBase,
-            borderColor: expanded === 'startup' ? 'rgba(200,240,0,0.4)' : 'var(--border)',
-            background: expanded === 'startup' ? 'rgba(200,240,0,0.03)' : 'var(--surface)',
+            borderColor: expanded === 'startup' ? 'rgba(214,255,0,0.4)' : 'var(--border)',
+            background: expanded === 'startup' ? 'rgba(214,255,0,0.03)' : 'var(--surface)',
           }}
         >
           <div
@@ -131,10 +131,10 @@ export default function Login() {
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(200,240,0,0.1)', border: '1px solid rgba(200,240,0,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Startup</span>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(214,255,0,0.1)', border: '1px solid rgba(214,255,0,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Startup</span>
               </div>
-              <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Founder</div>
-              <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Track your application through the BRIDGE pipeline.</div>
+              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Founder</div>
+              <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Track your application through the BRIDGE pipeline.</div>
             </div>
             <motion.div animate={{ rotate: expanded === 'startup' ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={18} color="var(--text-faint)" />
@@ -154,23 +154,23 @@ export default function Login() {
 
                   {/* ── Apply now (primary) ── */}
                   <div>
-                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
                       New to BRIDGE?
                     </div>
                     <button
                       onClick={handleNewStartup}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        width: '100%', background: 'rgba(200,240,0,0.08)', textAlign: 'left',
-                        border: '1px solid rgba(200,240,0,0.35)', borderRadius: 'var(--radius-sm)',
+                        width: '100%', background: 'rgba(214,255,0,0.08)', textAlign: 'left',
+                        border: '1px solid rgba(214,255,0,0.35)', borderRadius: 'var(--radius-sm)',
                         padding: '14px 18px', cursor: 'pointer', transition: 'all 0.15s',
                       }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,240,0,0.14)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,240,0,0.08)' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(214,255,0,0.14)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(214,255,0,0.08)' }}
                     >
                       <div>
-                        <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '15px', color: 'var(--lime)' }}>Apply now</div>
-                        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '2px' }}>48h to a name · 2 weeks to a yes or no</div>
+                        <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '15px', color: 'var(--lime)' }}>Apply now</div>
+                        <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '2px' }}>48h to a name · 2 weeks to a yes or no</div>
                       </div>
                       <ArrowRight size={16} color="var(--lime)" />
                     </button>
@@ -179,13 +179,13 @@ export default function Login() {
                   {/* Divider */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', color: 'var(--text-faint)', textTransform: 'uppercase' }}>Already applied?</span>
+                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', color: 'var(--text-faint)', textTransform: 'uppercase' }}>Already applied?</span>
                     <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
                   </div>
 
                   {/* ── Login as existing founder ── */}
                   <div>
-                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
                       Log in as existing founder
                     </div>
 
@@ -199,12 +199,12 @@ export default function Login() {
                         onChange={e => { setFounderName(e.target.value); setFounderError(false) }}
                         onKeyDown={e => { if (e.key === 'Enter') handleFounderSubmit() }}
                         style={{
-                          flex: 1, fontFamily: 'IBM Plex Sans', fontSize: '14px', color: 'var(--text)',
+                          flex: 1, fontFamily: 'Inter', fontSize: '14px', color: 'var(--text)',
                           background: 'var(--surface-2)', border: `1px solid ${founderError ? 'var(--red)' : 'var(--border)'}`,
                           borderRadius: 'var(--radius-sm)', padding: '10px 14px',
                           outline: 'none', transition: 'border-color 0.15s',
                         }}
-                        onFocus={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'rgba(200,240,0,0.5)' }}
+                        onFocus={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'rgba(214,255,0,0.5)' }}
                         onBlur={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'var(--border)' }}
                       />
                       <button
@@ -217,7 +217,7 @@ export default function Login() {
                         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
                       >
-                        <ArrowRight size={16} color="#0A0B0D" />
+                        <ArrowRight size={16} color="#050505" />
                       </button>
                     </div>
 
@@ -228,7 +228,7 @@ export default function Login() {
                           initial={{ opacity: 0, y: -4 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
-                          style={{ marginTop: '8px', fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--red)' }}
+                          style={{ marginTop: '8px', fontFamily: 'Inter', fontSize: '13px', color: 'var(--red)' }}
                         >
                           No application found for "{founderName}".
                         </motion.div>
@@ -242,16 +242,16 @@ export default function Login() {
                           key={app.id}
                           onClick={() => { login('startup', { appId: app.id }); navigate(`/founder/${app.id}`) }}
                           style={{
-                            fontFamily: 'IBM Plex Sans', fontSize: '12px', fontWeight: 500,
+                            fontFamily: 'Inter', fontSize: '12px', fontWeight: 500,
                             color: 'var(--text-muted)', background: 'var(--surface-2)',
                             border: '1px solid var(--border)', borderRadius: '20px',
                             padding: '5px 12px', cursor: 'pointer', transition: 'all 0.15s',
                           }}
                           onMouseEnter={e => {
                             const b = e.currentTarget as HTMLButtonElement
-                            b.style.borderColor = 'rgba(200,240,0,0.5)'
+                            b.style.borderColor = 'rgba(214,255,0,0.5)'
                             b.style.color = 'var(--text)'
-                            b.style.background = 'rgba(200,240,0,0.06)'
+                            b.style.background = 'rgba(214,255,0,0.06)'
                           }}
                           onMouseLeave={e => {
                             const b = e.currentTarget as HTMLButtonElement
@@ -285,10 +285,10 @@ export default function Login() {
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Audi</span>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Audi</span>
             </div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Internal Lead</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Manage your startup queue and match pain points.</div>
+            <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Internal Lead</div>
+            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Manage your startup queue and match pain points.</div>
           </div>
           <ArrowRight size={18} color="var(--text-faint)" />
         </button>
@@ -307,10 +307,10 @@ export default function Login() {
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Community</span>
+                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Community</span>
               </div>
-              <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Pool Member</div>
-              <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Access events and open pain points in the BRIDGE network.</div>
+              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Pool Member</div>
+              <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Access events and open pain points in the BRIDGE network.</div>
             </div>
             <motion.div animate={{ rotate: expanded === 'community' ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={18} color="var(--text-faint)" />
@@ -327,7 +327,7 @@ export default function Login() {
                 style={{ overflow: 'hidden' }}
               >
                 <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
                     Select your profile
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -345,8 +345,8 @@ export default function Login() {
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-2)' }}
                       >
                         <div>
-                          <div style={{ fontFamily: 'IBM Plex Sans', fontWeight: 600, fontSize: '13px', color: 'var(--text)' }}>{member.name}{member.company ? ` · ${member.company}` : ''}</div>
-                          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '1px' }}>{member.type === 'startup' ? 'Redirected startup' : 'Contact'} · {member.techArea}</div>
+                          <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '13px', color: 'var(--text)' }}>{member.name}{member.company ? ` · ${member.company}` : ''}</div>
+                          <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '1px' }}>{member.type === 'startup' ? 'Redirected startup' : 'Contact'} · {member.techArea}</div>
                         </div>
                         <ArrowRight size={14} color="var(--text-faint)" />
                       </button>
@@ -371,10 +371,10 @@ export default function Login() {
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--amber)', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '3px', padding: '2px 7px' }}>System</span>
+              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--amber)', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '3px', padding: '2px 7px' }}>System</span>
             </div>
-            <div style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Admin</div>
-            <div style={{ fontFamily: 'IBM Plex Sans', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Full system overview — Dashboard, all pipelines, all data.</div>
+            <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Admin</div>
+            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Full system overview — Dashboard, all pipelines, all data.</div>
           </div>
           <ArrowRight size={18} color="var(--text-faint)" />
         </button>
@@ -390,7 +390,7 @@ export default function Login() {
       >
         <button
           onClick={() => { resetDemo(); setExpanded(null) }}
-          style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--text-faint)', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+          style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--text-faint)', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
         >
           Reset demo data
         </button>
