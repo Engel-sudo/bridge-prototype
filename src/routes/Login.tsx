@@ -161,7 +161,7 @@ export default function Login() {
                       onClick={handleNewStartup}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        width: '100%', background: 'rgba(200,240,0,0.08)',
+                        width: '100%', background: 'rgba(200,240,0,0.08)', textAlign: 'left',
                         border: '1px solid rgba(200,240,0,0.35)', borderRadius: 'var(--radius-sm)',
                         padding: '14px 18px', cursor: 'pointer', transition: 'all 0.15s',
                       }}
