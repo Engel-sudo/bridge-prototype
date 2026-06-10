@@ -36,7 +36,7 @@ const stations = [
     step: '2',
     h3: 'The Internal Lead',
     name: 'One person, your whole case',
-    body: 'One Audi employee owns your case from first call to pilot. Not a mailbox — a person with a name, sitting where the cars are built.',
+    body: 'One Audi employee owns your case from first call to pilot. A real person with a name, based at the plant where the cars are built.',
     icon: (
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="8" r="4" />
@@ -48,7 +48,7 @@ const stations = [
     step: '3',
     h3: 'The Map',
     name: 'Matched to a real need',
-    body: 'Audi employees post real problems from the plants. Your application is matched against them — so a yes means there\'s an actual need waiting for you.',
+    body: 'Audi employees post real problems from the plants. Your application gets matched to one of them. If you get a yes, there is an actual need waiting for you.',
     icon: (
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z" />
@@ -135,7 +135,7 @@ export default function Landing() {
             marginTop: '22px', maxWidth: '580px', marginLeft: 'auto', marginRight: 'auto',
             fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--text-muted)', lineHeight: 1.6,
           }}>
-            You built something that could improve how cars get made. BRIDGE gets it in front of the right person at Audi, with an answer in 2 weeks.
+            You built something that could improve how cars get made. Apply once, get a named contact in 48 hours and a clear answer in 2 weeks.
           </motion.p>
 
           {/* CTAs */}
@@ -163,13 +163,13 @@ export default function Landing() {
               Why this exists
             </span>
             <p style={{ fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text)', lineHeight: 1.65, marginBottom: '18px' }}>
-              Selling to a big carmaker usually goes like this: you find a contact, they forward you, that person forwards you again, and four months later you still don't know if anyone even looked at your product.
+              Selling to a big carmaker usually goes like this: you find a contact, they forward you to someone else, that person forwards you again. Four months later you still don't know if anyone looked at your product.
             </p>
             <p style={{ fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text-muted)', lineHeight: 1.65, marginBottom: '28px' }}>
-              For a startup with limited runway, that's not slow. That's a no.
+              Most startups can't wait that long.
             </p>
             <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', color: 'var(--lime)', letterSpacing: '0.06em' }}>
-              BRIDGE replaces that with three promises. ↓
+              BRIDGE makes three promises instead. ↓
             </p>
           </motion.div>
         </div>
