@@ -22,9 +22,9 @@ const inView = (delay = 0) => ({
 const stations = [
   {
     step: '1',
-    h3: 'Apply',
-    name: 'The Door',
-    body: 'Fill one short form. Get an answer in 2 weeks.',
+    h3: 'The Door',
+    name: 'One short form',
+    body: 'Five minutes to fill in. You get a named contact within 48 hours and a yes or no within 2 weeks.',
     icon: (
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M14 21V8h3a2 2 0 0 1 2 2v11" />
@@ -34,9 +34,9 @@ const stations = [
   },
   {
     step: '2',
-    h3: 'Your Internal Lead',
-    name: 'The Internal Lead',
-    body: 'One Audi person is responsible for your case from start to finish.',
+    h3: 'The Internal Lead',
+    name: 'One person, your whole case',
+    body: 'One Audi employee owns your case from first call to pilot. Not a mailbox — a person with a name, sitting where the cars are built.',
     icon: (
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="8" r="4" />
@@ -46,9 +46,9 @@ const stations = [
   },
   {
     step: '3',
-    h3: 'Get matched',
-    name: 'The Map',
-    body: 'Your idea is matched to a real problem on the line.',
+    h3: 'The Map',
+    name: 'Matched to a real need',
+    body: 'Audi employees post real problems from the plants. Your application is matched against them — so a yes means there\'s an actual need waiting for you.',
     icon: (
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z" />
@@ -60,7 +60,7 @@ const stations = [
 
 const badRows = [
   { icon: <Clock size={22} />, text: <><strong>4 months</strong> and still no answer</> },
-  { icon: <UserX size={22} />, text: <>No one is responsible</> },
+  { icon: <UserX size={22} />, text: <>Nobody owns your case</> },
   { icon: <Lightbulb size={22} />, text: <>Good ideas get lost</> },
 ]
 
@@ -124,11 +124,19 @@ export default function Landing() {
           {/* H1 */}
           <motion.h1 {...fadeUp(0.1)} style={{
             fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 900,
-            fontSize: 'clamp(40px, 7vw, 76px)', lineHeight: 1.02, letterSpacing: '-0.02em',
+            fontSize: 'clamp(36px, 6vw, 68px)', lineHeight: 1.04, letterSpacing: '-0.02em',
             color: 'var(--text)', marginBottom: '0',
           }}>
-            Get your startup<br />into <span style={{ color: 'var(--lime)' }}>Audi</span>.
+            The fastest way for startups<br />to work with <span style={{ color: 'var(--lime)' }}>Audi</span>.
           </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p {...fadeUp(0.17)} style={{
+            marginTop: '22px', maxWidth: '580px', marginLeft: 'auto', marginRight: 'auto',
+            fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--text-muted)', lineHeight: 1.6,
+          }}>
+            You built something that could improve how cars get made. BRIDGE gets it in front of the right person at Audi, with an answer in 2 weeks.
+          </motion.p>
 
           {/* CTAs */}
           <motion.div {...fadeUp(0.22)} style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '34px' }}>
@@ -143,6 +151,26 @@ export default function Landing() {
             >
               Apply now <ArrowRight size={17} />
             </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── WHY THIS EXISTS ──────────────────────────────────────────── */}
+      <section style={{ padding: '10px 0 72px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 32px' }}>
+          <motion.div {...inView(0)}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '20px' }}>
+              Why this exists
+            </span>
+            <p style={{ fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text)', lineHeight: 1.65, marginBottom: '18px' }}>
+              Selling to a big carmaker usually goes like this: you find a contact, they forward you, that person forwards you again, and four months later you still don't know if anyone even looked at your product.
+            </p>
+            <p style={{ fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text-muted)', lineHeight: 1.65, marginBottom: '28px' }}>
+              For a startup with limited runway, that's not slow. That's a no.
+            </p>
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', color: 'var(--lime)', letterSpacing: '0.06em' }}>
+              BRIDGE replaces that with three promises. ↓
+            </p>
           </motion.div>
         </div>
       </section>
@@ -269,51 +297,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── BENCHMARK STRIP ──────────────────────────────────────────── */}
-      <section style={{ padding: '0 0 64px' }}>
-        <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
-          <motion.div {...inView(0)} style={{
-            display: 'grid', gridTemplateColumns: '1fr 1px 1fr',
-            border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-            background: 'var(--surface)', overflow: 'hidden',
-          }}>
-            {/* BMW */}
-            <div style={{ padding: '28px 36px' }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
-                BMW Startup Garage · est. 2015
-              </div>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--text)', lineHeight: 1, marginBottom: '6px' }}>
-                32
-              </div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
-                completed startup projects in 2022
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div style={{ background: 'var(--border)' }} />
-
-            {/* Audi */}
-            <div style={{ padding: '28px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '12px' }}>
-                  Audi A4nXT · est. 2020
-                </div>
-                <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 60px)', color: 'var(--red)', lineHeight: 1, marginBottom: '6px' }}>
-                  ~3
-                </div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
-                  public wins in 4 years
-                </div>
-              </div>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'var(--text-faint)', lineHeight: 1.6, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                Audi is ranked #8 globally by brand value. Top-tier founders are routing around it for BMW, which gives a supplier number in week six. BRIDGE fixes that.
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── FINAL CTA ────────────────────────────────────────────────── */}
       <section style={{ padding: '0 0 110px' }}>
         <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
@@ -332,10 +315,10 @@ export default function Landing() {
             }} />
             <div style={{ position: 'relative' }}>
               <h2 style={{ fontFamily: "'Inter', system-ui", fontWeight: 900, fontSize: 'clamp(30px, 4.5vw, 50px)', lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--text)' }}>
-                Built something good?<br /><span style={{ color: 'var(--lime)' }}>Audi wants to see it.</span>
+                Built something good?<br /><span style={{ color: 'var(--lime)' }}>Show us.</span>
               </h2>
               <p style={{ margin: '16px auto 0', maxWidth: '560px', fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                Apply in five minutes. We'll point you to a real person.
+                Five minutes to apply. A real person answers within 48 hours.
               </p>
               <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginTop: '34px' }}>
                 <button onClick={handleApplyNow} style={{
