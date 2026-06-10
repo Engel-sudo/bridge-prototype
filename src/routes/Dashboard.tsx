@@ -42,7 +42,6 @@ function AreaChart({ data }: { data: number[] }) {
         <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
           Pipeline depth · applications active per week
         </span>
-        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', color: 'var(--lime)' }}>↑ trending up</span>
       </div>
       <div style={{ position: 'relative', height: '88px' }}>
         <svg viewBox="0 0 800 180" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} preserveAspectRatio="none">
@@ -74,10 +73,7 @@ function Chrome({ title, badge, children }: { title: string; badge?: string; chi
   return (
     <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', background: 'var(--surface)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', borderBottom: '1px solid var(--border)', background: 'var(--surface-2)', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          {[0, 1, 2].map(i => <span key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'inline-block' }} />)}
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginLeft: '8px' }}>{title}</span>
-        </div>
+        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{title}</span>
         {badge && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)', display: 'inline-block', boxShadow: '0 0 5px var(--lime)' }} />
@@ -410,11 +406,8 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
                   <div>
                     <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block' }}>Map / overview</span>
-                    <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>Innovation visibility · Q2</span>
+                    <span style={{ fontFamily: 'Archivo', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>Innovation visibility</span>
                   </div>
-                  <span style={{ fontFamily: 'IBM Plex Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(200,240,0,0.1)', border: '1px solid rgba(200,240,0,0.2)', borderRadius: '4px', padding: '4px 10px' }}>
-                    Q2 · 12 weeks
-                  </span>
                 </div>
 
                 {/* Mini KPI row */}

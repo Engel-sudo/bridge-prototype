@@ -219,21 +219,6 @@ export default function FounderStatus() {
         </div>
       </motion.div>
 
-      {/* Jonas quote */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        style={{ marginBottom: '24px', padding: '20px 24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', borderLeft: '3px solid var(--blue)' }}
-      >
-        <div style={{ fontFamily: 'IBM Plex Sans', fontStyle: 'italic', fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '8px' }}>
-          "I don't have the runway to wait for someone to figure out their internal approvals. BMW gave us a supplier number in week six."
-        </div>
-        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>
-          Jonas Weber · CEO, VisionQual · 14 months runway
-        </div>
-      </motion.div>
-
       {/* Owner card */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <span className="kicker" style={{ marginBottom: '10px', display: 'block' }}>your internal lead</span>

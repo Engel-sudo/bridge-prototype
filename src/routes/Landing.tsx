@@ -127,16 +127,8 @@ export default function Landing() {
             fontSize: 'clamp(40px, 7vw, 76px)', lineHeight: 1.02, letterSpacing: '-0.02em',
             color: 'var(--text)', marginBottom: '0',
           }}>
-            Get your startup<br />into an <span style={{ color: 'var(--lime)' }}>Audi</span>.
+            Get your startup<br />into <span style={{ color: 'var(--lime)' }}>Audi</span>.
           </motion.h1>
-
-          {/* Sub */}
-          <motion.p {...fadeUp(0.16)} style={{
-            margin: '22px auto 0', maxWidth: '560px',
-            fontSize: 'clamp(16px, 2.2vw, 20px)', color: 'var(--text-muted)', lineHeight: 1.5,
-          }}>
-            One way in. One person responsible. A clear yes or no in two weeks.
-          </motion.p>
 
           {/* CTAs */}
           <motion.div {...fadeUp(0.22)} style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '34px' }}>

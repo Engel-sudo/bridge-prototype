@@ -21,19 +21,6 @@ const ON_SURFACE = '#e5e2e1'
 const BORDER_SUBTLE = 'rgba(255, 255, 255, 0.05)'
 const BORDER_MED = 'rgba(255, 255, 255, 0.10)'
 
-const TERMINAL_LOGS = [
-  'UPLINK_ENCRYPTED_SHA256',
-  'FETCHING_AUDI_NODE_09...',
-  'VALIDATING_ISO_CHECKSUM',
-  'TRL_VERIFICATION_PENDING',
-  'SYNCING_WITH_GATEKEEPER',
-  'ACCESS_LAYER_LOCKED',
-  'STRESS_TEST_PARSING...',
-  'COMPLIANCE_VECTOR_MATCH',
-  'NDR_LOCK_ACTIVE',
-  'GDPR_ISOLATION_VERIFIED',
-  'PATENT_VECTOR_SCANNING',
-]
 
 const REGIONS = ['Bavaria', 'Baden-Württemberg', 'Hesse', 'Other Germany', 'Outside Germany']
 const NEARBY = ['Bavaria', 'Baden-Württemberg']
@@ -187,6 +174,7 @@ export default function Apply() {
   const [appId, setAppId] = useState('')
   const [done, setDone] = useState(false)
   const [attempted, setAttempted] = useState(false)
+  const [revealedIds, setRevealedIds] = useState<ReadonlySet<string>>(new Set())
   const sec1Ref = useRef<HTMLElement>(null)
   const sec2Ref = useRef<HTMLElement>(null)
   const sec3Ref = useRef<HTMLElement>(null)
@@ -196,7 +184,6 @@ export default function Apply() {
   const navigate = useNavigate()
 
   const mouseGlowRef = useRef<HTMLDivElement>(null)
-  const terminalRef = useRef<HTMLDivElement>(null)
 
   // Inject page-scoped CSS once
   useEffect(() => {
@@ -210,10 +197,7 @@ export default function Apply() {
       .ap-reveal.in { opacity:1; transform:translateY(0); }
       .ap-lime-pulse { animation:ap-pulse 3s ease-in-out infinite; }
       @keyframes ap-pulse { 0%,100%{opacity:1;filter:drop-shadow(0 0 2px #D6FF00)} 50%{opacity:.4;filter:drop-shadow(0 0 10px #D6FF00)} }
-      .ap-glitch:hover { animation:ap-glitch-anim 0.18s infinite; background:#e1ff33 !important; }
-      @keyframes ap-glitch-anim { 0%{transform:translate(0)} 25%{transform:translate(-1px,1px)} 50%{transform:translate(1px,-1px)} 75%{transform:translate(-1px,-1px)} 100%{transform:translate(0)} }
       @media (prefers-reduced-motion: reduce) {
-        .ap-glitch:hover { animation:none; }
         .ap-reveal { transition:none; }
         .ap-lime-pulse { animation:none; }
       }
@@ -229,13 +213,9 @@ export default function Apply() {
       .ap-error-ring { box-shadow: 0 0 0 1px rgba(255,45,70,0.45), 0 0 24px rgba(255,45,70,0.07) !important; border-radius: 6px; }
       .ap-glass-card:hover { border-color:rgba(214,255,0,0.12) !important; }
       /* ── Responsive layout ─────────────────────────────────────── */
-      .ap-main-grid { grid-template-columns: 220px 1fr 220px; }
+      .ap-main-grid { grid-template-columns: 220px 1fr; }
       .ap-form-2col { grid-template-columns: 1fr 1fr; }
       .ap-trl-grid  { grid-template-columns: repeat(9, 1fr); }
-      @media (max-width: 1200px) {
-        .ap-main-grid { grid-template-columns: 200px 1fr; }
-        .ap-right-aside { display: none !important; }
-      }
       @media (max-width: 900px) {
         .ap-main-grid { grid-template-columns: 1fr; }
         .ap-left-aside { display: none !important; }
@@ -260,26 +240,17 @@ export default function Apply() {
     return () => window.removeEventListener('mousemove', onMove)
   }, [])
 
-  // Terminal log
-  useEffect(() => {
-    const id = setInterval(() => {
-      const t = terminalRef.current
-      if (!t) return
-      const p = document.createElement('p')
-      p.style.cssText = `font-size:8px;opacity:0.3;font-family:JetBrains Mono,monospace;color:#8A8A8A;text-transform:uppercase;letter-spacing:0.1em;margin:0;line-height:1.8;`
-      p.textContent = `> ${TERMINAL_LOGS[Math.floor(Math.random() * TERMINAL_LOGS.length)]}`
-      t.appendChild(p)
-      t.scrollTop = t.scrollHeight
-      if (t.children.length > 22) t.removeChild(t.children[0])
-    }, 2200)
-    return () => clearInterval(id)
-  }, [])
 
-  // Scroll reveal
+  // Scroll reveal — tracks revealed IDs in state so React owns the className
   useEffect(() => {
-    const els = document.querySelectorAll('.ap-reveal')
+    const els = document.querySelectorAll<HTMLElement>('.ap-reveal[data-reveal-id]')
     const obs = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in') }),
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = (e.target as HTMLElement).dataset.revealId
+          if (id) setRevealedIds(prev => { const s = new Set(prev); s.add(id); return s })
+        }
+      }),
       { threshold: 0.06 }
     )
     els.forEach(el => obs.observe(el))
@@ -430,20 +401,6 @@ export default function Apply() {
         {/* ── Left Sidebar ──────────────────────────────────────────────── */}
         <aside className="ap-left-aside" style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'sticky', top: '100px', height: 'fit-content' }}>
 
-          {/* Portal Status */}
-          <GlassCard style={{ padding: '20px', overflow: 'hidden' }} className="ap-glass-card">
-            <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '12px' }}>Portal Status</p>
-            <div style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, paddingTop: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', marginBottom: '6px' }}>
-                <span>Signal Strength</span>
-                <span style={{ color: LIME }}>98.4%</span>
-              </div>
-              <div style={{ height: '2px', background: BORDER_SUBTLE, borderRadius: '2px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: '98.4%', background: LIME }} />
-              </div>
-            </div>
-          </GlassCard>
-
           {/* Progress Nav */}
           <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
             <h3 style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: '24px' }}>Your Progress</h3>
@@ -494,37 +451,17 @@ export default function Apply() {
             </nav>
           </GlassCard>
 
-          {/* Protocol Log */}
-          <GlassCard style={{ padding: '16px', background: 'rgba(0,0,0,0.7)', border: `1px solid rgba(214,255,0,0.06)` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h5 style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Protocol Log</h5>
-              <span style={{ fontFamily: MONO, fontSize: '8px', color: LIME, animation: 'ap-pulse 2s ease-in-out infinite' }}>UPLINKING</span>
-            </div>
-            <div ref={terminalRef} className="ap-scroll" style={{ height: '130px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {Array.from({ length: 8 }, (_, i) => (
-                <p key={i} style={{ fontFamily: MONO, fontSize: '8px', opacity: 0.25, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0, lineHeight: '1.8' }}>
-                  &gt; {TERMINAL_LOGS[i % TERMINAL_LOGS.length]}
-                </p>
-              ))}
-            </div>
-          </GlassCard>
         </aside>
 
         {/* ── Center Form ────────────────────────────────────────────────── */}
         <section style={{ minWidth: 0 }}>
-          <DemoHint persona="You are a startup founder" hint="Fill in the 4 sections below and submit. You'll get a tracked application you can follow in the Founder view." />
+          <DemoHint persona="You are a startup founder" hint="Required to submit: Company Name, Founder Name, Region (§01) · TRL + Stage (§02) · Technology description (§03) · What you need from Audi (§04). All other fields are optional." />
 
           {/* Page header */}
-          <div className="ap-reveal in" style={{ position: 'relative', padding: '40px', border: `1px solid ${BORDER_SUBTLE}`, background: '#0a0a0a', overflow: 'hidden', borderRadius: '4px', marginBottom: '40px' }}>
-            <div style={{ position: 'absolute', top: '12px', right: '16px', fontFamily: MONO, fontSize: '40px', color: 'rgba(214,255,0,0.05)', lineHeight: 1 }}>⬡</div>
-            <div style={{ fontFamily: MONO, fontSize: '9px', color: LIME, letterSpacing: '0.5em', textTransform: 'uppercase', marginBottom: '14px' }}>Venture Intake // Level 2</div>
-            <h1 style={{ fontFamily: SANS, fontWeight: 800, fontSize: 'clamp(24px,3.5vw,36px)', color: ON_SURFACE, marginBottom: '16px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+          <div className="ap-reveal in" style={{ padding: '40px', border: `1px solid ${BORDER_SUBTLE}`, background: '#0a0a0a', borderRadius: '4px', marginBottom: '40px' }}>
+            <h1 style={{ fontFamily: SANS, fontWeight: 800, fontSize: 'clamp(24px,3.5vw,36px)', color: ON_SURFACE, marginBottom: '0', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
               Venture Intake
             </h1>
-            <p style={{ fontFamily: SANS, fontSize: '13px', color: MUTED, lineHeight: 1.75, borderLeft: `3px solid rgba(214,255,0,0.3)`, paddingLeft: '18px', maxWidth: '480px' }}>
-              A multi-layered technical audit designed for enterprise-grade integration.
-              Responses are cryptographically secured and routed to the Audi AG Procurement Node.
-            </p>
           </div>
 
           <form onSubmit={handleSubmitAttempt} style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
@@ -610,11 +547,11 @@ export default function Apply() {
             </section>
 
             {/* ── Section 02: Growth & Scale ────────────────────────────── */}
-            <section ref={sec2Ref} className={`ap-reveal${attempted && !s2Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderColor: 'rgba(214,255,0,0.04)', borderRadius: '6px', padding: '32px' }}>
+            <section ref={sec2Ref} data-reveal-id="s2" className={`ap-reveal${revealedIds.has('s2') ? ' in' : ''}${attempted && !s2Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderColor: 'rgba(214,255,0,0.04)', borderRadius: '6px', padding: '32px' }}>
               <SectionHeader num="02" title="Growth & Scale" />
 
               <div style={{ marginBottom: '28px' }}>
-                <Label>Technology Readiness Level (TRL)</Label>
+                <Label>Technology Readiness Level (TRL) *</Label>
                 <div className="ap-trl-grid" style={{ display: 'grid', gap: '6px' }}>
                   {Array.from({ length: 9 }, (_, i) => i + 1).map(n => (
                     <button
@@ -635,7 +572,7 @@ export default function Apply() {
 
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
                 <div>
-                  <Label>Current Stage</Label>
+                  <Label>Current Stage *</Label>
                   <ApplySelect value={data.stage} onChange={e => setData(d => ({ ...d, stage: e.target.value }))}>
                     <option value="">Select…</option>
                     <option>Prototype / Lab POC</option>
@@ -656,7 +593,7 @@ export default function Apply() {
             </section>
 
             {/* ── Section 03: Tech Stack ────────────────────────────────── */}
-            <section ref={sec3Ref} className={`ap-reveal${attempted && !s3Done ? ' ap-error-ring' : ''}`}>
+            <section ref={sec3Ref} data-reveal-id="s3" className={`ap-reveal${revealedIds.has('s3') ? ' in' : ''}${attempted && !s3Done ? ' ap-error-ring' : ''}`}>
               <SectionHeader num="03" title="Tech Stack" />
 
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
@@ -706,7 +643,7 @@ export default function Apply() {
             </section>
 
             {/* ── Section 04: Ready to Scale ────────────────────────────── */}
-            <section ref={sec4Ref} className={`ap-reveal${attempted && !s4Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px', padding: '32px' }}>
+            <section ref={sec4Ref} data-reveal-id="s4" className={`ap-reveal${revealedIds.has('s4') ? ' in' : ''}${attempted && !s4Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px', padding: '32px' }}>
               <SectionHeader num="04" title="Ready to Scale" />
 
               <div style={{ marginBottom: '20px' }}>
@@ -746,10 +683,9 @@ export default function Apply() {
             </section>
 
             {/* ── Submit ────────────────────────────────────────────────── */}
-            <div className="ap-reveal" style={{ paddingTop: '8px' }}>
+            <div data-reveal-id="submit" className={`ap-reveal${revealedIds.has('submit') ? ' in' : ''}`} style={{ paddingTop: '8px' }}>
               <button
                 type="submit"
-                className="ap-glitch"
                 style={{
                   width: '100%', padding: '22px', background: canSubmit ? LIME : 'rgba(214,255,0,0.25)',
                   color: '#050505', fontFamily: MONO, fontWeight: 800, fontSize: '11px',
@@ -765,101 +701,11 @@ export default function Apply() {
                 <ShieldCheck size={16} />
               </button>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 8px', opacity: 0.35 }}>
-                <span style={{ fontFamily: MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.16em', color: MUTED }}>Session_ID: {generateId()}</span>
-                <div style={{ display: 'flex', gap: '24px', fontFamily: MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: MUTED }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: LIME, display: 'inline-block' }} />
-                    AES-256
-                  </span>
-                  <span>NDR_LOCK_ACTIVE</span>
-                </div>
-              </div>
             </div>
           </form>
         </section>
-
-        {/* ── Right Sidebar ──────────────────────────────────────────────── */}
-        <aside className="ap-right-aside" style={{ position: 'sticky', top: '100px', height: 'fit-content', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-          {/* Evaluation benchmarks */}
-          <GlassCard style={{ padding: '24px', position: 'relative', overflow: 'hidden' }} className="ap-glass-card">
-            <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', background: 'rgba(214,255,0,0.04)', borderRadius: '50%', filter: 'blur(60px)' }} />
-            <h2 style={{ fontFamily: MONO, fontSize: '9px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: '28px' }}>Evaluation Benchmarks</h2>
-
-            {/* Progress ring */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px' }}>
-              <div style={{ position: 'relative', width: '56px', height: '56px', flexShrink: 0 }}>
-                <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
-                  <circle cx="50" cy="50" r="42" fill="transparent" stroke={BORDER_SUBTLE} strokeWidth="10" />
-                  <circle cx="50" cy="50" r="42" fill="transparent" stroke={LIME} strokeWidth="10"
-                    strokeDasharray="263.9" strokeDashoffset="65.9" className="ap-ring" />
-                </svg>
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: '9px', color: ON_SURFACE }}>75%</div>
-              </div>
-              <div>
-                <h4 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', color: ON_SURFACE, lineHeight: 1.2, marginBottom: '2px' }}>Architecture</h4>
-                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Fidelity Index</p>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
-              {[
-                { val: '14-Day', desc: 'Decision Signal', dim: false },
-                { val: 'Zero Friction', desc: 'Intake Protocol', dim: true },
-                { val: '48h', desc: 'Contact Assignment', dim: true },
-              ].map(({ val, desc, dim }) => (
-                <div key={val} style={{ paddingLeft: '12px', borderLeft: `1px solid ${dim ? BORDER_MED : LIME_BORDER}`, opacity: dim ? 0.45 : 1 }}>
-                  <h4 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '15px', color: ON_SURFACE, lineHeight: 1.2 }}>{val}</h4>
-                  <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: '2px' }}>{desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, paddingTop: '16px' }}>
-              <div style={{ padding: '12px', border: `1px solid rgba(214,255,0,0.08)`, background: 'rgba(214,255,0,0.02)', borderRadius: '2px' }}>
-                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, lineHeight: 1.7, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  Responses evaluated using Audi-specific compliance weights. Audit Logic V4.1.
-                </p>
-              </div>
-            </div>
-          </GlassCard>
-
-          {/* Contact authority */}
-          <GlassCard style={{ padding: '16px', border: `1px solid rgba(214,255,0,0.04)` }} className="ap-glass-card">
-            <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: '12px' }}>Your Point of Contact</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '3px', background: 'rgba(214,255,0,0.06)', border: `1px solid ${BORDER_MED}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 700, color: LIME }}>MT</span>
-              </div>
-              <div>
-                <h5 style={{ fontFamily: SANS, fontSize: '12px', fontWeight: 700, color: ON_SURFACE }}>Marcus Thorne</h5>
-                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Principal Gateway Audits</p>
-              </div>
-            </div>
-          </GlassCard>
-
-          {/* Uplink status */}
-          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', fontFamily: MONO, fontSize: '9px', color: LIME, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-            <span className="ap-lime-pulse" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: LIME, flexShrink: 0 }} />
-            UPLINK_STABLE
-          </div>
-        </aside>
       </div>
 
-      {/* Footer */}
-      <footer style={{ borderTop: `1px solid ${BORDER_SUBTLE}`, background: SURFACE, marginTop: '48px', position: 'relative', zIndex: 10 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontFamily: SANS, fontWeight: 800, fontSize: '22px', color: ON_SURFACE, opacity: 0.25, letterSpacing: '-0.02em' }}>BRIDGE</div>
-          <div style={{ display: 'flex', gap: '32px' }}>
-            {['Manual_V.2', 'Audit_Standards', 'Compliance_Vector', 'Node_Status'].map(link => (
-              <span key={link} style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.16em', cursor: 'pointer', opacity: 0.6 }}>{link}</span>
-            ))}
-          </div>
-          <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.16em', opacity: 0.3 }}>© 2024 BRIDGE. OPERATED FOR AUDI AG.</p>
-        </div>
-      </footer>
     </div>
   )
 }
