@@ -54,7 +54,7 @@ export default function Nav() {
         display: 'flex', alignItems: 'center',
         padding: '0 32px', height: '56px',
       }}>
-        <Link to="/login" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Link to={pathname === '/login' ? '/' : '/login'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '28px', height: '28px', background: 'var(--accent)', borderRadius: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--accent-contrast)' }}>B</span>
           </div>
