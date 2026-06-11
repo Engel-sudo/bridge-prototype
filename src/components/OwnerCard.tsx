@@ -22,19 +22,19 @@ export default function OwnerCard({ owner, compact }: Props) {
         width: compact ? '36px' : '48px',
         height: compact ? '36px' : '48px',
         background: 'var(--surface-2)',
-        border: '1px solid var(--lime)',
-        borderRadius: '6px',
+        border: '1px solid var(--accent)',
+        borderRadius: '0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
       }}>
         <span style={{
-          fontFamily: 'Inter',
-          fontWeight: 800,
+          fontFamily: 'AudiType',
+          fontWeight: 700,
           fontSize: compact ? '13px' : '16px',
-          color: 'var(--lime)',
-          letterSpacing: '0.05em',
+          color: 'var(--accent)',
+         
         }}>
           {owner.initials}
         </span>
@@ -42,29 +42,29 @@ export default function OwnerCard({ owner, compact }: Props) {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
+          <span style={{ fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
             {owner.name}
           </span>
-          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(214,255,0,0.1)', padding: '2px 6px', borderRadius: '3px' }}>
+          <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)', background: 'var(--accent-dim)', padding: '2px 6px', borderRadius: '0' }}>
             internal
           </span>
         </div>
-        <div style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', marginTop: '2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+        <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginTop: '2px' }}>
           {owner.role} · {owner.department}
         </div>
         {!compact && (
           <div style={{ display: 'flex', gap: '16px', marginTop: '10px', flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Implementations</div>
-              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '22px', color: 'var(--lime)' }}>{owner.implementations}</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>Implementations</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '22px', color: 'var(--accent)' }}>{owner.implementations}</div>
             </div>
             <div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Startups owned</div>
-              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '22px', color: 'var(--text)' }}>{owner.startupsOwned}</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>Startups owned</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '22px', color: 'var(--text)' }}>{owner.startupsOwned}</div>
             </div>
             <div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Avg days to signal</div>
-              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '22px', color: owner.avgDaysToSignal <= 14 ? 'var(--lime)' : 'var(--amber)' }}>{owner.avgDaysToSignal}</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>Avg days to decision</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '22px', color: owner.avgDaysToSignal <= 14 ? 'var(--accent)' : 'var(--amber)' }}>{owner.avgDaysToSignal}</div>
             </div>
           </div>
         )}

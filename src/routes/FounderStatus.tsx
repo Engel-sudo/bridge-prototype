@@ -11,7 +11,7 @@ const STAGE_LABELS: Record<string, string> = {
   named_contact: 'Named contact assigned',
   owner_assigned: 'Internal Lead assigned',
   in_review: 'Internal Lead reviewing',
-  signal_sent: '2-week signal sent',
+  signal_sent: '2-week decision sent',
   decision_go: 'Decision: Go',
   decision_redirect: 'Decision: Redirect',
   matched_pain_owner: 'Matched to pain point',
@@ -22,8 +22,8 @@ const NEXT_STEP: Record<string, string> = {
   submitted: 'A named Audi contact will be assigned within 48 hours.',
   named_contact: 'Your Internal Lead is being assigned. Expect first contact shortly.',
   owner_assigned: 'Your Internal Lead is reviewing your application.',
-  in_review: 'Your Internal Lead is preparing the 2-week signal. Expect a yes or no soon.',
-  signal_sent: 'Decision imminent. Your Internal Lead will send a Go or Redirect signal.',
+  in_review: 'Your Internal Lead is preparing the 2-week decision. Expect a yes or no soon.',
+  signal_sent: 'Decision imminent. Your Internal Lead will send a Go or Redirect decision.',
   decision_go: 'Pilot confirmed. Your Internal Lead will reach out to set up next steps.',
   decision_redirect: 'Redirected with a referral. Your Internal Lead will send contact details.',
   matched_pain_owner: 'Matched to a pain point. Pilot scope being defined.',
@@ -48,11 +48,11 @@ export default function FounderStatus() {
         style={{ padding: '120px 40px 60px', maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}
       >
         <span className="kicker">founder view</span>
-        <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>
+        <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>
           Application not found
         </h1>
-        <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px' }}>
-          No application matches <span style={{ fontFamily: 'JetBrains Mono', color: 'var(--text)' }}>{id}</span>. Check the link from your confirmation.
+        <p style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px' }}>
+          No application matches <span style={{ fontFamily: 'AudiType', color: 'var(--text)' }}>{id}</span>. Check the link from your confirmation.
         </p>
         <Link to="/apply" className="btn-primary" style={{ textDecoration: 'none' }}>Apply to BRIDGE</Link>
       </motion.div>
@@ -78,17 +78,17 @@ export default function FounderStatus() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '36px' }}>
         <span className="kicker">founder view</span>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
+          <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
             {app.companyName}
           </h1>
           <span style={{
-            fontFamily: 'JetBrains Mono', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: 'var(--blue)', background: 'rgba(59,130,246,0.12)', padding: '4px 10px', borderRadius: '4px',
+            fontFamily: 'AudiType', fontSize: '11px',
+            color: 'var(--blue)', background: 'rgba(59,130,246,0.12)', padding: '4px 10px', borderRadius: '0',
           }}>
             External
           </span>
         </div>
-        <div style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
+        <div style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', marginTop: '6px' }}>
           {app.technology} · {app.founderName}
         </div>
       </motion.div>
@@ -100,7 +100,7 @@ export default function FounderStatus() {
         transition={{ delay: 0.1 }}
         style={{
           background: 'var(--surface)',
-          border: `1px solid ${isGo ? 'var(--lime)' : isRedirect ? 'var(--red)' : 'var(--border)'}`,
+          border: `1px solid ${isGo ? 'var(--accent)' : isRedirect ? 'var(--red)' : 'var(--border)'}`,
           borderRadius: 'var(--radius)',
           padding: '28px',
           marginBottom: '24px',
@@ -110,10 +110,10 @@ export default function FounderStatus() {
           <div>
             <span className="kicker">current status</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {isGo && <CheckCircle size={20} color="var(--lime)" />}
+              {isGo && <CheckCircle size={20} color="var(--accent)" />}
               {isRedirect && <XCircle size={20} color="var(--red)" />}
               {!isGo && !isRedirect && <Clock size={20} color="var(--amber)" />}
-              <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '20px', color: isGo ? 'var(--lime)' : isRedirect ? 'var(--red)' : 'var(--text)' }}>
+              <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '20px', color: isGo ? 'var(--accent)' : isRedirect ? 'var(--red)' : 'var(--text)' }}>
                 {currentLabel}
               </span>
             </div>
@@ -129,43 +129,43 @@ export default function FounderStatus() {
                 padding: '14px 20px',
                 textAlign: 'center',
               }}>
-                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Signal overdue
+                <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--red)', marginBottom: '4px' }}>
+                  Decision overdue
                 </div>
-                <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '36px', color: 'var(--red)', lineHeight: 1 }}>
+                <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '36px', color: 'var(--red)', lineHeight: 1 }}>
                   {Math.abs(daysLeft)}
                 </div>
-                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>days past deadline</div>
+                <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--red)' }}>days past deadline</div>
               </div>
             ) : (
               <div style={{
-                background: 'rgba(214,255,0,0.06)',
-                border: '1px solid rgba(214,255,0,0.2)',
+                background: 'var(--accent-dim)',
+                border: '1px solid var(--border-strong)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '14px 20px',
                 textAlign: 'center',
               }}>
-                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  2-week signal in
+                <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '4px' }}>
+                  2-week decision in
                 </div>
-                <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '36px', color: daysLeft <= 3 ? 'var(--red)' : 'var(--lime)', lineHeight: 1 }}>
+                <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '36px', color: daysLeft <= 3 ? 'var(--red)' : 'var(--accent)', lineHeight: 1 }}>
                   {daysLeft}
                 </div>
-                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em' }}>days remaining</div>
+                <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>days remaining</div>
               </div>
             )
           )}
 
           {isGo && (
             <div style={{
-              background: 'rgba(214,255,0,0.1)',
-              border: '1px solid var(--lime)',
+              background: 'var(--accent-dim)',
+              border: '1px solid var(--accent)',
               borderRadius: 'var(--radius-sm)',
               padding: '14px 20px',
               textAlign: 'center',
             }}>
-              <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '20px', color: 'var(--lime)' }}>GO</div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--lime)', letterSpacing: '0.08em' }}>signal sent</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '20px', color: 'var(--accent)' }}>GO</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)' }}>decision sent</div>
             </div>
           )}
 
@@ -177,8 +177,8 @@ export default function FounderStatus() {
               padding: '14px 20px',
               textAlign: 'center',
             }}>
-              <div style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '20px', color: 'var(--red)' }}>REDIRECT</div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--red)', letterSpacing: '0.08em' }}>with referral</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '20px', color: 'var(--red)' }}>REDIRECT</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--red)' }}>with referral</div>
             </div>
           )}
         </div>
@@ -198,22 +198,22 @@ export default function FounderStatus() {
         }}>
           {[
             { label: '48h to a name', done: ['named_contact','owner_assigned','in_review','signal_sent','decision_go','decision_redirect'].includes(app.stage), value: 'Named contact' },
-            { label: '2 weeks to yes/no', done: ['decision_go','decision_redirect','path_to_production'].includes(app.stage), value: `Day ${app.daysInProcess} of 14` },
+            { label: '2 weeks to a decision', done: ['decision_go','decision_redirect','path_to_production'].includes(app.stage), value: `Day ${app.daysInProcess} of 14` },
           ].map(({ label, done, value }) => (
             <div key={label} style={{ background: 'var(--surface)', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</div>
-                <div style={{ fontFamily: 'Inter', fontSize: '13px', color: done ? 'var(--lime)' : 'var(--text-muted)', marginTop: '2px' }}>{value}</div>
+                <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{label}</div>
+                <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: done ? 'var(--accent)' : 'var(--text-muted)', marginTop: '2px' }}>{value}</div>
               </div>
-              <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: done ? 'var(--lime)' : 'var(--border-strong)' }} />
+              <div style={{ width: '8px', height: '8px', borderRadius: '0', background: done ? 'var(--accent)' : 'var(--border-strong)' }} />
             </div>
           ))}
         </div>
 
         {/* Next step */}
         <div style={{ marginTop: '16px', padding: '12px 16px', background: 'var(--surface-2)', borderRadius: 'var(--radius-sm)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', flexShrink: 0, marginTop: '1px' }}>Next</span>
-          <span style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+          <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', flexShrink: 0, marginTop: '1px' }}>Next</span>
+          <span style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
             {NEXT_STEP[app.stage]}
           </span>
         </div>
@@ -230,13 +230,13 @@ export default function FounderStatus() {
               width: '44px', height: '44px', borderRadius: 'var(--radius-sm)',
               background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '13px', color: 'var(--lime)' }}>TBA</span>
+              <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--accent)' }}>TBA</span>
             </div>
             <div>
-              <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}>
                 Your Internal Lead is being assigned.
               </div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginTop: '2px' }}>
+              <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginTop: '2px' }}>
                 A named Audi contact within 48 hours.
               </div>
             </div>
@@ -253,12 +253,12 @@ export default function FounderStatus() {
       >
         {[
           { label: 'Application ID', value: app.id },
-          { label: 'Signal deadline', value: app.signalDeadline },
+          { label: 'Decision deadline', value: app.signalDeadline },
           { label: 'Days remaining', value: `${Math.max(0, 14 - app.daysInProcess)} of 14` },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: 'var(--surface)', padding: '14px 16px' }}>
-            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{label}</div>
-            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text)' }}>{value}</div>
+            <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '4px' }}>{label}</div>
+            <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text)' }}>{value}</div>
           </div>
         ))}
       </motion.div>

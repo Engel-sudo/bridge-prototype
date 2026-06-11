@@ -6,11 +6,11 @@ interface FunnelStage {
 
 const stages: FunnelStage[] = [
   { label: 'Interest / Door', value: 27, color: 'var(--blue)' },
-  { label: 'Internal Lead Assigned', value: 18, color: 'var(--lime)' },
-  { label: 'Map / Match', value: 11, color: 'var(--lime-dim)' },
+  { label: 'Internal Lead Assigned', value: 18, color: 'var(--accent)' },
+  { label: 'Map / Match', value: 11, color: 'var(--accent-dim)' },
   { label: 'In Review', value: 7, color: 'var(--amber)' },
   { label: 'Signal Sent', value: 5, color: 'var(--amber)' },
-  { label: 'Idea → Car', value: 3, color: 'var(--lime)' },
+  { label: 'Idea → Car', value: 3, color: 'var(--accent)' },
 ]
 
 export default function PipelineFunnel() {
@@ -23,26 +23,25 @@ export default function PipelineFunnel() {
         const isLast = i === stages.length - 1
         return (
           <div key={stage.label} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '120px', fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ width: '120px', fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', textAlign: 'right', flexShrink: 0 }}>
               {stage.label}
             </div>
-            <div style={{ flex: 1, height: isLast ? '20px' : '14px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden', position: 'relative' }}>
+            <div style={{ flex: 1, height: isLast ? '20px' : '14px', background: 'var(--border)', borderRadius: '0', overflow: 'hidden', position: 'relative' }}>
               <div style={{
                 width: `${pct}%`,
                 height: '100%',
-                background: isLast ? 'var(--lime)' : stage.color,
-                borderRadius: '2px',
+                background: isLast ? 'var(--accent)' : stage.color,
+                borderRadius: '0',
                 opacity: isLast ? 1 : 0.75,
-                boxShadow: isLast ? '0 0 12px rgba(214,255,0,0.3)' : 'none',
                 transition: 'width 0.6s ease',
               }} />
             </div>
             <div style={{
               width: '28px',
-              fontFamily: 'Inter',
+              fontFamily: 'AudiType',
               fontWeight: 700,
               fontSize: isLast ? '18px' : '14px',
-              color: isLast ? 'var(--lime)' : 'var(--text)',
+              color: isLast ? 'var(--accent)' : 'var(--text)',
               textAlign: 'right',
               flexShrink: 0,
             }}>
