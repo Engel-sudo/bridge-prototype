@@ -178,7 +178,7 @@ export default function Landing() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right', alignItems: 'flex-end' }}>
                 <span style={{ fontFamily: "'AudiType', sans-serif", fontSize: '11px', color: 'var(--text-faint)' }}>You end here</span>
-                <span style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(20px, 3vw, 30px)', lineHeight: 1, color: 'var(--accent)' }}>In an Audi</span>
+                <span style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(20px, 3vw, 30px)', lineHeight: 1, color: 'var(--accent)' }}>At Audi</span>
               </div>
             </div>
 
