@@ -17,7 +17,7 @@ const STAGE_LABELS: Record<string, string> = {
   named_contact: 'Named Contact',
   owner_assigned: 'Lead Assigned',
   in_review: 'In Review',
-  signal_sent: '2-Week Signal',
+  signal_sent: '2-Week Decision',
   decision_go: 'Go',
   decision_redirect: 'Redirect',
   matched_pain_owner: 'Pain Matched',
@@ -27,23 +27,23 @@ const STAGE_LABELS: Record<string, string> = {
 const stageColor: Record<string, string> = {
   submitted: 'var(--text-faint)',
   named_contact: 'var(--blue)',
-  owner_assigned: 'var(--lime)',
+  owner_assigned: 'var(--accent)',
   in_review: 'var(--amber)',
   signal_sent: 'var(--amber)',
-  decision_go: 'var(--lime)',
+  decision_go: 'var(--accent)',
   decision_redirect: 'var(--red)',
-  matched_pain_owner: 'var(--lime)',
-  path_to_production: 'var(--lime)',
+  matched_pain_owner: 'var(--accent)',
+  path_to_production: 'var(--accent)',
 }
 
 function Initials({ name, color }: { name: string; color: string }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
   return (
     <div style={{
-      width: 36, height: 36, borderRadius: '8px', flexShrink: 0,
+      width: 36, height: 36, borderRadius: '0', flexShrink: 0,
       background: `${color}18`, border: `1px solid ${color}40`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'Inter', fontWeight: 800, fontSize: '13px', color,
+      fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color,
     }}>
       {initials}
     </div>
@@ -102,15 +102,15 @@ export default function OwnerConsole() {
       transition={{ duration: 0.3 }}
       style={{ padding: '80px 40px 60px', maxWidth: '1280px', margin: '0 auto' }}
     >
-      <DemoHint persona="You are an Audi Internal Lead" hint="Claim a new (amber) startup, advance its stage, then make the Go or Redirect call at the 2-week signal. Try the overdue one." />
+      <DemoHint persona="You are an Audi Internal Lead" hint="Claim a new (amber) startup, advance its stage, then make the Go or Redirect call at the 2-week decision. Try the overdue one." />
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '28px' }}>
         <span className="kicker">internal lead console</span>
-        <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 3.5vw, 38px)', color: 'var(--text)', lineHeight: 1.1 }}>
+        <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(24px, 3.5vw, 38px)', color: 'var(--text)', lineHeight: 1.1 }}>
           Startup Queue
         </h1>
-        <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+        <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
           {queue.length} startups · {unassigned.length} unclaimed · {queue.filter(isOverdue).length} overdue
         </p>
       </motion.div>
@@ -132,19 +132,19 @@ export default function OwnerConsole() {
         }}
       >
         {[
-          { kicker: 'Implementations',     value: metrics.implementations,        color: 'var(--lime)',  caption: 'idea → car · primary KPI' },
+          { kicker: 'Implementations',     value: metrics.implementations,        color: 'var(--accent)',  caption: 'idea → car · primary KPI' },
           { kicker: 'Pain points matched', value: matchedPPCount,                 color: 'var(--blue)',  caption: 'linked to a startup' },
           { kicker: 'Startups in queue',   value: myApps.length,                  color: 'var(--text)',  caption: 'active in pipeline' },
-          { kicker: 'Avg days to signal',  value: `${owner.avgDaysToSignal}d`,    color: owner.avgDaysToSignal <= 14 ? 'var(--lime)' : 'var(--amber)', caption: 'target: 14 days' },
+          { kicker: 'Avg days to decision', value: `${owner.avgDaysToSignal}d`,    color: owner.avgDaysToSignal <= 14 ? 'var(--accent)' : 'var(--amber)', caption: 'target: 14 days' },
         ].map(item => (
           <div key={item.kicker} style={{ background: 'var(--surface)', padding: '18px 20px' }}>
-            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)', display: 'block', marginBottom: '4px' }}>
+            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '4px' }}>
               {item.kicker}
             </span>
-            <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '28px', color: item.color, lineHeight: 1 }}>
+            <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '28px', color: item.color, lineHeight: 1 }}>
               {item.value}
             </div>
-            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', marginTop: '4px', letterSpacing: '0.08em' }}>
+            <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginTop: '4px' }}>
               {item.caption}
             </div>
           </div>
@@ -170,8 +170,8 @@ export default function OwnerConsole() {
                   onClick={() => setSelected(app)}
                   style={{
                     background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
-                    border: `1px solid ${isSelected ? 'var(--lime)' : isUnassigned ? 'rgba(245,158,11,0.4)' : overdue ? 'rgba(255,45,70,0.3)' : 'var(--border)'}`,
-                    borderLeft: `3px solid ${isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : isSelected ? 'var(--lime)' : 'var(--border)'}`,
+                    border: `1px solid ${isSelected ? 'var(--accent)' : isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : 'var(--border)'}`,
+                    borderLeft: `3px solid ${isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : isSelected ? 'var(--accent)' : 'var(--border)'}`,
                     borderRadius: 'var(--radius-sm)',
                     padding: '12px 14px',
                     cursor: 'pointer',
@@ -189,27 +189,27 @@ export default function OwnerConsole() {
                   {/* Content */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px', marginBottom: '4px' }}>
-                      <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '13px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {app.companyName}
                       </span>
-                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: overdue ? 'var(--red)' : 'var(--text-faint)', flexShrink: 0 }}>
+                      <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: overdue ? 'var(--red)' : 'var(--text-faint)', flexShrink: 0 }}>
                         day {app.daysInProcess}
                       </span>
                     </div>
 
                     {/* Tech tag + stage badge */}
                     <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: pp ? '6px' : 0 }}>
-                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', background: 'var(--surface-2)', border: '1px solid var(--border)', padding: '1px 6px', borderRadius: '3px', letterSpacing: '0.04em' }}>
+                      <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>
                         {app.technology}
                       </span>
                       <span style={{
-                        fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase',
-                        color: accentColor, background: `${accentColor}18`, padding: '1px 6px', borderRadius: '3px',
+                        fontFamily: 'AudiType', fontSize: '11px',
+                        color: accentColor, background: `${accentColor}18`, padding: '1px 6px', borderRadius: '0',
                       }}>
                         {isUnassigned ? 'Unclaimed' : STAGE_LABELS[app.stage]}
                       </span>
                       {overdue && (
-                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--red)', background: 'rgba(255,45,70,0.1)', padding: '1px 6px', borderRadius: '3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--red)', background: 'var(--red-dim)', padding: '1px 6px', borderRadius: '0', display: 'flex', alignItems: 'center', gap: '3px' }}>
                           <AlertCircle size={9} /> overdue
                         </span>
                       )}
@@ -218,15 +218,15 @@ export default function OwnerConsole() {
                     {/* Linked pain point */}
                     {pp && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px', paddingTop: '6px', borderTop: '1px solid var(--border)' }}>
-                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)', flexShrink: 0 }} />
-                        <span style={{ fontFamily: 'Inter', fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)', flexShrink: 0 }} />
+                        <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {pp.title}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <ChevronRight size={13} color={isSelected ? 'var(--lime)' : 'var(--text-faint)'} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <ChevronRight size={13} color={isSelected ? 'var(--accent)' : 'var(--text-faint)'} style={{ flexShrink: 0, marginTop: '2px' }} />
                 </button>
               )
             })}
@@ -248,23 +248,23 @@ export default function OwnerConsole() {
               <div className="card" style={{ padding: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-                    <Initials name={selected.companyName} color={selected.ownerId === null ? 'var(--amber)' : stageColor[selected.stage] || 'var(--lime)'} />
+                    <Initials name={selected.companyName} color={selected.ownerId === null ? 'var(--amber)' : stageColor[selected.stage] || 'var(--accent)'} />
                     <div>
                       <span className="kicker" style={{ marginBottom: '2px' }}>{selected.id}</span>
-                      <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '22px', color: 'var(--text)', lineHeight: 1.1 }}>
+                      <h2 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: '22px', color: 'var(--text)', lineHeight: 1.1 }}>
                         {selected.companyName}
                       </h2>
-                      <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
+                      <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
                         {selected.technology} · {selected.founderName}
                       </div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: isOverdue(selected) ? 'var(--red)' : 'var(--text-faint)', letterSpacing: '0.08em' }}>
-                      day {selected.daysInProcess} · signal by {selected.signalDeadline}
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: isOverdue(selected) ? 'var(--red)' : 'var(--text-faint)' }}>
+                      day {selected.daysInProcess} · decision by {selected.signalDeadline}
                     </span>
                     {isOverdue(selected) && (
-                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', textTransform: 'uppercase', color: 'var(--red)', background: 'rgba(255,45,70,0.1)', padding: '3px 8px', borderRadius: '3px' }}>
+                      <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--red)', background: 'var(--red-dim)', padding: '3px 8px', borderRadius: '0' }}>
                         Overdue
                       </span>
                     )}
@@ -286,7 +286,7 @@ export default function OwnerConsole() {
                         <button
                           onClick={() => handleDecide(selected.id, 'redirect')}
                           disabled={advancing}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'Inter', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--red)', background: 'transparent', border: '1px solid var(--red)', opacity: advancing ? 0.7 : 1 }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--red)', background: 'transparent', border: '1px solid var(--red)', opacity: advancing ? 0.7 : 1 }}
                         >
                           <X size={14} /> Redirect
                         </button>
@@ -303,7 +303,7 @@ export default function OwnerConsole() {
                       const justAdded = addedToPool === selected.id
                       if (alreadyInPool || justAdded) {
                         return (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.08em', color: 'var(--blue)', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.25)', padding: '5px 10px', borderRadius: 'var(--radius-sm)' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '11px', color: 'var(--blue)', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.25)', padding: '5px 10px', borderRadius: 'var(--radius-sm)' }}>
                             <Users size={11} /> In community pool
                           </span>
                         )
@@ -314,7 +314,7 @@ export default function OwnerConsole() {
                             addToPool({ id: `pm-${selected.id}`, name: selected.founderName, company: selected.companyName, type: 'startup', techArea: selected.technology, addedAt: new Date().toISOString().slice(0, 10), addedByName: owner.name, applicationId: selected.id, notes: `Added from BRIDGE pipeline. ${selected.notes}` })
                             setAddedToPool(selected.id)
                           }}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'Inter', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--blue)', background: 'transparent', border: '1px solid rgba(59,130,246,0.4)', transition: 'all 0.15s' }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '13px', fontWeight: 600, padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--blue)', background: 'transparent', border: '1px solid rgba(59,130,246,0.4)', transition: 'all 0.15s' }}
                         >
                           <Users size={14} /> Add to community pool
                         </button>
@@ -343,8 +343,8 @@ export default function OwnerConsole() {
                       { label: 'Submitted', value: selected.submittedAt },
                     ].map(({ label, value }) => (
                       <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</span>
-                        <span style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text)' }}>{value}</span>
+                        <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{label}</span>
+                        <span style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text)' }}>{value}</span>
                       </div>
                     ))}
                   </div>
@@ -359,24 +359,24 @@ export default function OwnerConsole() {
                   style={{
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',
-                    borderLeft: '3px solid var(--lime)',
+                    borderLeft: '3px solid var(--accent)',
                     borderRadius: 'var(--radius)',
                     padding: '16px 20px',
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                     <span className="kicker" style={{ margin: 0 }}>linked pain point</span>
-                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(214,255,0,0.1)', padding: '2px 8px', borderRadius: '3px' }}>
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)', background: 'var(--accent-dim)', padding: '2px 8px', borderRadius: '0' }}>
                       {selectedPP.status.replace('_', ' ')}
                     </span>
                   </div>
-                  <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '14px', color: 'var(--text)', marginBottom: '4px' }}>
+                  <div style={{ fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--text)', marginBottom: '4px' }}>
                     {selectedPP.title}
                   </div>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.08em', marginBottom: '8px' }}>
+                  <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '8px' }}>
                     {selectedPP.department} · submitted by {selectedPP.submittedBy}
                   </div>
-                  <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+                  <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
                     {selectedPP.description}
                   </p>
                 </motion.div>
@@ -385,7 +385,7 @@ export default function OwnerConsole() {
               {/* Notes */}
               <div className="card" style={{ padding: '16px' }}>
                 <span className="kicker" style={{ marginBottom: '8px', display: 'block' }}>notes</span>
-                <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                   {selected.notes}
                 </p>
               </div>

@@ -12,7 +12,7 @@ const STAGES: TimelineStage[] = [
   { key: 'named_contact', label: 'Named Contact', sublabel: '48h' },
   { key: 'owner_assigned', label: 'Internal Lead Assigned' },
   { key: 'in_review', label: 'In Review' },
-  { key: 'signal_sent', label: '2-Week Signal', sublabel: '14 days' },
+  { key: 'signal_sent', label: '2-Week Decision', sublabel: '14 days' },
   { key: 'decision_go', label: 'Decision: Go' },
   { key: 'path_to_production', label: 'Idea → Car' },
 ]
@@ -58,36 +58,43 @@ export default function StatusTimeline({ current, compact }: Props) {
         {STAGES.map((stage, i) => {
           const status = nodeStatus(stage.key, current)
           const isLast = i === STAGES.length - 1
+          const nodeSize = status === 'active' ? 18 : 14
+          const nodeBg = status === 'active' ? 'var(--accent)' : status === 'done' ? 'var(--accent)' : status === 'blocked' ? 'var(--red)' : 'var(--bg)'
+          const nodeBorderColor = status === 'active' ? 'var(--accent)' : status === 'done' ? 'var(--accent)' : status === 'blocked' ? 'var(--red)' : 'var(--border-strong)'
 
           return (
             <div key={stage.key} style={{ display: 'flex', alignItems: 'center', flex: isLast ? '0 0 auto' : '1' }}>
               {/* Node */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', position: 'relative' }}>
                 <motion.div
-                  className={`rail-node ${status}`}
                   initial={false}
-                  animate={status === 'active' ? { boxShadow: ['0 0 6px rgba(214,255,0,0.3)', '0 0 14px rgba(214,255,0,0.7)', '0 0 6px rgba(214,255,0,0.3)'] } : {}}
+                  animate={status === 'active' ? { opacity: [1, 0.55, 1] } : {}}
                   transition={{ duration: 1.5, repeat: Infinity }}
                   style={{
-                    background: status === 'done' ? 'var(--lime)' : status === 'active' ? 'var(--bg)' : status === 'blocked' ? 'var(--red)' : 'var(--bg)',
-                    border: `2px solid ${status === 'done' ? 'var(--lime)' : status === 'active' ? 'var(--lime)' : status === 'blocked' ? 'var(--red)' : 'var(--border-strong)'}`,
+                    width: nodeSize, height: nodeSize,
+                    borderRadius: '0',
+                    flexShrink: 0,
+                    background: nodeBg,
+                    border: `2px solid ${nodeBorderColor}`,
+                    transition: 'all 0.3s ease',
                   }}
                 />
                 {!compact && (
                   <div style={{ textAlign: 'center', minWidth: '70px', maxWidth: '80px' }}>
                     <div style={{
-                      fontFamily: 'JetBrains Mono',
-                      fontSize: '9px',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      color: status === 'done' ? 'var(--lime)' : status === 'active' ? 'var(--text)' : status === 'blocked' ? 'var(--red)' : 'var(--text-faint)',
+                      fontFamily: 'AudiType',
+                      fontSize: status === 'active' ? '10px' : '9px',
+                     
+                     
+                      color: status === 'active' ? 'var(--text)' : status === 'done' ? 'var(--text-faint)' : status === 'blocked' ? 'var(--red)' : 'var(--text-faint)',
                       lineHeight: '1.3',
-                      fontWeight: status === 'active' ? 500 : 400,
+                      fontWeight: status === 'active' ? 700 : 400,
+                      opacity: status === 'active' ? 1 : undefined,
                     }}>
                       {stage.label}
                     </div>
                     {stage.sublabel && (
-                      <div style={{ fontFamily: 'JetBrains Mono', fontSize: '8px', color: 'var(--lime)', marginTop: '2px' }}>
+                      <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: status === 'active' ? 'var(--text)' : 'var(--text-faint)', marginTop: '2px' }}>
                         {stage.sublabel}
                       </div>
                     )}
@@ -97,7 +104,7 @@ export default function StatusTimeline({ current, compact }: Props) {
 
               {/* Connector line */}
               {!isLast && (
-                <div style={{ flex: 1, height: '2px', background: i < currentIdx ? 'var(--lime)' : 'var(--border)', margin: compact ? '0 2px' : '0 4px', marginBottom: compact ? '0' : '20px', transition: 'background 0.4s ease' }} />
+                <div style={{ flex: 1, height: '2px', background: i < currentIdx ? 'var(--accent)' : 'var(--border)', margin: compact ? '0 2px' : '0 4px', marginBottom: compact ? '0' : '20px', transition: 'background 0.4s ease' }} />
               )}
             </div>
           )

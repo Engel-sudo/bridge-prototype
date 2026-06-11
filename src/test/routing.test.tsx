@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { useAuthStore, type Role } from '../store/authStore'
 import ProtectedRoute from '../components/ProtectedRoute'
+import Landing from '../routes/Landing'
 
 beforeEach(() => {
   useAuthStore.getState().logout()
@@ -117,5 +118,47 @@ describe('ProtectedRoute — admin role', () => {
   it('can view /founder/:id as admin', () => {
     renderProtected('/founder/APP-2024-0047', 'admin')
     expect(screen.getByText('founder status')).toBeInTheDocument()
+  })
+})
+
+describe('Landing — role home redirect', () => {
+  beforeEach(() => {
+    // framer-motion whileInView needs IntersectionObserver, missing in jsdom
+    class MockIO {
+      observe = vi.fn()
+      unobserve = vi.fn()
+      disconnect = vi.fn()
+    }
+    vi.stubGlobal('IntersectionObserver', MockIO)
+  })
+
+  function renderLanding(role?: Role) {
+    if (role === 'admin') useAuthStore.getState().login('admin')
+    else if (role === 'internal_lead') useAuthStore.getState().login('internal_lead', { ownerId: 'o3' })
+
+    return render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/dashboard" element={<div>dashboard</div>} />
+          <Route path="/owner" element={<div>owner console</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it('shows the public landing page when logged out', () => {
+    renderLanding()
+    expect(screen.getByRole('heading', { name: /get your startup into audi/i })).toBeInTheDocument()
+  })
+
+  it('shows the landing page even when logged in as admin', () => {
+    renderLanding('admin')
+    expect(screen.getByRole('heading', { name: /get your startup into audi/i })).toBeInTheDocument()
+  })
+
+  it('shows the landing page even when logged in as internal lead', () => {
+    renderLanding('internal_lead')
+    expect(screen.getByRole('heading', { name: /get your startup into audi/i })).toBeInTheDocument()
   })
 })

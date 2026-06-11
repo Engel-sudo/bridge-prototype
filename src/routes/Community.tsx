@@ -15,7 +15,7 @@ const EVENT_TYPE_LABEL: Record<CommunityEventType, string> = {
 
 const EVENT_TYPE_COLOR: Record<CommunityEventType, string> = {
   workshop: 'var(--blue)',
-  networking: 'var(--lime)',
+  networking: 'var(--accent)',
   demo_day: 'var(--amber)',
   hackathon: 'var(--red)',
 }
@@ -46,25 +46,25 @@ export default function Community() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '36px' }}>
         <span className="kicker">bridge community</span>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
+          <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
             {member.name}
           </h1>
           <span style={{
-            fontFamily: 'JetBrains Mono', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: member.type === 'startup' ? 'var(--lime)' : 'var(--blue)',
-            background: member.type === 'startup' ? 'rgba(214,255,0,0.1)' : 'rgba(59,130,246,0.1)',
-            padding: '4px 10px', borderRadius: '4px',
+            fontFamily: 'AudiType', fontSize: '11px',
+            color: member.type === 'startup' ? 'var(--accent)' : 'var(--blue)',
+            background: member.type === 'startup' ? 'var(--accent-dim)' : 'rgba(59,130,246,0.1)',
+            padding: '4px 10px', borderRadius: '0',
           }}>
             {member.type === 'startup' ? 'Startup' : 'Contact'}
           </span>
         </div>
         {member.company && (
-          <div style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
+          <div style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
             {member.company} · {member.techArea}
           </div>
         )}
         {!member.company && member.techArea && (
-          <div style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
+          <div style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
             {member.techArea}
           </div>
         )}
@@ -77,8 +77,8 @@ export default function Community() {
         transition={{ delay: 0.05 }}
         style={{ marginBottom: '32px', padding: '20px 24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', borderLeft: '3px solid var(--blue)' }}
       >
-        <span className="kicker" style={{ display: 'block', marginBottom: '6px' }}>added by {member.addedByName}</span>
-        <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+        <span className="kicker" style={{ display: 'block', marginBottom: '6px' }}>from {member.addedByName}, your internal lead</span>
+        <p style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-line' }}>
           {member.notes}
         </p>
       </motion.div>
@@ -92,7 +92,7 @@ export default function Community() {
 
         {myEvents.length === 0 ? (
           <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-            <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-faint)' }}>No upcoming events yet.</p>
+            <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)' }}>No upcoming events yet.</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -109,29 +109,29 @@ export default function Community() {
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                       <span style={{
-                        fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase',
+                        fontFamily: 'AudiType', fontSize: '11px',
                         color: EVENT_TYPE_COLOR[evt.type], background: `${EVENT_TYPE_COLOR[evt.type]}18`,
-                        padding: '2px 7px', borderRadius: '3px',
+                        padding: '2px 7px', borderRadius: '0',
                       }}>
                         {EVENT_TYPE_LABEL[evt.type]}
                       </span>
-                      <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--lime)', letterSpacing: '0.06em' }}>
+                      <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)' }}>
                         Invited
                       </span>
                     </div>
-                    <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '16px', color: 'var(--text)' }}>
+                    <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '16px', color: 'var(--text)' }}>
                       {evt.title}
                     </div>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.06em' }}>{evt.date}</div>
+                    <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-muted)' }}>{evt.date}</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '8px' }}>
                   <MapPin size={12} color="var(--text-faint)" style={{ marginTop: '2px', flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', color: 'var(--text-faint)', letterSpacing: '0.06em' }}>{evt.location}</span>
+                  <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{evt.location}</span>
                 </div>
-                <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
                   {evt.description}
                 </p>
               </motion.div>
@@ -146,7 +146,7 @@ export default function Community() {
           <Lightbulb size={14} color="var(--text-faint)" />
           <span className="kicker">open pain points</span>
         </div>
-        <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '14px', lineHeight: 1.5 }}>
+        <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '14px', lineHeight: 1.5 }}>
           These are real problems Audi hasn't solved yet. If you have technology that could address one, you're welcome to apply through BRIDGE.
         </p>
 
@@ -165,17 +165,17 @@ export default function Community() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '14px', color: 'var(--text)', lineHeight: 1.3 }}>
+                <div style={{ fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--text)', lineHeight: 1.3 }}>
                   {pp.title}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                   <Users size={11} color="var(--text-faint)" />
-                  <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>
                     {pp.department}
                   </span>
                 </div>
               </div>
-              <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
                 {pp.description}
               </p>
             </motion.div>
@@ -187,21 +187,21 @@ export default function Community() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          style={{ marginTop: '24px', padding: '20px 24px', background: 'rgba(214,255,0,0.04)', border: '1px solid rgba(214,255,0,0.2)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}
+          style={{ marginTop: '24px', padding: '20px 24px', background: 'var(--accent-dim)', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}
         >
           <div>
-            <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '15px', color: 'var(--text)', marginBottom: '2px' }}>
+            <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--text)', marginBottom: '2px' }}>
               See a problem you can solve?
             </div>
-            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)' }}>
+            <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)' }}>
               Community members can apply directly. You already know the process.
             </div>
           </div>
           <Link
             to="/login"
             style={{
-              fontFamily: 'Inter', fontWeight: 600, fontSize: '13px',
-              color: '#050505', background: 'var(--lime)', border: 'none',
+              fontFamily: 'AudiType', fontWeight: 600, fontSize: '13px',
+              color: 'var(--accent-contrast)', background: 'var(--accent)', border: 'none',
               padding: '10px 20px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
               textDecoration: 'none', whiteSpace: 'nowrap', display: 'inline-block',
             }}

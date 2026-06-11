@@ -9,17 +9,18 @@ import type { Application } from '../store/types'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const MONO = "'JetBrains Mono', monospace"
-const SANS = "'Inter', sans-serif"
-const LIME = '#D6FF00'
-const LIME_DIM = 'rgba(214, 255, 0, 0.12)'
-const LIME_BORDER = 'rgba(214, 255, 0, 0.25)'
-const GLASS_BG = 'rgba(10, 10, 10, 0.65)'
-const SURFACE = '#0e0e0e'
-const MUTED = '#8A8A8A'
-const ON_SURFACE = '#e5e2e1'
-const BORDER_SUBTLE = 'rgba(255, 255, 255, 0.05)'
-const BORDER_MED = 'rgba(255, 255, 255, 0.10)'
+const MONO = "'AudiType', sans-serif"
+const SANS = "'AudiType', sans-serif"
+const EXTENDED = "'AudiType Extended', 'AudiType', sans-serif"
+const LIME = 'var(--accent)'
+const LIME_DIM = 'var(--accent-dim)'
+const LIME_BORDER = 'var(--text)'
+const GLASS_BG = 'color-mix(in srgb, var(--bg) 65%, transparent)'
+const SURFACE = 'var(--surface-2)'
+const MUTED = 'var(--text-muted)'
+const ON_SURFACE = 'var(--text)'
+const BORDER_SUBTLE = 'var(--border)'
+const BORDER_MED = 'var(--border-strong)'
 
 
 const REGIONS = ['Bavaria', 'Baden-Württemberg', 'Hesse', 'Other Germany', 'Outside Germany']
@@ -84,7 +85,7 @@ function addDays(days: number) {
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontFamily: MONO, fontSize: '11px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '10px' }}>
+    <p style={{ fontFamily: MONO, fontSize: '11px', color: MUTED, marginBottom: '10px' }}>
       {children}
     </p>
   )
@@ -96,7 +97,7 @@ function ApplyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       style={{
         width: '100%', background: SURFACE, border: `1px solid ${BORDER_MED}`,
-        borderRadius: '2px', padding: '13px 16px', fontSize: '13px',
+        borderRadius: '0', padding: '13px 16px', fontSize: '13px',
         color: ON_SURFACE, fontFamily: SANS, outline: 'none',
         transition: 'border-color 0.15s',
         ...props.style,
@@ -113,7 +114,7 @@ function ApplyTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>)
       {...props}
       style={{
         width: '100%', background: SURFACE, border: `1px solid ${BORDER_MED}`,
-        borderRadius: '2px', padding: '13px 16px', fontSize: '13px',
+        borderRadius: '0', padding: '13px 16px', fontSize: '13px',
         color: ON_SURFACE, fontFamily: SANS, outline: 'none', resize: 'vertical',
         minHeight: '100px', lineHeight: '1.65', transition: 'border-color 0.15s',
         ...props.style,
@@ -130,7 +131,7 @@ function ApplySelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
       {...props}
       style={{
         width: '100%', background: SURFACE, border: `1px solid ${BORDER_MED}`,
-        borderRadius: '2px', padding: '13px 16px', fontSize: '13px',
+        borderRadius: '0', padding: '13px 16px', fontSize: '13px',
         color: ON_SURFACE, fontFamily: SANS, outline: 'none',
         appearance: 'none', cursor: 'pointer', transition: 'border-color 0.15s',
         ...props.style,
@@ -144,8 +145,8 @@ function ApplySelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
 function SectionHeader({ num, title }: { num: string; title: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '32px' }}>
-      <span style={{ fontFamily: MONO, color: LIME, fontSize: '18px', fontWeight: 700, letterSpacing: '-0.02em' }}>{num}</span>
-      <h2 style={{ fontFamily: MONO, fontSize: '13px', color: ON_SURFACE, textTransform: 'uppercase', letterSpacing: '0.2em', margin: 0 }}>{title}</h2>
+      <span style={{ fontFamily: MONO, color: LIME, fontSize: '18px', fontWeight: 700 }}>{num}</span>
+      <h2 style={{ fontFamily: MONO, fontSize: '13px', color: ON_SURFACE, margin: 0 }}>{title}</h2>
       <div style={{ flex: 1, height: '1px', background: BORDER_SUBTLE }} />
     </div>
   )
@@ -155,7 +156,7 @@ function GlassCard({ children, style, className }: { children: React.ReactNode; 
   return (
     <div className={className} style={{
       background: GLASS_BG, backdropFilter: 'blur(24px)',
-      border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px',
+      border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '0',
       transition: 'border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
       ...style,
     }}>
@@ -183,8 +184,6 @@ export default function Apply() {
   const loginAuth = useAuthStore(s => s.login)
   const navigate = useNavigate()
 
-  const mouseGlowRef = useRef<HTMLDivElement>(null)
-
   // Inject page-scoped CSS once
   useEffect(() => {
     const id = 'apply-v2-styles'
@@ -192,26 +191,25 @@ export default function Apply() {
     const style = document.createElement('style')
     style.id = id
     style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap');
-.ap-reveal { opacity:0; transform:translateY(22px); transition:all 0.9s cubic-bezier(0.22,1,0.36,1); }
+      .ap-reveal { opacity:0; transform:translateY(22px); transition:all 0.9s cubic-bezier(0.22,1,0.36,1); }
       .ap-reveal.in { opacity:1; transform:translateY(0); }
       .ap-lime-pulse { animation:ap-pulse 3s ease-in-out infinite; }
-      @keyframes ap-pulse { 0%,100%{opacity:1;filter:drop-shadow(0 0 2px #D6FF00)} 50%{opacity:.4;filter:drop-shadow(0 0 10px #D6FF00)} }
+      @keyframes ap-pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
       @media (prefers-reduced-motion: reduce) {
         .ap-reveal { transition:none; }
         .ap-lime-pulse { animation:none; }
       }
-      .ap-trl { padding:11px 0; border:1px solid rgba(255,255,255,0.1); border-radius:3px; background:transparent; color:#e5e2e1; font-family:'JetBrains Mono',monospace; font-size:12px; cursor:pointer; transition:all 0.15s; text-align:center; }
-      .ap-trl:hover { border-color:rgba(214,255,0,0.4); color:#D6FF00; }
-      .ap-trl.sel { border-color:rgba(214,255,0,0.5); background:rgba(214,255,0,0.1); color:#D6FF00; box-shadow:0 0 10px rgba(214,255,0,0.1); }
-      .ap-check { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid rgba(255,255,255,0.05); border-radius:3px; cursor:pointer; transition:background 0.15s; }
-      .ap-check:hover { background:rgba(255,255,255,0.02); }
+      .ap-trl { padding:11px 0; border:1px solid var(--border); border-radius:0; background:transparent; color:var(--text); font-family:'AudiType',sans-serif; font-size:12px; cursor:pointer; transition:all 0.15s; text-align:center; }
+      .ap-trl:hover { border-color:var(--border-strong); }
+      .ap-trl.sel { border-color:var(--text); background:var(--accent-dim); }
+      .ap-check { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid var(--border); border-radius:0; cursor:pointer; transition:background 0.15s; }
+      .ap-check:hover { background:var(--accent-dim); }
       .ap-scroll::-webkit-scrollbar { width:2px; }
       .ap-scroll::-webkit-scrollbar-track { background:transparent; }
-      .ap-scroll::-webkit-scrollbar-thumb { background:rgba(214,255,0,0.3); }
+      .ap-scroll::-webkit-scrollbar-thumb { background:var(--border-strong); }
       .ap-ring { transition:stroke-dashoffset 0.8s ease-in-out; transform:rotate(-90deg); transform-origin:50% 50%; }
-      .ap-error-ring { box-shadow: 0 0 0 1px rgba(255,45,70,0.45), 0 0 24px rgba(255,45,70,0.07) !important; border-radius: 6px; }
-      .ap-glass-card:hover { border-color:rgba(214,255,0,0.12) !important; }
+      .ap-error-ring { box-shadow: 0 0 0 1px var(--red) !important; }
+      .ap-glass-card:hover { border-color:var(--border-strong) !important; }
       /* ── Responsive layout ─────────────────────────────────────── */
       .ap-main-grid { grid-template-columns: 220px 1fr; }
       .ap-form-2col { grid-template-columns: 1fr 1fr; }
@@ -227,19 +225,6 @@ export default function Apply() {
     `
     document.head.appendChild(style)
   }, [])
-
-  // Mouse glow + 3D node tilt
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (mouseGlowRef.current) {
-        mouseGlowRef.current.style.left = `${e.clientX}px`
-        mouseGlowRef.current.style.top = `${e.clientY}px`
-      }
-    }
-    window.addEventListener('mousemove', onMove)
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [])
-
 
   // Scroll reveal — tracks revealed IDs in state so React owns the className
   useEffect(() => {
@@ -310,21 +295,20 @@ export default function Apply() {
     return (
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
-        style={{ minHeight: '100vh', background: '#050505', padding: '120px 40px 80px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}
+        style={{ minHeight: '100vh', background: 'var(--bg)', padding: '120px 40px 80px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}
       >
-        <div className="grain" />
         <div style={{ maxWidth: '560px', width: '100%' }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
             {/* Status badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: MONO, fontSize: '11px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.2em', border: `1px solid ${LIME_BORDER}`, padding: '6px 12px', borderRadius: '2px', background: LIME_DIM }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: MONO, fontSize: '11px', color: LIME, border: `1px solid ${LIME_BORDER}`, padding: '6px 12px', borderRadius: '0', background: LIME_DIM }}>
                 <span className="ap-lime-pulse" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: LIME }} />
                 Application Logged
               </span>
             </div>
 
-            <div style={{ marginBottom: '8px', fontFamily: MONO, fontSize: '11px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Session ID</div>
-            <h1 style={{ fontFamily: MONO, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 40px)', color: LIME, letterSpacing: '-0.01em', marginBottom: '16px', lineHeight: 1.1 }}>
+            <div style={{ marginBottom: '8px', fontFamily: MONO, fontSize: '11px', color: MUTED }}>Session ID</div>
+            <h1 style={{ fontFamily: MONO, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 40px)', color: LIME, marginBottom: '16px', lineHeight: 1.1 }}>
               {appId}
             </h1>
             <p style={{ fontFamily: SANS, fontSize: '14px', color: MUTED, lineHeight: 1.7, marginBottom: '40px' }}>
@@ -333,17 +317,17 @@ export default function Apply() {
             </p>
 
             {/* Timeline cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: BORDER_SUBTLE, marginBottom: '24px', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: BORDER_SUBTLE, marginBottom: '24px', borderRadius: '0', overflow: 'hidden' }}>
               {[
                 { val: '48h', desc: 'Named contact assigned' },
                 { val: addDays(14), desc: 'Decision deadline' },
               ].map(({ val, desc }, i) => (
                 <motion.div
                   key={val} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.12 }}
-                  style={{ background: '#0e0e0e', padding: '20px 24px' }}
+                  style={{ background: SURFACE, padding: '20px 24px' }}
                 >
-                  <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: '20px', color: LIME, marginBottom: '6px', letterSpacing: '-0.01em' }}>{val}</div>
-                  <div style={{ fontFamily: MONO, fontSize: '10px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{desc}</div>
+                  <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: '20px', color: LIME, marginBottom: '6px' }}>{val}</div>
+                  <div style={{ fontFamily: MONO, fontSize: '11px', color: MUTED }}>{desc}</div>
                 </motion.div>
               ))}
             </div>
@@ -351,7 +335,7 @@ export default function Apply() {
             {data.wantsVisit === true && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ delay: 0.45 }}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontFamily: SANS, fontSize: '12px', color: LIME, background: LIME_DIM, border: `1px solid ${LIME_BORDER}`, padding: '12px 16px', borderRadius: '3px' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontFamily: SANS, fontSize: '12px', color: LIME, background: LIME_DIM, border: `1px solid ${LIME_BORDER}`, padding: '12px 16px', borderRadius: '0' }}
               >
                 <Check size={14} />
                 Plant visit requested — your Internal Lead will reach out to schedule.
@@ -362,13 +346,13 @@ export default function Apply() {
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => navigate(`/founder/${appId}`)}
-                style={{ flex: 1, padding: '14px', background: LIME, color: '#050505', fontFamily: MONO, fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '14px', background: LIME, color: 'var(--accent-contrast)', fontFamily: MONO, fontSize: '12px', fontWeight: 700, border: 'none', borderRadius: '0', cursor: 'pointer' }}
               >
                 Track Application
               </button>
               <button
                 onClick={() => { setDone(false); setData(EMPTY) }}
-                style={{ padding: '14px 20px', background: 'transparent', color: MUTED, fontFamily: MONO, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.16em', border: `1px solid ${BORDER_MED}`, borderRadius: '2px', cursor: 'pointer' }}
+                style={{ padding: '14px 20px', background: 'transparent', color: MUTED, fontFamily: MONO, fontSize: '12px', border: `1px solid ${BORDER_MED}`, borderRadius: '0', cursor: 'pointer' }}
               >
                 New
               </button>
@@ -376,8 +360,8 @@ export default function Apply() {
 
             {/* Footer note */}
             <div style={{ marginTop: '40px', padding: '16px', borderTop: `1px solid ${BORDER_SUBTLE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>{appId}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+              <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--text-faint)' }}>{appId}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: MONO, fontSize: '11px', color: 'var(--text-faint)' }}>
                 <ShieldCheck size={10} />
                 AES-256
               </div>
@@ -391,11 +375,7 @@ export default function Apply() {
   // ─── Main Form View ──────────────────────────────────────────────────────────
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050505', position: 'relative' }}>
-      {/* Grain + glow */}
-      <div className="grain" />
-      <div ref={mouseGlowRef} style={{ position: 'fixed', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(214,255,0,0.055) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1, transform: 'translate(-50%,-50%)', transition: 'opacity 0.3s', left: '-400px', top: '-400px' }} />
-
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', position: 'relative' }}>
       <div className="ap-main-grid" style={{ maxWidth: '1200px', margin: '0 auto', padding: '100px 40px 80px', display: 'grid', gap: '32px', position: 'relative', zIndex: 10 }}>
 
         {/* ── Left Sidebar ──────────────────────────────────────────────── */}
@@ -403,7 +383,7 @@ export default function Apply() {
 
           {/* Progress Nav */}
           <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
-            <h3 style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: '24px' }}>Your Progress</h3>
+            <h3 style={{ fontFamily: MONO, fontSize: '11px', color: MUTED, marginBottom: '24px' }}>Your Progress</h3>
 
             {/* Completion ring */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
@@ -414,37 +394,36 @@ export default function Apply() {
                     strokeDasharray="263.9" strokeDashoffset={263.9 * (1 - progressPct / 100)}
                     className="ap-ring" />
                 </svg>
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: '9px', color: LIME }}>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: '11px', color: LIME }}>
                   {progressPct}%
                 </div>
               </div>
               <div>
                 <p style={{ fontFamily: MONO, fontSize: '11px', color: ON_SURFACE, fontWeight: 600 }}>{completedSections}/4</p>
-                <p style={{ fontFamily: MONO, fontSize: '9px', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Sections done</p>
+                <p style={{ fontFamily: MONO, fontSize: '11px', color: MUTED }}>Sections done</p>
               </div>
             </div>
 
             <nav style={{ position: 'relative' }}>
               <div style={{ position: 'absolute', left: '7px', top: '4px', bottom: '4px', width: '1px', background: BORDER_SUBTLE }} />
               {[
-                { num: '01', label: 'Startup Profile', done: s1Done },
-                { num: '02', label: 'Growth & Scale', done: s2Done },
-                { num: '03', label: 'Tech Stack', done: s3Done },
-                { num: '04', label: 'Ready to Scale', done: s4Done },
+                { num: '01', label: 'About you', done: s1Done },
+                { num: '02', label: 'Where you are', done: s2Done },
+                { num: '03', label: 'Your technology', done: s3Done },
+                { num: '04', label: 'What you need', done: s4Done },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: i < 3 ? '16px' : 0, opacity: item.done ? 1 : 0.45, transition: 'opacity 0.3s', position: 'relative', zIndex: 1 }}>
                   <div style={{
                     width: '15px', height: '15px', borderRadius: '50%', flexShrink: 0,
-                    border: `1px solid ${item.done ? LIME : 'rgba(255,255,255,0.2)'}`,
+                    border: `1px solid ${item.done ? LIME : 'var(--border-strong)'}`,
                     background: item.done ? LIME_DIM : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: item.done ? `0 0 8px rgba(214,255,0,0.25)` : 'none',
                   }}>
                     {item.done && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: LIME }} />}
                   </div>
                   <div>
-                    <p style={{ fontFamily: MONO, fontSize: '9px', color: item.done ? LIME : MUTED, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1px' }}>{item.num}</p>
-                    <p style={{ fontFamily: MONO, fontSize: '11px', color: item.done ? ON_SURFACE : MUTED, textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: item.done ? 600 : 400 }}>{item.label}</p>
+                    <p style={{ fontFamily: MONO, fontSize: '11px', color: item.done ? LIME : MUTED, marginBottom: '1px' }}>{item.num}</p>
+                    <p style={{ fontFamily: MONO, fontSize: '11px', color: item.done ? ON_SURFACE : MUTED, fontWeight: item.done ? 600 : 400 }}>{item.label}</p>
                   </div>
                 </div>
               ))}
@@ -458,17 +437,17 @@ export default function Apply() {
           <DemoHint persona="You are a startup founder" hint="Required to submit: Company Name, Founder Name, Region (§01) · TRL + Stage (§02) · Technology description (§03) · What you need from Audi (§04). All other fields are optional." />
 
           {/* Page header */}
-          <div className="ap-reveal in" style={{ padding: '40px', border: `1px solid ${BORDER_SUBTLE}`, background: '#0a0a0a', borderRadius: '4px', marginBottom: '40px' }}>
-            <h1 style={{ fontFamily: SANS, fontWeight: 800, fontSize: 'clamp(24px,3.5vw,36px)', color: ON_SURFACE, marginBottom: '0', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              Venture Intake
+          <div className="ap-reveal in" style={{ padding: '40px', border: `1px solid ${BORDER_SUBTLE}`, background: 'var(--surface)', borderRadius: '0', marginBottom: '40px' }}>
+            <h1 style={{ fontFamily: EXTENDED, fontWeight: 700, fontSize: 'clamp(24px,3.5vw,36px)', color: ON_SURFACE, marginBottom: '0', lineHeight: 1.1 }}>
+              Your application
             </h1>
           </div>
 
           <form onSubmit={handleSubmitAttempt} style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
 
-            {/* ── Section 01: Startup Profile ───────────────────────────── */}
+            {/* ── Section 01: About you ─────────────────────────────────── */}
             <section ref={sec1Ref} className={`ap-reveal in${attempted && !s1Done ? ' ap-error-ring' : ''}`}>
-              <SectionHeader num="01" title="Startup Profile" />
+              <SectionHeader num="01" title="About you" />
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px' }}>
                 <div>
                   <Label>Legal Company Name *</Label>
@@ -520,7 +499,7 @@ export default function Apply() {
                     initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.25 }} style={{ overflow: 'hidden', marginTop: '20px' }}
                   >
-                    <div style={{ background: SURFACE, border: `1px solid ${BORDER_MED}`, borderLeft: `3px solid ${LIME}`, borderRadius: '3px', padding: '18px 20px' }}>
+                    <div style={{ background: SURFACE, border: `1px solid ${BORDER_MED}`, borderLeft: `3px solid ${LIME}`, borderRadius: '0', padding: '18px 20px' }}>
                       <p style={{ fontFamily: SANS, fontWeight: 600, fontSize: '13px', color: ON_SURFACE, marginBottom: '6px' }}>Would you like to meet in person?</p>
                       <p style={{ fontFamily: SANS, fontSize: '12px', color: MUTED, lineHeight: 1.6, marginBottom: '14px' }}>
                         You're nearby — your Internal Lead can arrange a plant visit in Ingolstadt or Neckarsulm within your first two weeks.
@@ -530,7 +509,7 @@ export default function Apply() {
                           <button key={String(opt.val)} type="button" onClick={() => setData(d => ({ ...d, wantsVisit: opt.val }))}
                             style={{
                               fontFamily: SANS, fontSize: '12px', fontWeight: 600, padding: '8px 16px',
-                              borderRadius: '2px', cursor: 'pointer', transition: 'all 0.15s',
+                              borderRadius: '0', cursor: 'pointer', transition: 'all 0.15s',
                               background: data.wantsVisit === opt.val ? (opt.val ? LIME_DIM : SURFACE) : 'transparent',
                               border: `1px solid ${data.wantsVisit === opt.val ? (opt.val ? LIME_BORDER : BORDER_MED) : BORDER_MED}`,
                               color: data.wantsVisit === opt.val ? (opt.val ? LIME : ON_SURFACE) : MUTED,
@@ -546,9 +525,9 @@ export default function Apply() {
               </AnimatePresence>
             </section>
 
-            {/* ── Section 02: Growth & Scale ────────────────────────────── */}
-            <section ref={sec2Ref} data-reveal-id="s2" className={`ap-reveal${revealedIds.has('s2') ? ' in' : ''}${attempted && !s2Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderColor: 'rgba(214,255,0,0.04)', borderRadius: '6px', padding: '32px' }}>
-              <SectionHeader num="02" title="Growth & Scale" />
+            {/* ── Section 02: Where you are ─────────────────────────────── */}
+            <section ref={sec2Ref} data-reveal-id="s2" className={`ap-reveal${revealedIds.has('s2') ? ' in' : ''}${attempted && !s2Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '0', padding: '32px' }}>
+              <SectionHeader num="02" title="Where you are" />
 
               <div style={{ marginBottom: '28px' }}>
                 <Label>Technology Readiness Level (TRL) *</Label>
@@ -564,8 +543,8 @@ export default function Apply() {
                   ))}
                 </div>
                 {data.trl > 0 && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontFamily: MONO, fontSize: '9px', color: LIME, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-                    TRL {data.trl} — {['Basic principles observed', 'Technology concept formulated', 'Experimental proof of concept', 'Validated in lab environment', 'Validated in relevant environment', 'Demonstrated in relevant environment', 'System prototype demonstrated', 'System complete & qualified', 'Operational in live environment'][data.trl - 1]}
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginTop: '10px' }}>
+                    T{data.trl}: {['basic research principles observed', 'technology concept formulated', 'experimental proof of concept', 'validated in lab environment', 'validated in relevant environment', 'demonstrated in relevant environment', 'system prototype demonstrated in operational environment', 'system complete and qualified', 'actual system proven in operational environment'][data.trl - 1]}
                   </motion.p>
                 )}
               </div>
@@ -588,25 +567,25 @@ export default function Apply() {
               </div>
               <div>
                 <Label>Major Milestones — Next 24 Months</Label>
-                <ApplyTextarea placeholder="Detailed roadmap trajectory…" value={data.milestones} onChange={e => setData(d => ({ ...d, milestones: e.target.value }))} />
+                <ApplyTextarea placeholder="What are you building in the next 2 years?" value={data.milestones} onChange={e => setData(d => ({ ...d, milestones: e.target.value }))} />
               </div>
             </section>
 
-            {/* ── Section 03: Tech Stack ────────────────────────────────── */}
+            {/* ── Section 03: Your technology ───────────────────────────── */}
             <section ref={sec3Ref} data-reveal-id="s3" className={`ap-reveal${revealedIds.has('s3') ? ' in' : ''}${attempted && !s3Done ? ' ap-error-ring' : ''}`}>
-              <SectionHeader num="03" title="Tech Stack" />
+              <SectionHeader num="03" title="Your technology" />
 
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
                 {/* Infrastructure */}
                 <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
-                  <h4 style={{ fontFamily: MONO, fontSize: '8px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.25em', marginBottom: '16px' }}>Hosting & Infrastructure</h4>
+                  <h4 style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginBottom: '16px' }}>Hosting & Infrastructure</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                     {[
                       { key: 'hasEdgeArch', label: 'Native Edge Architecture' },
                       { key: 'hasCloudNative', label: 'Cloud Native (K8s)' },
                     ].map(({ key, label }) => (
                       <label key={key} className="ap-check" style={{ cursor: 'pointer' }}>
-                        <span style={{ fontFamily: MONO, fontSize: '9px', color: ON_SURFACE, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
+                        <span style={{ fontFamily: MONO, fontSize: '11px', color: ON_SURFACE }}>{label}</span>
                         <input type="checkbox" checked={(data as unknown as Record<string, boolean>)[key]}
                           onChange={e => setData(d => ({ ...d, [key]: e.target.checked }))}
                           style={{ accentColor: LIME, width: '14px', height: '14px' }} />
@@ -619,7 +598,7 @@ export default function Apply() {
 
                 {/* Compliance */}
                 <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
-                  <h4 style={{ fontFamily: MONO, fontSize: '8px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.25em', marginBottom: '16px' }}>Compliance & Security</h4>
+                  <h4 style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginBottom: '16px' }}>Compliance & Security</h4>
                   <div style={{ marginBottom: '12px' }}>
                     <Label>Certification</Label>
                     <ApplySelect value={data.complianceCert} onChange={e => setData(d => ({ ...d, complianceCert: e.target.value }))}>
@@ -629,8 +608,8 @@ export default function Apply() {
                       <option>None / Self-Audit</option>
                     </ApplySelect>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', border: `1px solid ${BORDER_SUBTLE}`, background: 'rgba(214,255,0,0.03)', borderRadius: '3px' }}>
-                    <span style={{ fontFamily: MONO, fontSize: '9px', color: LIME, textTransform: 'uppercase', letterSpacing: '0.1em' }}>GDPR Data Isolation</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', border: `1px solid ${BORDER_SUBTLE}`, background: LIME_DIM, borderRadius: '0' }}>
+                    <span style={{ fontFamily: MONO, fontSize: '11px', color: LIME }}>GDPR Data Isolation</span>
                     <CheckCircle size={14} color={LIME} />
                   </div>
                 </GlassCard>
@@ -642,9 +621,9 @@ export default function Apply() {
               </div>
             </section>
 
-            {/* ── Section 04: Ready to Scale ────────────────────────────── */}
-            <section ref={sec4Ref} data-reveal-id="s4" className={`ap-reveal${revealedIds.has('s4') ? ' in' : ''}${attempted && !s4Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '6px', padding: '32px' }}>
-              <SectionHeader num="04" title="Ready to Scale" />
+            {/* ── Section 04: What you need from Audi ──────────────────── */}
+            <section ref={sec4Ref} data-reveal-id="s4" className={`ap-reveal${revealedIds.has('s4') ? ' in' : ''}${attempted && !s4Done ? ' ap-error-ring' : ''}`} style={{ background: GLASS_BG, backdropFilter: 'blur(24px)', border: `1px solid ${BORDER_SUBTLE}`, borderRadius: '0', padding: '32px' }}>
+              <SectionHeader num="04" title="What you need from Audi" />
 
               <div style={{ marginBottom: '20px' }}>
                 <Label>What do you need from Audi? *</Label>
@@ -687,14 +666,12 @@ export default function Apply() {
               <button
                 type="submit"
                 style={{
-                  width: '100%', padding: '22px', background: canSubmit ? LIME : 'rgba(214,255,0,0.25)',
-                  color: '#050505', fontFamily: MONO, fontWeight: 800, fontSize: '11px',
-                  textTransform: 'uppercase', letterSpacing: '0.4em', border: 'none',
-                  borderRadius: '2px', cursor: 'pointer',
+                  width: '100%', padding: '22px', background: canSubmit ? LIME : 'var(--surface-2)',
+                  color: canSubmit ? 'var(--accent-contrast)' : 'var(--text-faint)', fontFamily: MONO, fontWeight: 700, fontSize: '13px',
+                  border: canSubmit ? 'none' : '1px solid var(--border)',
+                  borderRadius: '0', cursor: canSubmit ? 'pointer' : 'not-allowed',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                  transition: 'background 0.2s, opacity 0.2s',
-                  opacity: canSubmit ? 1 : 0.6,
-                  boxShadow: canSubmit ? '0 20px 50px rgba(214,255,0,0.12)' : 'none',
+                  transition: 'background 0.2s, color 0.2s',
                 }}
               >
                 Submit Application

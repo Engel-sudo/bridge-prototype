@@ -51,14 +51,14 @@ export default function NetworkViz() {
     x: COL.startup,
     y: startupYs[i],
     label: app.companyName,
-    color: matchedAppIds.has(app.id) ? 'var(--lime)' : 'var(--text)',
+    color: matchedAppIds.has(app.id) ? 'var(--accent)' : 'var(--text)',
   }))
 
   const ppNodes: NodeDef[] = matchedPPs.map((pp, i) => ({
     x: COL.pain,
     y: ppYs[i],
     label: pp.title.length > 28 ? pp.title.slice(0, 28) + '…' : pp.title,
-    color: 'var(--lime)',
+    color: 'var(--accent)',
     isHub: true,
   }))
 
@@ -110,18 +110,18 @@ export default function NetworkViz() {
     >
       <defs>
         <linearGradient id="nv-edge" x1="0" x2="1">
-          <stop offset="0%"   stopColor="var(--lime)" stopOpacity="0.04" />
-          <stop offset="50%"  stopColor="var(--lime)" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="var(--lime)" stopOpacity="0.04" />
+          <stop offset="0%"   stopColor="var(--accent)" stopOpacity="0.04" />
+          <stop offset="50%"  stopColor="var(--accent)" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.04" />
         </linearGradient>
         <radialGradient id="nv-glow">
-          <stop offset="0%"   stopColor="var(--lime)" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="var(--lime)" stopOpacity="0" />
+          <stop offset="0%"   stopColor="var(--accent)" stopOpacity="0.45" />
+          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="nv-scan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="var(--lime)" stopOpacity="0" />
-          <stop offset="50%"  stopColor="var(--lime)" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="var(--lime)" stopOpacity="0" />
+          <stop offset="0%"   stopColor="var(--accent)" stopOpacity="0" />
+          <stop offset="50%"  stopColor="var(--accent)" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </linearGradient>
         <pattern id="nv-grid" width="40" height="40" patternUnits="userSpaceOnUse">
           <path d="M40 0H0V40" fill="none" stroke="var(--grid)" strokeWidth="1" />
@@ -133,10 +133,10 @@ export default function NetworkViz() {
 
       {/* Column labels */}
       {[
-        { x: COL.startup, label: 'STARTUPS' },
-        { x: COL.pain,    label: 'PAIN POINTS' },
-        { x: COL.pilot,   label: 'PILOTS' },
-        { x: COL.dept,    label: 'DEPARTMENTS' },
+        { x: COL.startup, label: 'Startups' },
+        { x: COL.pain,    label: 'Pain points' },
+        { x: COL.pilot,   label: 'Pilots' },
+        { x: COL.dept,    label: 'Departments' },
       ].map((c) => (
         <text
           key={c.label}
@@ -144,7 +144,7 @@ export default function NetworkViz() {
           y={22}
           textAnchor="middle"
           fill="var(--text-faint)"
-          style={{ fontFamily: 'JetBrains Mono', fontSize: 9, letterSpacing: 3 }}
+          style={{ fontFamily: 'AudiType', fontSize: 9}}
         >
           {c.label}
         </text>
@@ -157,7 +157,7 @@ export default function NetworkViz() {
           y={155}
           textAnchor="middle"
           fill="var(--text-faint)"
-          style={{ fontFamily: 'JetBrains Mono', fontSize: 10, letterSpacing: 1 }}
+          style={{ fontFamily: 'AudiType', fontSize: 10}}
         >
           No matches yet
         </text>
@@ -211,7 +211,7 @@ export default function NetworkViz() {
             cx={n.x}
             cy={n.y}
             r={n.isHub ? 10 : 7}
-            stroke={n.isHub ? 'var(--lime)' : 'var(--border-strong)'}
+            stroke={n.isHub ? 'var(--accent)' : 'var(--border-strong)'}
             strokeOpacity="0.4"
             fill="none"
           />
@@ -219,7 +219,7 @@ export default function NetworkViz() {
             x={n.x + 13}
             y={n.y + 4}
             fill={n.color}
-            style={{ fontFamily: 'JetBrains Mono', fontSize: 9.5, letterSpacing: 0.5 }}
+            style={{ fontFamily: 'AudiType', fontSize: 9.5}}
           >
             {n.label}
           </text>

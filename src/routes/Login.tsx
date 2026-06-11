@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
@@ -77,23 +77,8 @@ export default function Login() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '40px 24px',
+      padding: '80px 24px 40px',
     }}>
-      {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        style={{ marginBottom: '48px' }}
-      >
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '36px', height: '36px', background: 'var(--lime)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: '16px', color: '#050505' }}>B</span>
-          </div>
-          <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '20px', color: 'var(--text)', letterSpacing: '0.06em' }}>BRIDGE</span>
-        </Link>
-      </motion.div>
-
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -101,11 +86,11 @@ export default function Login() {
         transition={{ delay: 0.05, duration: 0.4 }}
         style={{ textAlign: 'center', marginBottom: '40px' }}
       >
-        <h1 style={{ fontFamily: 'Inter', fontWeight: 900, fontSize: 'clamp(22px, 4vw, 32px)', color: 'var(--text)', lineHeight: 1.1, marginBottom: '10px' }}>
-          Who are you in this system?
+        <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(22px, 4vw, 32px)', color: 'var(--text)', lineHeight: 1.15, marginBottom: '10px' }}>
+          Choose a perspective
         </h1>
-        <p style={{ fontFamily: 'Inter', fontSize: '14px', color: 'var(--text-muted)', maxWidth: '400px' }}>
-          Choose your role to enter the view relevant to you.
+        <p style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', maxWidth: '400px' }}>
+          Pick a role to explore BRIDGE from that side.
         </p>
       </motion.div>
 
@@ -121,8 +106,8 @@ export default function Login() {
         <div
           style={{
             ...tileBase,
-            borderColor: expanded === 'startup' ? 'rgba(214,255,0,0.4)' : 'var(--border)',
-            background: expanded === 'startup' ? 'rgba(214,255,0,0.03)' : 'var(--surface)',
+            borderColor: expanded === 'startup' ? 'var(--accent)' : 'var(--border)',
+            background: expanded === 'startup' ? 'var(--accent-dim)' : 'var(--surface)',
           }}
         >
           <div
@@ -131,10 +116,10 @@ export default function Login() {
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--lime)', background: 'rgba(214,255,0,0.1)', border: '1px solid rgba(214,255,0,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Startup</span>
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)', background: 'var(--accent-dim)', border: '1px solid var(--border-strong)', borderRadius: '0', padding: '2px 7px' }}>Startup</span>
               </div>
-              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Founder</div>
-              <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Track your application through the BRIDGE pipeline.</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Founder</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Track your application through the BRIDGE pipeline.</div>
             </div>
             <motion.div animate={{ rotate: expanded === 'startup' ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={18} color="var(--text-faint)" />
@@ -154,38 +139,38 @@ export default function Login() {
 
                   {/* ── Apply now (primary) ── */}
                   <div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                    <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '10px' }}>
                       New to BRIDGE?
                     </div>
                     <button
                       onClick={handleNewStartup}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        width: '100%', background: 'rgba(214,255,0,0.08)', textAlign: 'left',
-                        border: '1px solid rgba(214,255,0,0.35)', borderRadius: 'var(--radius-sm)',
+                        width: '100%', background: 'var(--accent-dim)', textAlign: 'left',
+                        border: '1px solid var(--accent)', borderRadius: 'var(--radius-sm)',
                         padding: '14px 18px', cursor: 'pointer', transition: 'all 0.15s',
                       }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(214,255,0,0.14)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(214,255,0,0.08)' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--accent-dim)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--accent-dim)' }}
                     >
                       <div>
-                        <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '15px', color: 'var(--lime)' }}>Apply now</div>
-                        <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '2px' }}>48h to a name · 2 weeks to a yes or no</div>
+                        <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--accent)' }}>Apply now</div>
+                        <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginTop: '2px' }}>48h to a name · 2 weeks to a decision</div>
                       </div>
-                      <ArrowRight size={16} color="var(--lime)" />
+                      <ArrowRight size={16} color="var(--accent)" />
                     </button>
                   </div>
 
                   {/* Divider */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-                    <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.12em', color: 'var(--text-faint)', textTransform: 'uppercase' }}>Already applied?</span>
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>Already applied?</span>
                     <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
                   </div>
 
                   {/* ── Login as existing founder ── */}
                   <div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                    <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '10px' }}>
                       Log in as existing founder
                     </div>
 
@@ -199,25 +184,25 @@ export default function Login() {
                         onChange={e => { setFounderName(e.target.value); setFounderError(false) }}
                         onKeyDown={e => { if (e.key === 'Enter') handleFounderSubmit() }}
                         style={{
-                          flex: 1, fontFamily: 'Inter', fontSize: '14px', color: 'var(--text)',
+                          flex: 1, fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text)',
                           background: 'var(--surface-2)', border: `1px solid ${founderError ? 'var(--red)' : 'var(--border)'}`,
                           borderRadius: 'var(--radius-sm)', padding: '10px 14px',
                           outline: 'none', transition: 'border-color 0.15s',
                         }}
-                        onFocus={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'rgba(214,255,0,0.5)' }}
+                        onFocus={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'var(--accent)' }}
                         onBlur={e => { if (!founderError) (e.target as HTMLInputElement).style.borderColor = 'var(--border)' }}
                       />
                       <button
                         onClick={handleFounderSubmit}
                         style={{
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          background: 'var(--lime)', border: 'none', borderRadius: 'var(--radius-sm)',
+                          background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius-sm)',
                           padding: '10px 18px', cursor: 'pointer', transition: 'opacity 0.15s',
                         }}
                         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
                       >
-                        <ArrowRight size={16} color="#050505" />
+                        <ArrowRight size={16} color="var(--accent-contrast)" />
                       </button>
                     </div>
 
@@ -228,7 +213,7 @@ export default function Login() {
                           initial={{ opacity: 0, y: -4 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
-                          style={{ marginTop: '8px', fontFamily: 'Inter', fontSize: '13px', color: 'var(--red)' }}
+                          style={{ marginTop: '8px', fontFamily: 'AudiType', fontSize: '13px', color: 'var(--red)' }}
                         >
                           No application found for "{founderName}".
                         </motion.div>
@@ -242,16 +227,16 @@ export default function Login() {
                           key={app.id}
                           onClick={() => { login('startup', { appId: app.id }); navigate(`/founder/${app.id}`) }}
                           style={{
-                            fontFamily: 'Inter', fontSize: '12px', fontWeight: 500,
+                            fontFamily: 'AudiType', fontSize: '12px', fontWeight: 500,
                             color: 'var(--text-muted)', background: 'var(--surface-2)',
-                            border: '1px solid var(--border)', borderRadius: '20px',
+                            border: '1px solid var(--border)', borderRadius: '0',
                             padding: '5px 12px', cursor: 'pointer', transition: 'all 0.15s',
                           }}
                           onMouseEnter={e => {
                             const b = e.currentTarget as HTMLButtonElement
-                            b.style.borderColor = 'rgba(214,255,0,0.5)'
+                            b.style.borderColor = 'var(--accent)'
                             b.style.color = 'var(--text)'
-                            b.style.background = 'rgba(214,255,0,0.06)'
+                            b.style.background = 'var(--accent-dim)'
                           }}
                           onMouseLeave={e => {
                             const b = e.currentTarget as HTMLButtonElement
@@ -273,25 +258,61 @@ export default function Login() {
         </div>
 
         {/* ── INTERNAL LEAD ── */}
-        <button
-          onClick={handleInternalLead}
+        <div
           style={{
             ...tileBase,
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            width: '100%', border: '1px solid var(--border)',
+            borderColor: expanded === 'internal_lead' ? 'rgba(59,130,246,0.4)' : 'var(--border)',
+            background: expanded === 'internal_lead' ? 'rgba(59,130,246,0.03)' : 'var(--surface)',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(59,130,246,0.4)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(59,130,246,0.03)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface)' }}
         >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Audi</span>
+          <div
+            onClick={() => setExpanded(expanded === 'internal_lead' ? null : 'internal_lead')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '0', padding: '2px 7px' }}>Audi</span>
+              </div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Internal Lead</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Manage your startup queue and match pain points.</div>
             </div>
-            <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Internal Lead</div>
-            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Manage your startup queue and match pain points.</div>
+            <motion.div animate={{ rotate: expanded === 'internal_lead' ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown size={18} color="var(--text-faint)" />
+            </motion.div>
           </div>
-          <ArrowRight size={18} color="var(--text-faint)" />
-        </button>
+
+          <AnimatePresence>
+            {expanded === 'internal_lead' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
+                  <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
+                    Review incoming applications, claim startups, advance pipeline stages, and send the final Go or Redirect decision.
+                  </p>
+                  <button
+                    onClick={handleInternalLead}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', background: 'rgba(59,130,246,0.08)', textAlign: 'left',
+                      border: '1px solid rgba(59,130,246,0.35)', borderRadius: 'var(--radius-sm)',
+                      padding: '12px 18px', cursor: 'pointer', transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(59,130,246,0.14)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(59,130,246,0.08)' }}
+                  >
+                    <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--blue)' }}>Enter</span>
+                    <ArrowRight size={16} color="var(--blue)" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* ── COMMUNITY ── */}
         <div
@@ -307,10 +328,10 @@ export default function Login() {
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '3px', padding: '2px 7px' }}>Community</span>
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '0', padding: '2px 7px' }}>Community</span>
               </div>
-              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Pool Member</div>
-              <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Access events and open pain points in the BRIDGE network.</div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Community</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Access events and open pain points in the BRIDGE community.</div>
             </div>
             <motion.div animate={{ rotate: expanded === 'community' ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={18} color="var(--text-faint)" />
@@ -327,7 +348,7 @@ export default function Login() {
                 style={{ overflow: 'hidden' }}
               >
                 <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '10px' }}>
+                  <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginBottom: '10px' }}>
                     Select your profile
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -345,8 +366,8 @@ export default function Login() {
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-2)' }}
                       >
                         <div>
-                          <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '13px', color: 'var(--text)' }}>{member.name}{member.company ? ` · ${member.company}` : ''}</div>
-                          <div style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', color: 'var(--text-faint)', letterSpacing: '0.06em', marginTop: '1px' }}>{member.type === 'startup' ? 'Redirected startup' : 'Contact'} · {member.techArea}</div>
+                          <div style={{ fontFamily: 'AudiType', fontWeight: 600, fontSize: '13px', color: 'var(--text)' }}>{member.name}{member.company ? ` · ${member.company}` : ''}</div>
+                          <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginTop: '1px' }}>{member.type === 'startup' ? 'Redirected startup' : 'Contact'} · {member.techArea}</div>
                         </div>
                         <ArrowRight size={14} color="var(--text-faint)" />
                       </button>
@@ -359,25 +380,61 @@ export default function Login() {
         </div>
 
         {/* ── ADMIN ── */}
-        <button
-          onClick={handleAdmin}
+        <div
           style={{
             ...tileBase,
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            width: '100%', border: '1px solid var(--border)',
+            borderColor: expanded === 'admin' ? 'var(--amber)' : 'var(--border)',
+            background: expanded === 'admin' ? 'rgba(245,158,11,0.03)' : 'var(--surface)',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(245,158,11,0.4)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.03)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface)' }}
         >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'JetBrains Mono', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--amber)', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '3px', padding: '2px 7px' }}>System</span>
+          <div
+            onClick={() => setExpanded(expanded === 'admin' ? null : 'admin')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--amber)', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '0', padding: '2px 7px' }}>System</span>
+              </div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Admin</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Full system overview — Dashboard, all pipelines, all data.</div>
             </div>
-            <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Admin</div>
-            <div style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Full system overview — Dashboard, all pipelines, all data.</div>
+            <motion.div animate={{ rotate: expanded === 'admin' ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown size={18} color="var(--text-faint)" />
+            </motion.div>
           </div>
-          <ArrowRight size={18} color="var(--text-faint)" />
-        </button>
+
+          <AnimatePresence>
+            {expanded === 'admin' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
+                  <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
+                    Full system overview — see all applications, pain points, and metrics across BRIDGE.
+                  </p>
+                  <button
+                    onClick={handleAdmin}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', background: 'rgba(245,158,11,0.08)', textAlign: 'left',
+                      border: '1px solid rgba(245,158,11,0.35)', borderRadius: 'var(--radius-sm)',
+                      padding: '12px 18px', cursor: 'pointer', transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.14)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.08)' }}
+                  >
+                    <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--amber)' }}>Enter</span>
+                    <ArrowRight size={16} color="var(--amber)" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
       </motion.div>
 
@@ -390,7 +447,7 @@ export default function Login() {
       >
         <button
           onClick={() => { resetDemo(); setExpanded(null) }}
-          style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--text-faint)', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+          style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
         >
           Reset demo data
         </button>

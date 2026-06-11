@@ -38,7 +38,7 @@ function revealElement(el: Element) {
 
 /** The <section> containing the TRL buttons — unique to §02. */
 function getS2Section() {
-  return screen.getByRole('heading', { name: /growth.*scale/i }).closest('section')!
+  return screen.getByRole('heading', { name: /where you are/i }).closest('section')!
 }
 
 async function fillSection01(user: ReturnType<typeof userEvent.setup>) {
@@ -49,7 +49,7 @@ async function fillSection01(user: ReturnType<typeof userEvent.setup>) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe('Apply — Growth & Scale (§02) reveal persistence', () => {
+describe('Apply — Where you are (§02) reveal persistence', () => {
   it('keeps the in class when a submit attempt adds the error ring', async () => {
     // The bug: React reconciles the className prop from 'ap-reveal' →
     // 'ap-reveal ap-error-ring' on submit, overwriting the DOM and dropping

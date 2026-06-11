@@ -18,15 +18,15 @@ export default function DemoHint({ persona, hint }: Props) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: '12px',
       background: 'var(--surface)', border: '1px solid var(--border)',
-      borderLeft: '3px solid var(--lime)', borderRadius: 'var(--radius-sm)',
+      borderLeft: '3px solid var(--accent)', borderRadius: 'var(--radius-sm)',
       padding: '10px 14px', marginBottom: '24px',
     }}>
-      <Lightbulb size={14} color="var(--lime)" style={{ flexShrink: 0 }} />
+      <Lightbulb size={14} color="var(--accent)" style={{ flexShrink: 0 }} />
       <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '4px 10px', alignItems: 'baseline' }}>
-        <span style={{ fontFamily: 'JetBrains Mono', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--lime)' }}>
+        <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)' }}>
           {persona}
         </span>
-        <span style={{ fontFamily: 'Inter', fontSize: '12px', color: 'var(--text-muted)' }}>
+        <span style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)' }}>
           {hint}
         </span>
       </div>
