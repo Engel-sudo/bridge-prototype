@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
@@ -79,6 +79,21 @@ export default function Login() {
       justifyContent: 'center',
       padding: '80px 24px 40px',
     }}>
+      {/* Logo */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ marginBottom: '48px' }}
+      >
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '36px', height: '36px', background: 'var(--accent)', borderRadius: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '16px', color: 'var(--accent-contrast)' }}>B</span>
+          </div>
+          <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '22px', color: 'var(--text)' }}>BRIDGE</span>
+        </Link>
+      </motion.div>
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
