@@ -510,12 +510,12 @@ export default function Apply() {
                     <option>Logistics</option>
                     <option>R&D</option>
                     <option>Procurement</option>
-                    <option>Not sure yet</option>
+                    <option>Others</option>
                   </ApplySelect>
                 </div>
                 <div>
                   <Label>Website</Label>
-                  <ApplyInput type="url" placeholder="https://…" value={data.website} onChange={e => setData(d => ({ ...d, website: e.target.value }))} />
+                  <ApplyInput type="text" placeholder="yourstartup.com" value={data.website} onChange={e => setData(d => ({ ...d, website: e.target.value }))} />
                 </div>
                 <div>
                   <Label>Founder LinkedIn</Label>
@@ -621,7 +621,7 @@ export default function Apply() {
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
                 {/* Infrastructure — plain-language, no jargon self-labelling */}
                 <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
-                  <h4 style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginBottom: '16px' }}>How your product runs</h4>
+                  <h4 style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginBottom: '16px' }}>How does your product run?</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                     {[
                       { key: 'cloud',  label: 'Cloud-hosted (SaaS)',           hint: 'runs in the cloud, used over the internet' },
