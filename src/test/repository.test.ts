@@ -54,7 +54,11 @@ describe('InMemoryRepository', () => {
 })
 
 describe('store write-through', () => {
-  let repo: BridgeRepository & { savePainPoint: ReturnType<typeof vi.fn>; saveMetrics: ReturnType<typeof vi.fn> }
+  let repo: BridgeRepository & {
+    savePainPoint: ReturnType<typeof vi.fn>
+    saveMetrics: ReturnType<typeof vi.fn>
+    deletePainPoint: ReturnType<typeof vi.fn>
+  }
 
   beforeEach(() => {
     useBridgeStore.getState().resetDemo()
@@ -63,6 +67,7 @@ describe('store write-through', () => {
       saveApplication: vi.fn().mockResolvedValue(undefined),
       saveOwner: vi.fn().mockResolvedValue(undefined),
       savePainPoint: vi.fn().mockResolvedValue(undefined),
+      deletePainPoint: vi.fn().mockResolvedValue(undefined),
       savePoolMember: vi.fn().mockResolvedValue(undefined),
       saveMetrics: vi.fn().mockResolvedValue(undefined),
       saveClusters: vi.fn().mockResolvedValue(undefined),
@@ -87,6 +92,21 @@ describe('store write-through', () => {
     useBridgeStore.getState().addApplication(makeApp('APP-W1', 'matched_pain_owner'))
     useBridgeStore.getState().advanceStage('APP-W1')
     expect(repo.saveMetrics).toHaveBeenCalledOnce()
+  })
+
+  it('admin edit updates the pain point locally and persists it', () => {
+    useBridgeStore.getState().addPainPoint(makePP('pp-edit'))
+    useBridgeStore.getState().updatePainPoint({ ...makePP('pp-edit'), title: 'Edited title' })
+    const pp = useBridgeStore.getState().painPoints.find((p) => p.id === 'pp-edit')
+    expect(pp?.title).toBe('Edited title')
+    expect(repo.savePainPoint).toHaveBeenCalledTimes(2) // add + update
+  })
+
+  it('admin delete removes the pain point and persists the deletion', () => {
+    useBridgeStore.getState().addPainPoint(makePP('pp-del'))
+    useBridgeStore.getState().deletePainPoint('pp-del')
+    expect(useBridgeStore.getState().painPoints.some((p) => p.id === 'pp-del')).toBe(false)
+    expect(repo.deletePainPoint).toHaveBeenCalledWith('pp-del')
   })
 })
 

@@ -65,6 +65,9 @@ export class SupabaseRepository implements BridgeRepository {
   async savePainPoint(painPoint: PainPoint): Promise<void> {
     await this.client.from('pain_points').upsert(painPoint)
   }
+  async deletePainPoint(id: string): Promise<void> {
+    await this.client.from('pain_points').delete().eq('id', id)
+  }
   async savePoolMember(member: PoolMember): Promise<void> {
     await this.client.from('pool_members').upsert(member)
   }

@@ -19,6 +19,8 @@ interface BridgeStore {
   assignOwner: (appId: string, ownerId: string) => void
   decide: (appId: string, outcome: 'go' | 'redirect') => void
   addPainPoint: (pp: PainPoint) => void
+  updatePainPoint: (pp: PainPoint) => void
+  deletePainPoint: (ppId: string) => void
   matchPainPoint: (ppId: string, appId: string) => void
   addToPool: (member: PoolMember) => void
   clusterPainPoints: () => Promise<void>
@@ -128,6 +130,20 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   addPainPoint: (pp) => {
     set((state) => ({ painPoints: [pp, ...state.painPoints] }))
     void getRepository().savePainPoint(pp)
+  },
+
+  // Admin edit — replace a pain point's fields in place and persist.
+  updatePainPoint: (pp) => {
+    set((state) => ({
+      painPoints: state.painPoints.map((p) => (p.id === pp.id ? pp : p)),
+    }))
+    void getRepository().savePainPoint(pp)
+  },
+
+  // Admin delete — remove a pain point and persist the deletion.
+  deletePainPoint: (ppId) => {
+    set((state) => ({ painPoints: state.painPoints.filter((p) => p.id !== ppId) }))
+    void getRepository().deletePainPoint(ppId)
   },
 
   matchPainPoint: (ppId, appId) => {

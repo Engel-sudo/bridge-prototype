@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { PainPoint } from '../store/types'
+import { Pencil, Trash2, Check, X } from 'lucide-react'
+import type { PainPoint, PainPointStatus } from '../store/types'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 
@@ -8,6 +10,9 @@ const statusStyles: Record<string, { color: string; bg: string; label: string }>
   matched: { color: 'var(--accent)', bg: 'var(--accent-dim)', label: 'Matched' },
   in_pilot: { color: 'var(--blue)', bg: 'rgba(59,130,246,0.12)', label: 'In Pilot' },
 }
+
+const DEPARTMENTS = ['Quality', 'Production', 'Logistics', 'R&D', 'Procurement', 'Innovation & Ventures']
+const STATUSES: PainPointStatus[] = ['open', 'matched', 'in_pilot']
 
 interface Props {
   painPoint: PainPoint
@@ -22,13 +27,65 @@ function truncateWords(text: string, max: number): string {
   return (lastSpace > 0 ? sliced.slice(0, lastSpace) : sliced) + '…'
 }
 
+const iconBtn: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+  width: '26px', height: '26px', border: '1px solid var(--border-strong)',
+  background: 'transparent', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--text-faint)',
+}
+
 export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Props) {
   const navigate = useNavigate()
   const { role } = useAuthStore()
-  const { applications, matchPainPoint } = useBridgeStore()
+  const { applications, matchPainPoint, updatePainPoint, deletePainPoint } = useBridgeStore()
   const canMatch = role === 'internal_lead' || role === 'admin'
+  const isAdmin = role === 'admin'
   const style = statusStyles[painPoint.status]
   const linkedApp = applications.find(a => a.id === painPoint.linkedApplicationId)
+
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState({
+    title: painPoint.title,
+    description: painPoint.description,
+    department: painPoint.department,
+    status: painPoint.status,
+  })
+
+  function startEdit() {
+    setDraft({ title: painPoint.title, description: painPoint.description, department: painPoint.department, status: painPoint.status })
+    setEditing(true)
+  }
+  function save() {
+    updatePainPoint({ ...painPoint, ...draft })
+    setEditing(false)
+  }
+  function remove() {
+    if (window.confirm(`Delete pain point “${painPoint.title}”? This can't be undone.`)) {
+      deletePainPoint(painPoint.id)
+    }
+  }
+
+  // ── Admin edit mode ─────────────────────────────────────────────────────
+  if (editing) {
+    return (
+      <div className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>Editing pain point</span>
+        <input className="input" value={draft.title} onChange={e => setDraft(d => ({ ...d, title: e.target.value }))} placeholder="Title" />
+        <textarea className="input" value={draft.description} onChange={e => setDraft(d => ({ ...d, description: e.target.value }))} placeholder="Description" style={{ minHeight: '70px' }} />
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <select className="input" value={draft.department} onChange={e => setDraft(d => ({ ...d, department: e.target.value }))}>
+            {DEPARTMENTS.map(dep => <option key={dep} value={dep}>{dep}</option>)}
+          </select>
+          <select className="input" value={draft.status} onChange={e => setDraft(d => ({ ...d, status: e.target.value as PainPointStatus }))}>
+            {STATUSES.map(s => <option key={s} value={s}>{statusStyles[s].label}</option>)}
+          </select>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button onClick={() => setEditing(false)} style={{ ...iconBtn, width: 'auto', padding: '0 12px', gap: '6px', fontFamily: 'AudiType', fontSize: '12px' }}><X size={13} /> Cancel</button>
+          <button onClick={save} className="btn-primary" style={{ padding: '6px 14px', fontSize: '12px' }}><Check size={13} /> Save</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="card" style={{ padding: '16px', transition: 'all 0.15s' }}>
@@ -41,12 +98,20 @@ export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Pr
             {painPoint.title}
           </div>
         </div>
-        <span style={{
-          fontFamily: 'AudiType', fontSize: '11px',
-          color: style.color, background: style.bg, padding: '3px 8px', borderRadius: '0', flexShrink: 0,
-        }}>
-          {style.label}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <span style={{
+            fontFamily: 'AudiType', fontSize: '11px',
+            color: style.color, background: style.bg, padding: '3px 8px', borderRadius: '0',
+          }}>
+            {style.label}
+          </span>
+          {isAdmin && (
+            <>
+              <button title="Edit" onClick={startEdit} style={iconBtn}><Pencil size={13} /></button>
+              <button title="Delete" onClick={remove} style={{ ...iconBtn, color: 'var(--red)', borderColor: 'var(--red)' }}><Trash2 size={13} /></button>
+            </>
+          )}
+        </div>
       </div>
 
       {clusterLabel && (

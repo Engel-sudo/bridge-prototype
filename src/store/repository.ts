@@ -39,6 +39,7 @@ export interface BridgeRepository {
   saveApplication(app: Application): Promise<void>
   saveOwner(owner: Owner): Promise<void>
   savePainPoint(painPoint: PainPoint): Promise<void>
+  deletePainPoint(id: string): Promise<void>
   savePoolMember(member: PoolMember): Promise<void>
   saveMetrics(metrics: SystemMetrics): Promise<void>
   saveClusters(clusters: Cluster[]): Promise<void>
@@ -72,6 +73,7 @@ export class InMemoryRepository implements BridgeRepository {
   async saveApplication(): Promise<void> {}
   async saveOwner(): Promise<void> {}
   async savePainPoint(): Promise<void> {}
+  async deletePainPoint(): Promise<void> {}
   async savePoolMember(): Promise<void> {}
   async saveMetrics(): Promise<void> {}
   async saveClusters(): Promise<void> {}
