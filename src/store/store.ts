@@ -23,6 +23,7 @@ interface BridgeStore {
   deletePainPoint: (ppId: string) => void
   matchPainPoint: (ppId: string, appId: string) => void
   addToPool: (member: PoolMember) => void
+  addCommunityEvent: (event: CommunityEvent) => void
   clusterPainPoints: () => Promise<void>
   resetDemo: () => void
 }
@@ -160,6 +161,12 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     if (get().poolMembers.some((m) => m.id === member.id)) return
     set((state) => ({ poolMembers: [member, ...state.poolMembers] }))
     void getRepository().savePoolMember(member)
+  },
+
+  // Admin creates a community event (invitations) and persists it.
+  addCommunityEvent: (event) => {
+    set((state) => ({ communityEvents: [event, ...state.communityEvents] }))
+    void getRepository().saveCommunityEvent(event)
   },
 
   // On-demand grouping. Delegates to the repository (local stub in the demo,

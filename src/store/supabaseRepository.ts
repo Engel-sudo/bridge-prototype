@@ -71,6 +71,9 @@ export class SupabaseRepository implements BridgeRepository {
   async savePoolMember(member: PoolMember): Promise<void> {
     await this.client.from('pool_members').upsert(member)
   }
+  async saveCommunityEvent(event: CommunityEvent): Promise<void> {
+    await this.client.from('community_events').upsert(event)
+  }
   async saveMetrics(metrics: SystemMetrics): Promise<void> {
     await this.client.from('system_metrics').upsert({ ...metrics, id: METRICS_ID })
   }

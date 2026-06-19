@@ -41,6 +41,7 @@ export interface BridgeRepository {
   savePainPoint(painPoint: PainPoint): Promise<void>
   deletePainPoint(id: string): Promise<void>
   savePoolMember(member: PoolMember): Promise<void>
+  saveCommunityEvent(event: CommunityEvent): Promise<void>
   saveMetrics(metrics: SystemMetrics): Promise<void>
   saveClusters(clusters: Cluster[]): Promise<void>
   /** Group the given pain points into themes. */
@@ -75,6 +76,7 @@ export class InMemoryRepository implements BridgeRepository {
   async savePainPoint(): Promise<void> {}
   async deletePainPoint(): Promise<void> {}
   async savePoolMember(): Promise<void> {}
+  async saveCommunityEvent(): Promise<void> {}
   async saveMetrics(): Promise<void> {}
   async saveClusters(): Promise<void> {}
   async clusterPainPoints(painPoints: PainPoint[]): Promise<Cluster[]> {

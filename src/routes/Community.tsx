@@ -1,10 +1,13 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Calendar, MapPin, Users, Lightbulb } from 'lucide-react'
+import { Calendar, MapPin, Users, Lightbulb, Plus } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import type { CommunityEventType } from '../store/types'
+
+const EVENT_TYPES: CommunityEventType[] = ['workshop', 'networking', 'demo_day', 'hackathon']
 
 const EVENT_TYPE_LABEL: Record<CommunityEventType, string> = {
   workshop: 'Workshop',
@@ -21,12 +24,37 @@ const EVENT_TYPE_COLOR: Record<CommunityEventType, string> = {
 }
 
 export default function Community() {
-  const { selectedMemberId } = useAuthStore()
-  const { poolMembers, communityEvents, painPoints } = useBridgeStore()
+  const { selectedMemberId, role } = useAuthStore()
+  const { poolMembers, communityEvents, painPoints, addCommunityEvent } = useBridgeStore()
+  const isAdmin = role === 'admin'
+
+  const [showEventForm, setShowEventForm] = useState(false)
+  const [evtForm, setEvtForm] = useState({
+    title: '', type: 'workshop' as CommunityEventType, date: '', location: '', description: '',
+  })
 
   const member = poolMembers.find(m => m.id === selectedMemberId) ?? poolMembers[0]
-  const myEvents = communityEvents.filter(e => e.invitedMemberIds.includes(member?.id ?? ''))
+  // Admins manage the whole programme, so they see every event; members see only theirs.
+  const myEvents = isAdmin
+    ? communityEvents
+    : communityEvents.filter(e => e.invitedMemberIds.includes(member?.id ?? ''))
   const openPainPoints = painPoints.filter(pp => pp.status === 'open')
+
+  function handleAddEvent(e: React.FormEvent) {
+    e.preventDefault()
+    if (!evtForm.title.trim()) return
+    addCommunityEvent({
+      id: `evt-${Date.now()}`,
+      title: evtForm.title,
+      type: evtForm.type,
+      date: evtForm.date || 'TBD',
+      location: evtForm.location || 'TBD',
+      description: evtForm.description,
+      invitedMemberIds: poolMembers.map(m => m.id), // invite the whole pool
+    })
+    setEvtForm({ title: '', type: 'workshop', date: '', location: '', description: '' })
+    setShowEventForm(false)
+  }
 
   if (!member) return null
 
@@ -85,10 +113,41 @@ export default function Community() {
 
       {/* Events */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-          <Calendar size={14} color="var(--text-faint)" />
-          <span className="kicker">your invitations</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Calendar size={14} color="var(--text-faint)" />
+            <span className="kicker">{isAdmin ? 'all events' : 'your invitations'}</span>
+          </div>
+          {isAdmin && (
+            <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => setShowEventForm(v => !v)}>
+              <Plus size={13} /> Add event
+            </button>
+          )}
         </div>
+
+        {/* Admin: create event */}
+        <AnimatePresence>
+          {isAdmin && showEventForm && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden', marginBottom: '14px' }}>
+              <form onSubmit={handleAddEvent} className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <input className="input" placeholder="Event title *" value={evtForm.title} onChange={e => setEvtForm(f => ({ ...f, title: e.target.value }))} required />
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <select className="input" style={{ flex: 1 }} value={evtForm.type} onChange={e => setEvtForm(f => ({ ...f, type: e.target.value as CommunityEventType }))}>
+                    {EVENT_TYPES.map(t => <option key={t} value={t}>{EVENT_TYPE_LABEL[t]}</option>)}
+                  </select>
+                  <input className="input" style={{ flex: 1 }} type="date" value={evtForm.date} onChange={e => setEvtForm(f => ({ ...f, date: e.target.value }))} />
+                  <input className="input" style={{ flex: 1 }} placeholder="Location" value={evtForm.location} onChange={e => setEvtForm(f => ({ ...f, location: e.target.value }))} />
+                </div>
+                <textarea className="input" placeholder="Description" value={evtForm.description} onChange={e => setEvtForm(f => ({ ...f, description: e.target.value }))} style={{ minHeight: '60px' }} />
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                  <button type="button" className="btn-secondary" style={{ padding: '6px 14px', fontSize: '12px' }} onClick={() => setShowEventForm(false)}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '6px 14px', fontSize: '12px' }}>Create event</button>
+                </div>
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>Invites all {poolMembers.length} community members.</span>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {myEvents.length === 0 ? (
           <div className="card" style={{ padding: '20px', textAlign: 'center' }}>

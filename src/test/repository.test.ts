@@ -69,6 +69,7 @@ describe('store write-through', () => {
       savePainPoint: vi.fn().mockResolvedValue(undefined),
       deletePainPoint: vi.fn().mockResolvedValue(undefined),
       savePoolMember: vi.fn().mockResolvedValue(undefined),
+      saveCommunityEvent: vi.fn().mockResolvedValue(undefined),
       saveMetrics: vi.fn().mockResolvedValue(undefined),
       saveClusters: vi.fn().mockResolvedValue(undefined),
       clusterPainPoints: vi.fn().mockResolvedValue([]),
@@ -107,6 +108,21 @@ describe('store write-through', () => {
     useBridgeStore.getState().deletePainPoint('pp-del')
     expect(useBridgeStore.getState().painPoints.some((p) => p.id === 'pp-del')).toBe(false)
     expect(repo.deletePainPoint).toHaveBeenCalledWith('pp-del')
+  })
+
+  it('admin add community event stores it locally and persists it', () => {
+    const before = useBridgeStore.getState().communityEvents.length
+    useBridgeStore.getState().addCommunityEvent({
+      id: 'evt-test',
+      title: 'Demo Day',
+      type: 'demo_day',
+      date: '2026-07-01',
+      location: 'Ingolstadt',
+      description: 'x',
+      invitedMemberIds: [],
+    })
+    expect(useBridgeStore.getState().communityEvents.length).toBe(before + 1)
+    expect(repo.saveCommunityEvent).toHaveBeenCalledOnce()
   })
 })
 
