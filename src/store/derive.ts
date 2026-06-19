@@ -1,4 +1,20 @@
-import type { Application, PainPoint } from './types'
+import type { Application, PainPoint, Stage } from './types'
+
+/**
+ * Whether a founder at the given application stage has earned BRIDGE community
+ * access. Acceptance (decision_go) and everything downstream unlocks it; a
+ * redirect does not — redirected founders join the pool the existing way (an
+ * admin adds them, like Elena Vogel).
+ */
+const COMMUNITY_STAGES: ReadonlySet<Stage> = new Set<Stage>([
+  'decision_go',
+  'matched_pain_owner',
+  'path_to_production',
+])
+
+export function canAccessCommunity(stage: Stage): boolean {
+  return COMMUNITY_STAGES.has(stage)
+}
 
 /**
  * Returns an array of `weeks` numbers representing pipeline depth over time.

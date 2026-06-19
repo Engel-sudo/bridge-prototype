@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import type { Application, PainPoint, Owner, SystemMetrics, Stage, PoolMember, CommunityEvent } from './types'
-import { seedApplications, seedOwners, seedPainPoints, seedMetrics, seedPoolMembers, seedCommunityEvents } from './seed'
+import type { Application, PainPoint, Owner, SystemMetrics, Stage, PoolMember, CommunityEvent, TruckStop } from './types'
+import { seedApplications, seedOwners, seedPainPoints, seedMetrics, seedPoolMembers, seedCommunityEvents, seedTruckStops } from './seed'
 import { getRepository } from './repository'
 import type { Cluster } from './clustering'
 
@@ -11,6 +11,7 @@ interface BridgeStore {
   metrics: SystemMetrics
   poolMembers: PoolMember[]
   communityEvents: CommunityEvent[]
+  truckStops: TruckStop[]
   clusters: Cluster[]
 
   hydrate: () => Promise<void>
@@ -24,6 +25,11 @@ interface BridgeStore {
   matchPainPoint: (ppId: string, appId: string) => void
   addToPool: (member: PoolMember) => void
   addCommunityEvent: (event: CommunityEvent) => void
+  updateCommunityEvent: (event: CommunityEvent) => void
+  deleteCommunityEvent: (eventId: string) => void
+  addTruckStop: (stop: TruckStop) => void
+  updateTruckStop: (stop: TruckStop) => void
+  deleteTruckStop: (stopId: string) => void
   clusterPainPoints: () => Promise<void>
   resetDemo: () => void
 }
@@ -52,6 +58,7 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   metrics: seedMetrics,
   poolMembers: seedPoolMembers,
   communityEvents: seedCommunityEvents,
+  truckStops: seedTruckStops,
   clusters: [],
 
   // Load persisted state from the backend on app start. With the in-memory
@@ -169,6 +176,38 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     void getRepository().saveCommunityEvent(event)
   },
 
+  // Admin edit — replace a community event's fields in place and persist.
+  updateCommunityEvent: (event) => {
+    set((state) => ({
+      communityEvents: state.communityEvents.map((e) => (e.id === event.id ? event : e)),
+    }))
+    void getRepository().saveCommunityEvent(event)
+  },
+
+  // Admin delete — remove a community event and persist the deletion.
+  deleteCommunityEvent: (eventId) => {
+    set((state) => ({ communityEvents: state.communityEvents.filter((e) => e.id !== eventId) }))
+    void getRepository().deleteCommunityEvent(eventId)
+  },
+
+  // Admin manages the recruiting truck's tour route.
+  addTruckStop: (stop) => {
+    set((state) => ({ truckStops: [...state.truckStops, stop] }))
+    void getRepository().saveTruckStop(stop)
+  },
+
+  updateTruckStop: (stop) => {
+    set((state) => ({
+      truckStops: state.truckStops.map((s) => (s.id === stop.id ? stop : s)),
+    }))
+    void getRepository().saveTruckStop(stop)
+  },
+
+  deleteTruckStop: (stopId) => {
+    set((state) => ({ truckStops: state.truckStops.filter((s) => s.id !== stopId) }))
+    void getRepository().deleteTruckStop(stopId)
+  },
+
   // On-demand grouping. Delegates to the repository (local stub in the demo,
   // Gemini Edge Function when Supabase is configured), then stamps each pain
   // point with its theme so the map can group and filter by cluster.
@@ -197,6 +236,7 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
       metrics: seedMetrics,
       poolMembers: seedPoolMembers,
       communityEvents: seedCommunityEvents,
+      truckStops: seedTruckStops,
       clusters: [],
     })
     void getRepository().reseed().catch(() => {})

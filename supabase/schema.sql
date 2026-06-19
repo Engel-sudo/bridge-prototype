@@ -90,6 +90,18 @@ create table if not exists community_events (
   "invitedMemberIds" jsonb default '[]'::jsonb
 );
 
+create table if not exists truck_stops (
+  id text primary key,
+  city text,
+  venue text,
+  date text,
+  x numeric,
+  y numeric,
+  status text,
+  description text,
+  "registerUrl" text
+);
+
 create table if not exists system_metrics (
   id integer primary key,
   "activePilots" integer,
@@ -114,4 +126,5 @@ alter table pain_points           disable row level security;
 alter table pain_point_clusters   disable row level security;
 alter table pool_members          disable row level security;
 alter table community_events      disable row level security;
+alter table truck_stops           disable row level security;
 alter table system_metrics        disable row level security;

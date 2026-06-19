@@ -137,6 +137,18 @@ export default function Landing() {
             >
               Apply now <ArrowRight size={17} />
             </button>
+            <button onClick={() => navigate('/tour')} style={{
+              display: 'inline-flex', alignItems: 'center', gap: '9px',
+              fontFamily: "'AudiType', system-ui", fontWeight: 600, fontSize: '15px',
+              padding: '13px 24px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+              background: 'transparent', color: 'var(--text)', border: '1px solid var(--border-strong)',
+              transition: 'border-color 0.15s, transform 0.15s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'scale(1.03)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.transform = 'scale(1)' }}
+            >
+              See the tour
+            </button>
           </motion.div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import type { Owner, Application, PainPoint, SystemMetrics, PoolMember, CommunityEvent } from './types'
+import type { Owner, Application, PainPoint, SystemMetrics, PoolMember, CommunityEvent, TruckStop } from './types'
 
 export const seedOwners: Owner[] = [
   {
@@ -279,6 +279,100 @@ export const seedCommunityEvents: CommunityEvent[] = [
     description: 'Annual CCC demo day. Community members are invited as observers and future applicants. Watch the current cohort present to Audi leadership.',
     type: 'demo_day',
     invitedMemberIds: ['pm1', 'pm2'],
+  },
+  {
+    id: 'evt4',
+    title: 'BRIDGE Build Sprint — 24h Hackathon',
+    date: '2026-08-22',
+    location: 'Digital Hub, Munich',
+    description: 'Overnight hackathon where community startups team up with Audi engineers to prototype against a live production pain point. Hardware and compute provided.',
+    type: 'hackathon',
+    invitedMemberIds: ['pm1', 'pm2'],
+  },
+  {
+    id: 'evt5',
+    title: 'Procurement Fast-Track Workshop',
+    date: '2026-07-24',
+    location: 'Audi Forum, Ingolstadt',
+    description: 'Hands-on session on the startup procurement fast-track: how to pass qualification for a sub-12-month pilot without the Tier 1 financial history check.',
+    type: 'workshop',
+    invitedMemberIds: ['pm1', 'pm2'],
+  },
+  {
+    id: 'evt6',
+    title: 'Founders & Leads Mixer',
+    date: '2026-07-03',
+    location: 'Audi Forum, Ingolstadt',
+    description: 'Informal evening connecting community founders with internal leads across Production, Quality, Logistics and R&D. Bring a one-line problem statement.',
+    type: 'networking',
+    invitedMemberIds: ['pm2'],
+  },
+]
+
+export const seedTruckStops: TruckStop[] = [
+  {
+    id: 'ts1',
+    city: 'Aachen',
+    venue: 'RWTH Aachen — Collective Incubator',
+    date: '2026-05-12',
+    x: 16,
+    y: 46,
+    status: 'past',
+    description: 'Kicked off the BRIDGE recruiting tour at RWTH. 40+ deep-tech teams pitched; 3 invited to apply.',
+  },
+  {
+    id: 'ts2',
+    city: 'Berlin',
+    venue: 'TU Berlin — Centre for Entrepreneurship',
+    date: '2026-06-04',
+    x: 72,
+    y: 24,
+    status: 'past',
+    description: 'AI and mobility startup meetup. The truck demoed live pain points from the Ingolstadt production line.',
+  },
+  {
+    id: 'ts3',
+    city: 'Munich',
+    venue: 'TUM — UnternehmerTUM, Garching',
+    date: '2026-06-18',
+    x: 56,
+    y: 84,
+    status: 'current',
+    description: 'The truck is here now. Open scouting day with UnternehmerTUM founders — drop in for a 1:1 with a BRIDGE lead.',
+    registerUrl: 'https://bridge.audi/tour/munich',
+  },
+  {
+    id: 'ts4',
+    city: 'Stuttgart',
+    venue: 'University of Stuttgart — ARENA2036',
+    date: '2026-07-02',
+    x: 36,
+    y: 74,
+    status: 'upcoming',
+    description: 'Manufacturing and sensing focus at the ARENA2036 research campus. Bring hardware — there is a demo bay.',
+    registerUrl: 'https://bridge.audi/tour/stuttgart',
+  },
+  {
+    id: 'ts5',
+    city: 'Dresden',
+    venue: 'TU Dresden — dresden|exists',
+    date: '2026-07-16',
+    x: 76,
+    y: 44,
+    status: 'upcoming',
+    description: 'Microelectronics and materials scouting stop in the Silicon Saxony cluster.',
+    registerUrl: 'https://bridge.audi/tour/dresden',
+  },
+  {
+    id: 'ts6',
+    city: 'Hamburg',
+    venue: 'Hamburg — Startup Dock, TUHH',
+    date: '2026-07-29',
+    x: 48,
+    y: 18,
+    status: 'upcoming',
+    description: 'Final northern stop of the summer tour. Logistics and supply-chain startups especially welcome.',
+    registerUrl: 'https://bridge.audi/tour/hamburg',
   },
 ]
 

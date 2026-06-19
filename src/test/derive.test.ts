@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { getPipelineDepthSeries, getSparklineSeries, getDeptBarData } from '../store/derive'
-import type { Application, PainPoint } from '../store/types'
+import { getPipelineDepthSeries, getSparklineSeries, getDeptBarData, canAccessCommunity } from '../store/derive'
+import type { Application, PainPoint, Stage } from '../store/types'
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -37,6 +37,23 @@ function makePainPoint(overrides: Partial<PainPoint> = {}): PainPoint {
     ...overrides,
   }
 }
+
+describe('canAccessCommunity', () => {
+  const accepted: Stage[] = ['decision_go', 'matched_pain_owner', 'path_to_production']
+  const denied: Stage[] = ['submitted', 'named_contact', 'owner_assigned', 'in_review', 'signal_sent', 'decision_redirect']
+
+  it.each(accepted)('grants access at %s', (stage) => {
+    expect(canAccessCommunity(stage)).toBe(true)
+  })
+
+  it.each(denied)('denies access at %s', (stage) => {
+    expect(canAccessCommunity(stage)).toBe(false)
+  })
+
+  it('denies a redirected founder even though it sits at the decision point', () => {
+    expect(canAccessCommunity('decision_redirect')).toBe(false)
+  })
+})
 
 const today = new Date().toISOString().slice(0, 10)
 const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)

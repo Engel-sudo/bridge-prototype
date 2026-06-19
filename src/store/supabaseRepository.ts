@@ -5,6 +5,7 @@ import type {
   PainPoint,
   PoolMember,
   CommunityEvent,
+  TruckStop,
   SystemMetrics,
 } from './types'
 import type { BridgeData, BridgeRepository } from './repository'
@@ -30,12 +31,13 @@ export class SupabaseRepository implements BridgeRepository {
 
   async loadAll(): Promise<BridgeData | null> {
     try {
-      const [apps, owners, pps, pool, events, metricsRows, clusters] = await Promise.all([
+      const [apps, owners, pps, pool, events, truckStops, metricsRows, clusters] = await Promise.all([
         this.client.from('applications').select('*'),
         this.client.from('owners').select('*'),
         this.client.from('pain_points').select('*'),
         this.client.from('pool_members').select('*'),
         this.client.from('community_events').select('*'),
+        this.client.from('truck_stops').select('*'),
         this.client.from('system_metrics').select('*').eq('id', METRICS_ID).single(),
         this.client.from('pain_point_clusters').select('*'),
       ])
@@ -47,6 +49,7 @@ export class SupabaseRepository implements BridgeRepository {
       painPoints: (pps.data ?? []) as PainPoint[],
       poolMembers: (pool.data ?? []) as PoolMember[],
       communityEvents: (events.data ?? []) as CommunityEvent[],
+      truckStops: (truckStops.data ?? []) as TruckStop[],
         metrics,
         clusters: (clusters.data ?? []) as Cluster[],
       }
@@ -73,6 +76,15 @@ export class SupabaseRepository implements BridgeRepository {
   }
   async saveCommunityEvent(event: CommunityEvent): Promise<void> {
     await this.client.from('community_events').upsert(event)
+  }
+  async deleteCommunityEvent(id: string): Promise<void> {
+    await this.client.from('community_events').delete().eq('id', id)
+  }
+  async saveTruckStop(stop: TruckStop): Promise<void> {
+    await this.client.from('truck_stops').upsert(stop)
+  }
+  async deleteTruckStop(id: string): Promise<void> {
+    await this.client.from('truck_stops').delete().eq('id', id)
   }
   async saveMetrics(metrics: SystemMetrics): Promise<void> {
     await this.client.from('system_metrics').upsert({ ...metrics, id: METRICS_ID })

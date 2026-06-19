@@ -4,6 +4,7 @@ import type {
   PainPoint,
   PoolMember,
   CommunityEvent,
+  TruckStop,
   SystemMetrics,
 } from './types'
 import {
@@ -13,6 +14,7 @@ import {
   seedMetrics,
   seedPoolMembers,
   seedCommunityEvents,
+  seedTruckStops,
 } from './seed'
 import { type Cluster, localStubCluster } from './clustering'
 import { SupabaseRepository } from './supabaseRepository'
@@ -25,6 +27,7 @@ export interface BridgeData {
   metrics: SystemMetrics
   poolMembers: PoolMember[]
   communityEvents: CommunityEvent[]
+  truckStops: TruckStop[]
   clusters: Cluster[]
 }
 
@@ -42,6 +45,9 @@ export interface BridgeRepository {
   deletePainPoint(id: string): Promise<void>
   savePoolMember(member: PoolMember): Promise<void>
   saveCommunityEvent(event: CommunityEvent): Promise<void>
+  deleteCommunityEvent(id: string): Promise<void>
+  saveTruckStop(stop: TruckStop): Promise<void>
+  deleteTruckStop(id: string): Promise<void>
   saveMetrics(metrics: SystemMetrics): Promise<void>
   saveClusters(clusters: Cluster[]): Promise<void>
   /** Group the given pain points into themes. */
@@ -58,6 +64,7 @@ function freshSeed(): BridgeData {
     metrics: seedMetrics,
     poolMembers: seedPoolMembers,
     communityEvents: seedCommunityEvents,
+    truckStops: seedTruckStops,
     clusters: [],
   }
 }
@@ -77,6 +84,9 @@ export class InMemoryRepository implements BridgeRepository {
   async deletePainPoint(): Promise<void> {}
   async savePoolMember(): Promise<void> {}
   async saveCommunityEvent(): Promise<void> {}
+  async deleteCommunityEvent(): Promise<void> {}
+  async saveTruckStop(): Promise<void> {}
+  async deleteTruckStop(): Promise<void> {}
   async saveMetrics(): Promise<void> {}
   async saveClusters(): Promise<void> {}
   async clusterPainPoints(painPoints: PainPoint[]): Promise<Cluster[]> {

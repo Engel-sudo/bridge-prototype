@@ -4,6 +4,7 @@ import { RotateCcw, LogOut, Sun, Moon } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import { seedApplications } from '../store/seed'
+import { canAccessCommunity } from '../store/derive'
 import { useTheme } from '../theme'
 import type { PoolMember } from '../store/types'
 
@@ -41,11 +42,12 @@ export default function Nav() {
   const navigate = useNavigate()
   const resetDemo = useBridgeStore(s => s.resetDemo)
   const poolMembers = useBridgeStore(s => s.poolMembers)
+  const applications = useBridgeStore(s => s.applications)
   const { role, selectedAppId, selectedOwnerId, selectedMemberId, logout } = useAuthStore()
   const { theme, toggleTheme } = useTheme()
 
-  // Minimal public header for landing and login pages
-  if (pathname === '/' || pathname === '/login') {
+  // Minimal public header for landing, login and the public tour pages
+  if (pathname === '/' || pathname === '/login' || pathname === '/tour') {
     return (
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
@@ -54,7 +56,7 @@ export default function Nav() {
         display: 'flex', alignItems: 'center',
         padding: '0 32px', height: '56px',
       }}>
-        <Link to={pathname === '/login' ? '/' : '/login'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Link to={pathname === '/' ? '/login' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '28px', height: '28px', background: 'var(--accent)', borderRadius: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--accent-contrast)' }}>B</span>
           </div>
@@ -93,6 +95,15 @@ export default function Nav() {
     if (l.requiresAppId === false &&  selectedAppId) return false
     return true
   })
+
+  // Accepted founders earn community access — surface the link once their
+  // application reaches the Go decision (or beyond).
+  const founderApp = role === 'startup' && selectedAppId
+    ? applications.find(a => a.id === selectedAppId)
+    : null
+  if (founderApp && canAccessCommunity(founderApp.stage)) {
+    visibleLinks.push({ to: '/community', label: 'Community', mono: 'community', roles: ['startup'], requiresAppId: null })
+  }
   const badge = roleBadge(role, selectedAppId, selectedOwnerId, selectedMemberId, poolMembers)
 
   // For startup: "My Application" links to their specific app if they have one

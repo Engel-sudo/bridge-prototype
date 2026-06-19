@@ -96,6 +96,25 @@ export interface CommunityEvent {
   invitedMemberIds: string[]
 }
 
+export type TruckStopStatus = 'past' | 'current' | 'upcoming'
+
+/**
+ * A stop on the BRIDGE recruiting truck's tour. `x`/`y` are the pin position as a
+ * percentage (0–100) of the Germany map's viewBox, so the same coordinates work
+ * at any rendered size.
+ */
+export interface TruckStop {
+  id: string
+  city: string
+  venue: string
+  date: string
+  x: number
+  y: number
+  status: TruckStopStatus
+  description: string
+  registerUrl?: string
+}
+
 export interface SystemMetrics {
   activePilots: number
   implementations: number

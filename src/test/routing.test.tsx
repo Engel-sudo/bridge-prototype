@@ -2,8 +2,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { useAuthStore, type Role } from '../store/authStore'
+import { useBridgeStore } from '../store/store'
 import ProtectedRoute from '../components/ProtectedRoute'
 import Landing from '../routes/Landing'
+import Tour from '../routes/Tour'
 
 beforeEach(() => {
   useAuthStore.getState().logout()
@@ -118,6 +120,63 @@ describe('ProtectedRoute — admin role', () => {
   it('can view /founder/:id as admin', () => {
     renderProtected('/founder/APP-2024-0047', 'admin')
     expect(screen.getByText('founder status')).toBeInTheDocument()
+  })
+})
+
+describe('Community access — startup stage gate', () => {
+  // Seed apps: APP-2024-0031 (FlowRoute) is decision_go; APP-2024-0047 is in_review.
+  beforeEach(() => {
+    useBridgeStore.getState().resetDemo()
+  })
+
+  function renderCommunity(appId: string) {
+    useAuthStore.getState().login('startup', { appId })
+    return render(
+      <MemoryRouter initialEntries={['/community']}>
+        <Routes>
+          <Route path="/login" element={<div>login page</div>} />
+          <Route path="/founder/:id" element={<div>founder status</div>} />
+          <Route path="/apply" element={<div>apply form</div>} />
+          <Route path="/community" element={
+            <ProtectedRoute allowedRoles={['pool_member', 'internal_lead', 'admin', 'startup']} startupNeedsCommunityAccess>
+              <div>community page</div>
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it('admits an accepted founder (decision_go) into the community', () => {
+    renderCommunity('APP-2024-0031')
+    expect(screen.getByText('community page')).toBeInTheDocument()
+  })
+
+  it('blocks a pre-acceptance founder (in_review) from the community', () => {
+    renderCommunity('APP-2024-0047')
+    expect(screen.queryByText('community page')).not.toBeInTheDocument()
+    expect(screen.getByText('founder status')).toBeInTheDocument()
+  })
+})
+
+describe('Public tour page', () => {
+  beforeEach(() => {
+    class MockIO {
+      observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn()
+    }
+    vi.stubGlobal('IntersectionObserver', MockIO)
+    useBridgeStore.getState().resetDemo()
+  })
+
+  it('renders /tour when logged out', () => {
+    render(
+      <MemoryRouter initialEntries={['/tour']}>
+        <Routes>
+          <Route path="/tour" element={<Tour />} />
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('heading', { name: /the bridge truck is coming to you/i })).toBeInTheDocument()
   })
 })
 

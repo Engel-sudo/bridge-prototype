@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
+import { useBridgeStore } from '../store/store'
 import Nav from '../components/Nav'
 
 beforeEach(() => {
@@ -109,5 +110,24 @@ describe('Nav — startup link visibility', () => {
     renderNav('/apply')
     expect(screen.getByText('Apply')).toBeInTheDocument()
     expect(screen.queryByText('My Application')).not.toBeInTheDocument()
+  })
+})
+
+describe('Nav — accepted-founder community link', () => {
+  // Seed apps: APP-2024-0031 (FlowRoute) is decision_go; APP-2024-0047 is in_review.
+  beforeEach(() => {
+    useBridgeStore.getState().resetDemo()
+  })
+
+  it('shows Community for a startup whose application is accepted', () => {
+    useAuthStore.getState().login('startup', { appId: 'APP-2024-0031' })
+    renderNav('/founder/APP-2024-0031')
+    expect(screen.getByText('Community')).toBeInTheDocument()
+  })
+
+  it('hides Community for a startup before acceptance', () => {
+    useAuthStore.getState().login('startup', { appId: 'APP-2024-0047' })
+    renderNav('/founder/APP-2024-0047')
+    expect(screen.queryByText('Community')).not.toBeInTheDocument()
   })
 })

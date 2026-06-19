@@ -12,6 +12,7 @@ import OwnerConsole from './routes/OwnerConsole'
 import PainPointMap from './routes/PainPointMap'
 import Dashboard from './routes/Dashboard'
 import Community from './routes/Community'
+import Tour from './routes/Tour'
 
 export default function App() {
   const hydrate = useBridgeStore((s) => s.hydrate)
@@ -28,6 +29,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Landing />} />
+          <Route path="/tour" element={<Tour />} />
 
           <Route path="/apply" element={
             <ProtectedRoute allowedRoles={['startup']}>
@@ -65,7 +67,7 @@ export default function App() {
           } />
 
           <Route path="/community" element={
-            <ProtectedRoute allowedRoles={['pool_member', 'internal_lead', 'admin']}>
+            <ProtectedRoute allowedRoles={['pool_member', 'internal_lead', 'admin', 'startup']} startupNeedsCommunityAccess>
               <Community />
             </ProtectedRoute>
           } />

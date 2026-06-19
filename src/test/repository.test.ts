@@ -58,6 +58,10 @@ describe('store write-through', () => {
     savePainPoint: ReturnType<typeof vi.fn>
     saveMetrics: ReturnType<typeof vi.fn>
     deletePainPoint: ReturnType<typeof vi.fn>
+    saveCommunityEvent: ReturnType<typeof vi.fn>
+    deleteCommunityEvent: ReturnType<typeof vi.fn>
+    saveTruckStop: ReturnType<typeof vi.fn>
+    deleteTruckStop: ReturnType<typeof vi.fn>
   }
 
   beforeEach(() => {
@@ -70,6 +74,9 @@ describe('store write-through', () => {
       deletePainPoint: vi.fn().mockResolvedValue(undefined),
       savePoolMember: vi.fn().mockResolvedValue(undefined),
       saveCommunityEvent: vi.fn().mockResolvedValue(undefined),
+      deleteCommunityEvent: vi.fn().mockResolvedValue(undefined),
+      saveTruckStop: vi.fn().mockResolvedValue(undefined),
+      deleteTruckStop: vi.fn().mockResolvedValue(undefined),
       saveMetrics: vi.fn().mockResolvedValue(undefined),
       saveClusters: vi.fn().mockResolvedValue(undefined),
       clusterPainPoints: vi.fn().mockResolvedValue([]),
@@ -123,6 +130,32 @@ describe('store write-through', () => {
     })
     expect(useBridgeStore.getState().communityEvents.length).toBe(before + 1)
     expect(repo.saveCommunityEvent).toHaveBeenCalledOnce()
+  })
+
+  it('admin edit/delete of a community event persists through the repository', () => {
+    useBridgeStore.getState().addCommunityEvent({
+      id: 'evt-rw', title: 'Mixer', type: 'networking', date: '2026-07-01',
+      location: 'Ingolstadt', description: 'x', invitedMemberIds: [],
+    })
+    useBridgeStore.getState().updateCommunityEvent({
+      id: 'evt-rw', title: 'Mixer v2', type: 'networking', date: '2026-07-01',
+      location: 'Ingolstadt', description: 'x', invitedMemberIds: [],
+    })
+    expect(repo.saveCommunityEvent).toHaveBeenCalledTimes(2) // add + update
+    useBridgeStore.getState().deleteCommunityEvent('evt-rw')
+    expect(repo.deleteCommunityEvent).toHaveBeenCalledWith('evt-rw')
+  })
+
+  it('truck stop add/update/delete persist through the repository', () => {
+    const stop = {
+      id: 'ts-rw', city: 'Leipzig', venue: 'Hub', date: '2026-08-01',
+      x: 60, y: 40, status: 'upcoming' as const, description: 'x',
+    }
+    useBridgeStore.getState().addTruckStop(stop)
+    useBridgeStore.getState().updateTruckStop({ ...stop, status: 'current' })
+    expect(repo.saveTruckStop).toHaveBeenCalledTimes(2) // add + update
+    useBridgeStore.getState().deleteTruckStop('ts-rw')
+    expect(repo.deleteTruckStop).toHaveBeenCalledWith('ts-rw')
   })
 })
 
