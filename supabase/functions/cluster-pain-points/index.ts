@@ -93,6 +93,15 @@ Deno.serve(async (req: Request) => {
         ],
       }),
     })
+
+    // Surface a rate limit distinctly (200 body flag) so the client can show
+    // "rate limit reached" rather than treating it as a bug.
+    if (res.status === 429) {
+      return new Response(JSON.stringify({ clusters: [], rateLimited: true }), {
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+      })
+    }
+
     const parsed = extractJson(await res.json()) as {
       clusters?: { label?: string; summary?: string; painPointIds?: string[] }[]
     }
@@ -116,6 +125,9 @@ Deno.serve(async (req: Request) => {
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     if (supabaseUrl && serviceKey && clusters.length) {
       const db = createClient(supabaseUrl, serviceKey)
+      // Clear the previous run's themes first (FK ON DELETE SET NULL also resets
+      // every pain_points.clusterId), then write this run's fresh themes.
+      await db.from('pain_point_clusters').delete().not('id', 'is', null)
       await db.from('pain_point_clusters').upsert(clusters)
       for (const c of clusters) {
         await db.from('pain_points').update({ clusterId: c.id }).in('id', c.painPointIds)

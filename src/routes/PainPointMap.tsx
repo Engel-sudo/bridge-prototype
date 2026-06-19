@@ -5,6 +5,7 @@ import { useBridgeStore } from '../store/store'
 import PainPointCard from '../components/PainPointCard'
 import DemoHint from '../components/DemoHint'
 import type { PainPointStatus } from '../store/types'
+import { ClusterRateLimitError } from '../store/clustering'
 
 const DEPARTMENTS = ['All', 'Quality', 'Production', 'Logistics', 'R&D', 'Procurement', 'Innovation & Ventures']
 const STATUS_FILTERS: { label: string; value: PainPointStatus | 'all' }[] = [
@@ -40,8 +41,12 @@ export default function PainPointMap() {
     setClustering(true)
     try {
       await clusterPainPoints()
-    } catch {
-      setClusterError('Grouping failed — please try again.')
+    } catch (e) {
+      if (e instanceof ClusterRateLimitError) {
+        setClusterError('Groq rate limit reached — this is a usage limit, not an error. Wait about a minute and try again.')
+      } else {
+        setClusterError('Grouping failed — please try again.')
+      }
     } finally {
       setClustering(false)
     }

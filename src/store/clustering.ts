@@ -12,6 +12,15 @@ export interface Cluster {
   painPointIds: string[]
 }
 
+/** Thrown when the clustering LLM (Groq) returns a rate-limit response, so the
+ *  UI can say "rate limit hit" rather than a generic failure. */
+export class ClusterRateLimitError extends Error {
+  constructor() {
+    super('LLM rate limit reached')
+    this.name = 'ClusterRateLimitError'
+  }
+}
+
 function slugify(label: string): string {
   return 'cl-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }

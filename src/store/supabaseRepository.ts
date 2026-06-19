@@ -8,7 +8,7 @@ import type {
   SystemMetrics,
 } from './types'
 import type { BridgeData, BridgeRepository } from './repository'
-import { type Cluster, parseClusterResponse, localStubCluster } from './clustering'
+import { type Cluster, parseClusterResponse, localStubCluster, ClusterRateLimitError } from './clustering'
 
 const METRICS_ID = 1
 
@@ -76,20 +76,22 @@ export class SupabaseRepository implements BridgeRepository {
   }
 
   async clusterPainPoints(painPoints: PainPoint[]): Promise<Cluster[]> {
-    try {
-      const { data, error } = await this.client.functions.invoke('cluster-pain-points', {
-        body: { painPoints: painPoints.map((p) => ({ id: p.id, title: p.title, description: p.description, department: p.department })) },
-      })
-      if (error) throw error
-      const knownIds = new Set(painPoints.map((p) => p.id))
-      const clusters = parseClusterResponse(data, knownIds)
-      if (clusters.length === 0) throw new Error('empty cluster result')
-      return clusters
-    } catch {
-      // Edge Function not deployed yet (or returned nothing) — fall back to the
-      // local stub so "Group by theme" still works while setup is completed.
+    const { data, error } = await this.client.functions.invoke('cluster-pain-points', {
+      body: { painPoints: painPoints.map((p) => ({ id: p.id, title: p.title, description: p.description, department: p.department })) },
+    })
+    // Rate limit is surfaced explicitly so the UI can say so (not a silent fallback).
+    if (data && (data as { rateLimited?: boolean }).rateLimited) {
+      throw new ClusterRateLimitError()
+    }
+    if (error) {
+      // Function unreachable / not deployed — fall back to the local stub so the
+      // button still works during setup.
       return localStubCluster(painPoints)
     }
+    const knownIds = new Set(painPoints.map((p) => p.id))
+    const clusters = parseClusterResponse(data, knownIds)
+    if (clusters.length === 0) return localStubCluster(painPoints)
+    return clusters
   }
 
   async reseed(): Promise<BridgeData> {
