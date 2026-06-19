@@ -20,36 +20,39 @@ const inView = (delay = 0) => ({
 
 const stations = [
   {
-    step: '1',
-    h3: 'The Door',
+    num: '01',
+    actor: 'You',
+    h3: 'You apply',
     name: 'One short form',
-    body: 'Five minutes to fill in. You get a named contact within 48 hours and a yes or no within 2 weeks.',
+    body: 'Five minutes to fill in. You get a named contact within 48 hours and a yes-or-no within two weeks.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M14 21V8h3a2 2 0 0 1 2 2v11" />
         <circle cx="11" cy="12" r="1" fill="currentColor" stroke="none" />
       </svg>
     ),
   },
   {
-    step: '2',
-    h3: 'One person owns your case',
-    name: 'The Internal Lead',
-    body: 'One Audi employee owns your case from first call to pilot. A real person with a name, based at the plant where the cars are built.',
+    num: '02',
+    actor: 'Audi',
+    h3: 'You get one owner',
+    name: 'Your Internal Lead',
+    body: 'One Audi employee — a real person, based at the plant where the cars are built — owns your case from the first call to the pilot.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="8" r="4" />
         <path d="M5 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1" />
       </svg>
     ),
   },
   {
-    step: '3',
-    h3: 'The Map',
+    num: '03',
+    actor: 'You + Audi',
+    h3: 'You run a pilot',
     name: 'Matched to a real need',
-    body: 'Audi employees post real problems from the plants. Your application gets matched to one of them. If it\'s a go, you start a pilot in production.',
+    body: 'Audi teams post real problems from the production line. Yours gets matched to one — and if it fits, you pilot it inside the plant.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z" />
         <path d="M9 3v15M15 6v15" />
       </svg>
@@ -162,11 +165,17 @@ export default function Landing() {
       <section id="how" style={{ padding: '30px 0 90px' }}>
         <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 32px' }}>
 
-          {/* "Three steps across" label */}
-          <motion.div {...inView(0)} style={{ textAlign: 'center', marginBottom: '14px' }}>
-            <span style={{ fontFamily: "'AudiType', sans-serif", fontSize: '11px', color: 'var(--text-faint)' }}>
-              Three steps across
+          {/* Section header — frames the whole journey for newcomers */}
+          <motion.div {...inView(0)} style={{ textAlign: 'center', marginBottom: '40px', maxWidth: '620px', marginLeft: 'auto', marginRight: 'auto' }}>
+            <span style={{ fontFamily: "'AudiType', sans-serif", fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '12px' }}>
+              How it works
             </span>
+            <h2 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(24px, 3.4vw, 36px)', lineHeight: 1.12, color: 'var(--text)' }}>
+              Three steps from outside to inside
+            </h2>
+            <p style={{ marginTop: '14px', fontSize: 'clamp(15px, 1.8vw, 18px)', color: 'var(--text-muted)', lineHeight: 1.55 }}>
+              You apply. Audi gives you one named owner. Together you run a pilot on a real production problem.
+            </p>
           </motion.div>
 
           <motion.div {...inView(0.05)}>
@@ -202,34 +211,33 @@ export default function Landing() {
               }} />
             </div>
 
-            {/* Station cards — overlap bridge */}
-            <div className="grid-3-col" style={{ position: 'relative', display: 'grid', gap: '18px', marginTop: '-44px', zIndex: 2 }}>
+            {/* Station cards — informational, overlap the bridge deck.
+                Static by design: no hover-lift / cursor so they don't read as clickable. */}
+            <div className="grid-3-col" style={{ position: 'relative', display: 'grid', gap: '18px', marginTop: '-36px', zIndex: 2 }}>
               {stations.map((s, i) => (
-                <motion.div key={s.step}
+                <motion.div key={s.num}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 + i * 0.08, duration: 0.5, ease }}
-                  whileHover={{ y: -4 }}
                   style={{
                     background: 'var(--surface)', border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius)', padding: '22px 22px 24px',
-                    textAlign: 'center', cursor: 'default',
-                    transition: 'border-color 0.15s, background 0.15s',
+                    borderTop: '2px solid var(--accent)',
+                    borderRadius: 'var(--radius)', padding: '22px 22px 26px',
+                    textAlign: 'left',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface)')}
                 >
-                  {/* Node circle with step badge */}
-                  <div style={{ position: 'relative', width: '54px', height: '54px', margin: '0 auto 16px', borderRadius: '50%', background: 'var(--accent-dim)', border: '1px solid var(--accent)', display: 'grid', placeItems: 'center', color: 'var(--accent)' }}>
+                  {/* Top row: typographic step number + who acts */}
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '18px' }}>
+                    <span style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: '30px', lineHeight: 1, color: 'var(--border-strong)' }}>{s.num}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: "'AudiType', sans-serif", fontSize: '11px', color: 'var(--accent)' }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
+                      {s.actor}
+                    </span>
+                  </div>
+                  {/* Square icon tile — sharp, on-brand (no circles, no floating bubble) */}
+                  <div style={{ width: '44px', height: '44px', borderRadius: 0, background: 'var(--accent-dim)', border: '1px solid var(--border)', display: 'grid', placeItems: 'center', color: 'var(--accent)', marginBottom: '16px' }}>
                     {s.icon}
-                    <span style={{
-                      position: 'absolute', top: '-9px', right: '-9px',
-                      width: '24px', height: '24px', borderRadius: '50%',
-                      background: 'var(--accent)', color: 'var(--accent-contrast)',
-                      fontFamily: "'AudiType', system-ui", fontWeight: 700, fontSize: '13px',
-                      display: 'grid', placeItems: 'center',
-                    }}>{s.step}</span>
                   </div>
                   <h3 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: '18px', color: 'var(--text)' }}>{s.h3}</h3>
                   <div style={{ fontFamily: "'AudiType', sans-serif", fontSize: '11px', color: 'var(--accent)', marginTop: '6px' }}>{s.name}</div>

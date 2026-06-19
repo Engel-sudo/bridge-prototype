@@ -61,7 +61,10 @@ export const useBridgeStore = create<BridgeStore>((set) => ({
         const app = state.applications.find((a) => a.id === appId)
         if (!app) return state.metrics
         const next = nextStage(app.stage)
-        if (next === 'path_to_production') {
+        // Count an implementation only on the transition *into* production —
+        // nextStage() is a no-op at the terminal stage, so guard against
+        // re-advancing an already-finished app inflating the KPI.
+        if (next === 'path_to_production' && app.stage !== 'path_to_production') {
           return {
             ...state.metrics,
             implementations: state.metrics.implementations + 1,

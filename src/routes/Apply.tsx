@@ -32,6 +32,10 @@ interface FormData {
   region: string
   wantsVisit: boolean | null
   teamSize: string
+  teamMembers: string
+  website: string
+  linkedin: string
+  formerProjects: string
   funding: string
   technology: string
   targetDepartment: string
@@ -40,10 +44,9 @@ interface FormData {
   trl: number
   milestones: string
   monthsToMarket: string
-  apiStandards: string
+  deployment: string[]
+  connectsTo: string
   complianceCert: string
-  hasEdgeArch: boolean
-  hasCloudNative: boolean
   partnerType: string
   timeline: string
 }
@@ -54,6 +57,10 @@ const EMPTY: FormData = {
   region: '',
   wantsVisit: null,
   teamSize: '',
+  teamMembers: '',
+  website: '',
+  linkedin: '',
+  formerProjects: '',
   funding: '',
   technology: '',
   targetDepartment: '',
@@ -62,10 +69,9 @@ const EMPTY: FormData = {
   trl: 0,
   milestones: '',
   monthsToMarket: '',
-  apiStandards: '',
+  deployment: [],
+  connectsTo: '',
   complianceCert: 'None / Self-Audit',
-  hasEdgeArch: false,
-  hasCloudNative: false,
   partnerType: '',
   timeline: '',
 }
@@ -490,6 +496,26 @@ export default function Apply() {
                     <option>Not sure yet</option>
                   </ApplySelect>
                 </div>
+                <div>
+                  <Label>Website</Label>
+                  <ApplyInput type="url" placeholder="https://…" value={data.website} onChange={e => setData(d => ({ ...d, website: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Founder LinkedIn</Label>
+                  <ApplyInput placeholder="linkedin.com/in/…" value={data.linkedin} onChange={e => setData(d => ({ ...d, linkedin: e.target.value }))} />
+                </div>
+              </div>
+
+              {/* Optional credibility fields — full width, never required */}
+              <div style={{ display: 'grid', gap: '20px', marginTop: '20px' }}>
+                <div>
+                  <Label>Key Team Members</Label>
+                  <ApplyInput placeholder="e.g. Jonas Weber – CEO, Lena Schmidt – CTO" value={data.teamMembers} onChange={e => setData(d => ({ ...d, teamMembers: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Former Projects / Traction</Label>
+                  <ApplyTextarea style={{ minHeight: '80px' }} placeholder="Past projects, customers, pilots, or notable work that shows you can deliver" value={data.formerProjects} onChange={e => setData(d => ({ ...d, formerProjects: e.target.value }))} />
+                </div>
               </div>
 
               {/* Inline visit prompt for nearby regions */}
@@ -576,24 +602,37 @@ export default function Apply() {
               <SectionHeader num="03" title="Your technology" />
 
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
-                {/* Infrastructure */}
+                {/* Infrastructure — plain-language, no jargon self-labelling */}
                 <GlassCard style={{ padding: '20px' }} className="ap-glass-card">
-                  <h4 style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginBottom: '16px' }}>Hosting & Infrastructure</h4>
+                  <h4 style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginBottom: '16px' }}>How your product runs</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                     {[
-                      { key: 'hasEdgeArch', label: 'Native Edge Architecture' },
-                      { key: 'hasCloudNative', label: 'Cloud Native (K8s)' },
-                    ].map(({ key, label }) => (
-                      <label key={key} className="ap-check" style={{ cursor: 'pointer' }}>
-                        <span style={{ fontFamily: MONO, fontSize: '11px', color: ON_SURFACE }}>{label}</span>
-                        <input type="checkbox" checked={(data as unknown as Record<string, boolean>)[key]}
-                          onChange={e => setData(d => ({ ...d, [key]: e.target.checked }))}
-                          style={{ accentColor: LIME, width: '14px', height: '14px' }} />
-                      </label>
-                    ))}
+                      { key: 'cloud',  label: 'Cloud-hosted (SaaS)',           hint: 'runs in the cloud, used over the internet' },
+                      { key: 'onprem', label: 'On-premise',                    hint: "runs inside the plant's own network" },
+                      { key: 'edge',   label: 'On the machine / edge device',  hint: 'runs on a device at the production line' },
+                      { key: 'hybrid', label: 'Hybrid',                        hint: 'a mix of the above' },
+                    ].map(({ key, label, hint }) => {
+                      const checked = data.deployment.includes(key)
+                      return (
+                        <label key={key} className="ap-check" style={{ cursor: 'pointer', alignItems: 'flex-start' }}>
+                          <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingRight: '10px' }}>
+                            <span style={{ fontFamily: MONO, fontSize: '11px', color: ON_SURFACE }}>{label}</span>
+                            <span style={{ fontFamily: SANS, fontSize: '10px', color: MUTED, lineHeight: 1.4 }}>{hint}</span>
+                          </span>
+                          <input type="checkbox" checked={checked}
+                            onChange={e => setData(d => ({
+                              ...d,
+                              deployment: e.target.checked
+                                ? [...d.deployment, key]
+                                : d.deployment.filter(k => k !== key),
+                            }))}
+                            style={{ accentColor: LIME, width: '14px', height: '14px', marginTop: '2px', flexShrink: 0 }} />
+                        </label>
+                      )
+                    })}
                   </div>
-                  <Label>API Standards</Label>
-                  <ApplyInput placeholder="gRPC, REST, GraphQL…" value={data.apiStandards} onChange={e => setData(d => ({ ...d, apiStandards: e.target.value }))} />
+                  <Label>Where does it need to connect? <span style={{ color: 'var(--text-faint)' }}>(optional)</span></Label>
+                  <ApplyInput placeholder="e.g. machine controllers (PLCs), our MES, our REST API…" value={data.connectsTo} onChange={e => setData(d => ({ ...d, connectsTo: e.target.value }))} />
                 </GlassCard>
 
                 {/* Compliance */}
