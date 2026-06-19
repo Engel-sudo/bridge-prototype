@@ -64,6 +64,8 @@ export default function OwnerConsole() {
   const matchedPPCount = painPoints.filter(pp => pp.status === 'matched' || pp.status === 'in_pilot').length
   const linkedPP = (appId: string) => painPoints.find(pp => pp.linkedApplicationId === appId) ?? null
   const selectedPP = selected ? linkedPP(selected.id) : null
+  const DEPLOY_LABEL: Record<string, string> = { cloud: 'Cloud (SaaS)', onprem: 'On-premise', edge: 'On the machine / edge', hybrid: 'Hybrid' }
+  const ext = (url: string) => (url.startsWith('http') ? url : `https://${url}`)
 
   function handleAdvance(appId: string) {
     setAdvancing(true)
@@ -326,29 +328,58 @@ export default function OwnerConsole() {
                 <StatusTimeline current={selected.stage} />
               </div>
 
-              {/* Owner + details + pain point */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                {selected.ownerId && (() => {
-                  const o = owners.find(o => o.id === selected.ownerId)
-                  return o ? <OwnerCard owner={o} /> : null
-                })()}
+              {/* Owner */}
+              {selected.ownerId && (() => {
+                const o = owners.find(o => o.id === selected.ownerId)
+                return o ? <OwnerCard owner={o} /> : null
+              })()}
 
-                <div className="card" style={{ padding: '16px' }}>
-                  <span className="kicker" style={{ marginBottom: '12px', display: 'block' }}>startup details</span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {[
-                      { label: 'Founder',   value: selected.founderName },
-                      { label: 'Funding',   value: selected.funding },
-                      { label: 'Team',      value: `${selected.teamSize} people` },
-                      { label: 'Submitted', value: selected.submittedAt },
-                    ].map(({ label, value }) => (
-                      <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                        <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{label}</span>
-                        <span style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text)' }}>{value}</span>
-                      </div>
-                    ))}
-                  </div>
+              {/* Full application detail — everything the founder submitted */}
+              <div className="card" style={{ padding: '16px' }}>
+                <span className="kicker" style={{ marginBottom: '12px', display: 'block' }}>application detail</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {([
+                    ['Founder', selected.founderName],
+                    selected.region && ['Region', selected.region],
+                    ['Funding', selected.funding],
+                    ['Team size', `${selected.teamSize} people`],
+                    selected.targetDepartment && ['Target dept', selected.targetDepartment],
+                    selected.productStage && ['Current stage', selected.productStage],
+                    selected.trl ? ['TRL', `T${selected.trl}`] : null,
+                    selected.monthsToMarket && ['Months to market', selected.monthsToMarket],
+                    selected.partnerType && ['Partnership', selected.partnerType],
+                    selected.timeline && ['Timeline', selected.timeline],
+                    selected.complianceCert && ['Compliance', selected.complianceCert],
+                    (selected.deployment && selected.deployment.length)
+                      ? ['Runs as', selected.deployment.map(k => DEPLOY_LABEL[k] ?? k).join(', ')] : null,
+                    selected.connectsTo && ['Connects to', selected.connectsTo],
+                    selected.wantsVisit === true ? ['Plant visit', 'Requested'] : null,
+                    ['Submitted', selected.submittedAt],
+                  ].filter(Boolean) as [string, string][]).map(([label, value]) => (
+                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                      <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', flexShrink: 0 }}>{label}</span>
+                      <span style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text)', textAlign: 'right' }}>{value}</span>
+                    </div>
+                  ))}
+
+                  {(selected.website || selected.linkedin) && (
+                    <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', paddingTop: '4px' }}>
+                      {selected.website && <a href={ext(selected.website)} target="_blank" rel="noreferrer" style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--accent)' }}>Website ↗</a>}
+                      {selected.linkedin && <a href={ext(selected.linkedin)} target="_blank" rel="noreferrer" style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--accent)' }}>LinkedIn ↗</a>}
+                    </div>
+                  )}
                 </div>
+
+                {([
+                  selected.teamMembers && ['Team members', selected.teamMembers],
+                  selected.formerProjects && ['Former projects / traction', selected.formerProjects],
+                  selected.milestones && ['Milestones — next 24 months', selected.milestones],
+                ].filter(Boolean) as [string, string][]).map(([label, text]) => (
+                  <div key={label} style={{ marginTop: '14px' }}>
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '4px' }}>{label}</span>
+                    <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-line' }}>{text}</p>
+                  </div>
+                ))}
               </div>
 
               {/* Linked pain point */}

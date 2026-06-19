@@ -38,6 +38,23 @@ export interface Application {
   notes: string
   funding: string
   teamSize: number
+  // Extended application detail (optional — seed/legacy records may omit these)
+  region?: string
+  wantsVisit?: boolean | null
+  teamMembers?: string
+  website?: string
+  linkedin?: string
+  formerProjects?: string
+  targetDepartment?: string
+  productStage?: string
+  trl?: number
+  milestones?: string
+  monthsToMarket?: string
+  deployment?: string[]
+  connectsTo?: string
+  complianceCert?: string
+  partnerType?: string
+  timeline?: string
 }
 
 export interface PainPoint {

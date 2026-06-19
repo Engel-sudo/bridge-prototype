@@ -18,7 +18,23 @@ create table if not exists applications (
   "signalDeadline" text,
   notes text,
   funding text,
-  "teamSize" integer
+  "teamSize" integer,
+  "region" text,
+  "wantsVisit" boolean,
+  "teamMembers" text,
+  "website" text,
+  "linkedin" text,
+  "formerProjects" text,
+  "targetDepartment" text,
+  "productStage" text,
+  "trl" integer,
+  "milestones" text,
+  "monthsToMarket" text,
+  "deployment" jsonb default '[]'::jsonb,
+  "connectsTo" text,
+  "complianceCert" text,
+  "partnerType" text,
+  "timeline" text
 );
 
 create table if not exists owners (

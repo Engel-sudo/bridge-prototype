@@ -284,7 +284,24 @@ export default function Apply() {
       signalDeadline: addDays(14),
       notes: data.ask,
       funding: data.funding || 'Undisclosed',
-      teamSize: parseInt(data.teamSize) || 1,
+      teamSize: Math.max(1, parseInt(data.teamSize) || 1),
+      // Full application detail — everything the founder entered.
+      region: data.region,
+      wantsVisit: data.wantsVisit,
+      teamMembers: data.teamMembers,
+      website: data.website,
+      linkedin: data.linkedin,
+      formerProjects: data.formerProjects,
+      targetDepartment: data.targetDepartment,
+      productStage: data.stage,
+      trl: data.trl,
+      milestones: data.milestones,
+      monthsToMarket: data.monthsToMarket,
+      deployment: data.deployment,
+      connectsTo: data.connectsTo,
+      complianceCert: data.complianceCert,
+      partnerType: data.partnerType,
+      timeline: data.timeline,
     }
     addApplication(app)
     loginAuth('startup', { appId: id })
@@ -472,7 +489,7 @@ export default function Apply() {
                 </div>
                 <div>
                   <Label>Team Size</Label>
-                  <ApplyInput type="number" placeholder="6" value={data.teamSize} onChange={e => setData(d => ({ ...d, teamSize: e.target.value }))} />
+                  <ApplyInput type="number" min={1} placeholder="6" value={data.teamSize} onChange={e => setData(d => ({ ...d, teamSize: e.target.value }))} />
                 </div>
                 <div>
                   <Label>Funding Stage</Label>
@@ -588,7 +605,7 @@ export default function Apply() {
                 </div>
                 <div>
                   <Label>Months to Market</Label>
-                  <ApplyInput type="number" placeholder="e.g. 18" value={data.monthsToMarket} onChange={e => setData(d => ({ ...d, monthsToMarket: e.target.value }))} />
+                  <ApplyInput type="number" min={0} placeholder="e.g. 18" value={data.monthsToMarket} onChange={e => setData(d => ({ ...d, monthsToMarket: e.target.value }))} />
                 </div>
               </div>
               <div>
