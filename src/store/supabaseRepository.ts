@@ -9,6 +9,7 @@ import type {
   SystemMetrics,
 } from './types'
 import type { BridgeData, BridgeRepository } from './repository'
+import { seedTruckStops } from './seed'
 import { type Cluster, parseClusterResponse, localStubCluster, ClusterRateLimitError } from './clustering'
 
 const METRICS_ID = 1
@@ -43,13 +44,17 @@ export class SupabaseRepository implements BridgeRepository {
       ])
       const metrics = metricsRows.data as (SystemMetrics & { id: number }) | null
       if (!metrics) return null // not provisioned yet — let the store keep its seed
+      // The truck_stops table is newer than the rest of the schema. If it hasn't
+      // been provisioned (query errored) or is simply empty, fall back to the
+      // seeded tour so the Tour tab and /tour page always have something to show.
+      const loadedStops = (truckStops.data ?? []) as TruckStop[]
       return {
       applications: (apps.data ?? []) as Application[],
       owners: (owners.data ?? []) as Owner[],
       painPoints: (pps.data ?? []) as PainPoint[],
       poolMembers: (pool.data ?? []) as PoolMember[],
       communityEvents: (events.data ?? []) as CommunityEvent[],
-      truckStops: (truckStops.data ?? []) as TruckStop[],
+      truckStops: loadedStops.length > 0 ? loadedStops : seedTruckStops,
         metrics,
         clusters: (clusters.data ?? []) as Cluster[],
       }
