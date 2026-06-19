@@ -25,19 +25,21 @@ Reload the app — it now hydrates from Supabase, and submitted pain points pers
 across refreshes and across machines. (If the DB is empty/unreachable, the app falls
 back to in-memory seed data, so nothing breaks.)
 
-## 3. Deploy the Gemini grouping function  (Slice 4)
-Get a free **Google AI Studio** key: https://aistudio.google.com/apikey
+## 3. Deploy the grouping function  (Slice 4) — DONE
+The clustering LLM is **Groq** (free tier, works in the EU — Google's free Gemini tier
+is not available in the EU, so the original Gemini plan was swapped for Groq). Get a
+free key at https://console.groq.com/keys (starts with `gsk_`).
 
 ```sh
-# install the Supabase CLI if needed: https://supabase.com/docs/guides/cli
-supabase login
-supabase link --project-ref cqhmpwvidbsjdftochfc
-supabase secrets set GEMINI_API_KEY=your-google-ai-studio-key
-supabase functions deploy cluster-pain-points
+brew install supabase/tap/supabase            # CLI
+export SUPABASE_ACCESS_TOKEN=sbp_...           # from supabase.com/dashboard/account/tokens
+supabase secrets set GROQ_API_KEY=gsk_... --project-ref cqhmpwvidbsjdftochfc
+supabase functions deploy cluster-pain-points --project-ref cqhmpwvidbsjdftochfc
 ```
 
-Now "Group by theme" calls Gemini. Until the function is deployed (or if it errors),
-the app automatically falls back to the local stub clusterer, so the button always works.
+Now "Group by theme" calls Groq for real semantic grouping. If the function is ever
+unreachable or errors, the app automatically falls back to the local keyword stub, so
+the button always works.
 
 ## Notes
 - **Do not commit** `.env.local` or any service-role/Gemini key. The anon key is

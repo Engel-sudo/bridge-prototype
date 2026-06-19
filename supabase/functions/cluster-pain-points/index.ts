@@ -1,9 +1,9 @@
-// Supabase Edge Function (Deno): groups pain points into themes with Google Gemini.
+// Supabase Edge Function (Deno): groups pain points into themes with Groq (free tier).
 //
 // Deploy:  supabase functions deploy cluster-pain-points
-// Secret:  supabase secrets set GEMINI_API_KEY=your-google-ai-studio-key
+// Secret:  supabase secrets set GROQ_API_KEY=your-groq-key
 //
-// This is the ONLY place the LLM provider appears. To switch to Claude/Haiku later,
+// This is the ONLY place the LLM provider appears. To switch providers later,
 // change only this file — the client contract ({ clusters: [...] }) stays the same.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -15,9 +15,8 @@ interface InputPainPoint {
   department: string
 }
 
-const GEMINI_MODEL = 'gemini-2.0-flash'
-const GEMINI_URL = (key: string) =>
-  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`
+const GROQ_MODEL = 'llama-3.3-70b-versatile'
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -31,9 +30,10 @@ function buildPrompt(painPoints: InputPainPoint[]): string {
   return [
     'You group Audi factory "pain points" (problems posted by employees) into a small',
     'set of clear themes (aim for 3–6). Every pain point id must appear in exactly one',
-    'cluster. Use the exact ids given.',
+    'cluster. Use the exact ids given. Themes should reflect the underlying problem and',
+    'may cut across departments.',
     '',
-    'Return ONLY JSON of the form:',
+    'Return ONLY a JSON object of the form:',
     '{"clusters":[{"label":"short theme name","summary":"one sentence","painPointIds":["id1","id2"]}]}',
     '',
     'Pain points:',
@@ -41,22 +41,27 @@ function buildPrompt(painPoints: InputPainPoint[]): string {
   ].join('\n')
 }
 
-// deno-lint-ignore no-explicit-any
-function extractJson(geminiResponse: any): unknown {
-  const text: string | undefined =
-    geminiResponse?.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) return { clusters: [] }
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-  const raw = fenced ? fenced[1] : text
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return { clusters: [] }
-  }
-}
-
 function slugify(label: string): string {
   return 'cl-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
+// deno-lint-ignore no-explicit-any
+function extractJson(groqResponse: any): unknown {
+  const text: string | undefined = groqResponse?.choices?.[0]?.message?.content
+  if (!text) return { clusters: [] }
+  try {
+    return JSON.parse(text)
+  } catch {
+    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (fenced) {
+      try {
+        return JSON.parse(fenced[1])
+      } catch {
+        return { clusters: [] }
+      }
+    }
+    return { clusters: [] }
+  }
 }
 
 // @ts-ignore Deno global is available in the Edge runtime
@@ -65,8 +70,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     // @ts-ignore Deno global
-    const geminiKey = Deno.env.get('GEMINI_API_KEY')
-    if (!geminiKey) throw new Error('GEMINI_API_KEY not set')
+    const groqKey = Deno.env.get('GROQ_API_KEY')
+    if (!groqKey) throw new Error('GROQ_API_KEY not set')
 
     const { painPoints } = (await req.json()) as { painPoints: InputPainPoint[] }
     if (!Array.isArray(painPoints) || painPoints.length === 0) {
@@ -75,12 +80,17 @@ Deno.serve(async (req: Request) => {
       })
     }
 
-    const res = await fetch(GEMINI_URL(geminiKey), {
+    const res = await fetch(GROQ_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: buildPrompt(painPoints) }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
+        model: GROQ_MODEL,
+        temperature: 0.2,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: 'You are a precise clustering assistant that outputs only JSON.' },
+          { role: 'user', content: buildPrompt(painPoints) },
+        ],
       }),
     })
     const parsed = extractJson(await res.json()) as {
@@ -98,19 +108,17 @@ Deno.serve(async (req: Request) => {
       }))
       .filter((c) => c.painPointIds.length > 0)
 
-    // Persist clusters + assignments using the service role (available in the
-    // function env automatically as SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).
+    // Persist clusters + assignments using the service role (provided to the
+    // function automatically as SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).
     // @ts-ignore Deno global
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     // @ts-ignore Deno global
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-    if (supabaseUrl && serviceKey) {
+    if (supabaseUrl && serviceKey && clusters.length) {
       const db = createClient(supabaseUrl, serviceKey)
-      if (clusters.length) {
-        await db.from('pain_point_clusters').upsert(clusters)
-        for (const c of clusters) {
-          await db.from('pain_points').update({ clusterId: c.id }).in('id', c.painPointIds)
-        }
+      await db.from('pain_point_clusters').upsert(clusters)
+      for (const c of clusters) {
+        await db.from('pain_points').update({ clusterId: c.id }).in('id', c.painPointIds)
       }
     }
 
