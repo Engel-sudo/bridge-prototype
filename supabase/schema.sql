@@ -88,3 +88,14 @@ create table if not exists system_metrics (
 grant usage on schema public to anon, authenticated;
 grant all on all tables in schema public to anon, authenticated;
 alter default privileges in schema public grant all on tables to anon, authenticated;
+
+-- Disable RLS for the demo so the anon key can read/write directly.
+-- (Supabase enables RLS on new tables; with it on and no policies, the anon key
+--  sees zero rows.) Add proper policies before any real-world use.
+alter table applications          disable row level security;
+alter table owners                disable row level security;
+alter table pain_points           disable row level security;
+alter table pain_point_clusters   disable row level security;
+alter table pool_members          disable row level security;
+alter table community_events      disable row level security;
+alter table system_metrics        disable row level security;
