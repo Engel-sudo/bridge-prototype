@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { useBridgeStore } from './store/store'
 import Nav from './components/Nav'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './routes/Login'
@@ -12,6 +14,13 @@ import Dashboard from './routes/Dashboard'
 import Community from './routes/Community'
 
 export default function App() {
+  const hydrate = useBridgeStore((s) => s.hydrate)
+
+  // Load any persisted backend state on startup (no-op with the in-memory repo).
+  useEffect(() => {
+    void hydrate()
+  }, [hydrate])
+
   return (
     <BrowserRouter>
       <Nav />

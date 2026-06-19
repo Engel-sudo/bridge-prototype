@@ -49,6 +49,8 @@ export interface PainPoint {
   status: PainPointStatus
   linkedApplicationId: string | null
   submittedAt: string
+  /** Theme assigned by "Group by theme". Null/absent until clustered. */
+  clusterId?: string | null
 }
 
 export type PoolMemberType = 'startup' | 'contact'

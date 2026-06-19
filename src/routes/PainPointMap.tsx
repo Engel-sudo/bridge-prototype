@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Filter } from 'lucide-react'
+import { Plus, Layers } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import PainPointCard from '../components/PainPointCard'
 import DemoHint from '../components/DemoHint'
@@ -15,18 +15,37 @@ const STATUS_FILTERS: { label: string; value: PainPointStatus | 'all' }[] = [
 ]
 
 export default function PainPointMap() {
-  const { painPoints, addPainPoint } = useBridgeStore()
+  const { painPoints, addPainPoint, clusters, clusterPainPoints } = useBridgeStore()
   const [deptFilter, setDeptFilter] = useState('All')
   const [statusFilter, setStatusFilter] = useState<PainPointStatus | 'all'>('all')
+  const [themeFilter, setThemeFilter] = useState<string>('all')
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ title: '', description: '', department: 'Quality', submittedBy: '' })
   const [submitted, setSubmitted] = useState(false)
+  const [clustering, setClustering] = useState(false)
+  const [clusterError, setClusterError] = useState<string | null>(null)
+
+  const clusterLabel = (id: string | null | undefined) =>
+    clusters.find(c => c.id === id)?.label
 
   const filtered = painPoints.filter(pp => {
     const deptOk = deptFilter === 'All' || pp.department === deptFilter
     const statusOk = statusFilter === 'all' || pp.status === statusFilter
-    return deptOk && statusOk
+    const themeOk = themeFilter === 'all' || pp.clusterId === themeFilter
+    return deptOk && statusOk && themeOk
   })
+
+  async function handleCluster() {
+    setClusterError(null)
+    setClustering(true)
+    try {
+      await clusterPainPoints()
+    } catch {
+      setClusterError('Grouping failed — please try again.')
+    } finally {
+      setClustering(false)
+    }
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -71,11 +90,20 @@ export default function PainPointMap() {
               Any Audi employee can surface a problem. Pilots visible across all silos.
             </p>
           </div>
-          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-            <Plus size={14} />
-            Submit Pain Point
-          </button>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button className="btn-secondary" onClick={handleCluster} disabled={clustering} style={{ opacity: clustering ? 0.6 : 1 }}>
+              <Layers size={14} />
+              {clustering ? 'Grouping…' : 'Group by theme'}
+            </button>
+            <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+              <Plus size={14} />
+              Submit Pain Point
+            </button>
+          </div>
         </div>
+        {clusterError && (
+          <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--red)', marginTop: '8px' }}>{clusterError}</div>
+        )}
       </motion.div>
 
 
@@ -182,34 +210,83 @@ export default function PainPointMap() {
             ))}
           </div>
         </div>
-      </motion.div>
-
-      {/* Pain point grid */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '12px' }}
-      >
-        <AnimatePresence>
-          {filtered.map((pp, i) => (
-            <motion.div
-              key={pp.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ delay: i * 0.04, duration: 0.25 }}
-            >
-              <PainPointCard painPoint={pp} showMatch />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-        {filtered.length === 0 && (
-          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '48px', color: 'var(--text-faint)', fontFamily: 'AudiType', fontSize: '12px' }}>
-            No pain points match current filters.
+        {clusters.length > 0 && (
+          <div>
+            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '8px' }}>Theme</span>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {[{ id: 'all', label: 'All' }, ...clusters].map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => setThemeFilter(c.id)}
+                  style={{
+                    fontFamily: 'AudiType', fontSize: '11px',
+                    padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid',
+                    borderColor: themeFilter === c.id ? 'var(--accent)' : 'var(--border-strong)',
+                    background: themeFilter === c.id ? 'var(--accent-dim)' : 'transparent',
+                    color: themeFilter === c.id ? 'var(--accent)' : 'var(--text-faint)',
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </motion.div>
+
+      {/* Pain point grid — flat until grouped, then sectioned by theme */}
+      {clusters.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '12px' }}
+        >
+          <AnimatePresence>
+            {filtered.map((pp, i) => (
+              <motion.div
+                key={pp.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ delay: i * 0.04, duration: 0.25 }}
+              >
+                <PainPointCard painPoint={pp} showMatch />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {filtered.length === 0 && (
+            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '48px', color: 'var(--text-faint)', fontFamily: 'AudiType', fontSize: '12px' }}>
+              No pain points match current filters.
+            </div>
+          )}
+        </motion.div>
+      ) : (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {[
+            ...clusters.map(c => ({ key: c.id, label: c.label, summary: c.summary, items: filtered.filter(pp => pp.clusterId === c.id) })),
+            { key: '_unthemed', label: 'Unthemed', summary: 'Not yet grouped into a theme.', items: filtered.filter(pp => !pp.clusterId) },
+          ].filter(g => g.items.length > 0).map(group => (
+            <div key={group.key}>
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+                  <h3 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: '16px', color: 'var(--text)' }}>{group.label}</h3>
+                  <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{group.items.length}</span>
+                </div>
+                {group.summary && (
+                  <p style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{group.summary}</p>
+                )}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '12px' }}>
+                {group.items.map(pp => (
+                  <PainPointCard key={pp.id} painPoint={pp} showMatch clusterLabel={clusterLabel(pp.clusterId)} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      )}
     </motion.div>
   )
 }

@@ -12,6 +12,7 @@ const statusStyles: Record<string, { color: string; bg: string; label: string }>
 interface Props {
   painPoint: PainPoint
   showMatch?: boolean
+  clusterLabel?: string
 }
 
 function truncateWords(text: string, max: number): string {
@@ -21,7 +22,7 @@ function truncateWords(text: string, max: number): string {
   return (lastSpace > 0 ? sliced.slice(0, lastSpace) : sliced) + '…'
 }
 
-export default function PainPointCard({ painPoint, showMatch }: Props) {
+export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Props) {
   const navigate = useNavigate()
   const { role } = useAuthStore()
   const { applications, matchPainPoint } = useBridgeStore()
@@ -47,6 +48,13 @@ export default function PainPointCard({ painPoint, showMatch }: Props) {
           {style.label}
         </span>
       </div>
+
+      {clusterLabel && (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <span style={{ width: '5px', height: '5px', background: 'var(--accent)', display: 'inline-block' }} />
+          <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)' }}>{clusterLabel}</span>
+        </div>
+      )}
 
       <div style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '10px' }}>
         {truncateWords(painPoint.description, 140)}

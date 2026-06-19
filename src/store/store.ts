@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import type { Application, PainPoint, Owner, SystemMetrics, Stage, PoolMember, CommunityEvent } from './types'
 import { seedApplications, seedOwners, seedPainPoints, seedMetrics, seedPoolMembers, seedCommunityEvents } from './seed'
+import { getRepository } from './repository'
+import type { Cluster } from './clustering'
 
 interface BridgeStore {
   applications: Application[]
@@ -9,7 +11,9 @@ interface BridgeStore {
   metrics: SystemMetrics
   poolMembers: PoolMember[]
   communityEvents: CommunityEvent[]
+  clusters: Cluster[]
 
+  hydrate: () => Promise<void>
   addApplication: (app: Application) => void
   advanceStage: (appId: string) => void
   assignOwner: (appId: string, ownerId: string) => void
@@ -17,6 +21,7 @@ interface BridgeStore {
   addPainPoint: (pp: PainPoint) => void
   matchPainPoint: (ppId: string, appId: string) => void
   addToPool: (member: PoolMember) => void
+  clusterPainPoints: () => Promise<void>
   resetDemo: () => void
 }
 
@@ -37,103 +42,140 @@ function nextStage(current: Stage): Stage {
   return STAGE_ORDER[idx + 1]
 }
 
-export const useBridgeStore = create<BridgeStore>((set) => ({
+export const useBridgeStore = create<BridgeStore>((set, get) => ({
   applications: seedApplications,
   owners: seedOwners,
   painPoints: seedPainPoints,
   metrics: seedMetrics,
   poolMembers: seedPoolMembers,
   communityEvents: seedCommunityEvents,
+  clusters: [],
 
-  addApplication: (app) =>
-    set((state) => ({
-      // A new application enters at stage 'submitted' — not yet an active pilot,
-      // so the activePilots count (Audi-wide narrative figure) is untouched.
-      applications: [app, ...state.applications],
-    })),
+  // Load persisted state from the backend on app start. With the in-memory
+  // repository this is a no-op (returns null) and the seed state is kept.
+  hydrate: async () => {
+    const data = await getRepository().loadAll()
+    if (data) set(data)
+  },
 
-  advanceStage: (appId) =>
-    set((state) => ({
-      applications: state.applications.map((a) =>
-        a.id === appId ? { ...a, stage: nextStage(a.stage) } : a
-      ),
-      metrics: (() => {
-        const app = state.applications.find((a) => a.id === appId)
-        if (!app) return state.metrics
-        const next = nextStage(app.stage)
-        // Count an implementation only on the transition *into* production —
-        // nextStage() is a no-op at the terminal stage, so guard against
-        // re-advancing an already-finished app inflating the KPI.
-        if (next === 'path_to_production' && app.stage !== 'path_to_production') {
-          return {
-            ...state.metrics,
-            implementations: state.metrics.implementations + 1,
-            implementationsThisQuarter: state.metrics.implementationsThisQuarter + 1,
-          }
+  addApplication: (app) => {
+    // A new application enters at stage 'submitted' — not yet an active pilot,
+    // so the activePilots count (Audi-wide narrative figure) is untouched.
+    set((state) => ({ applications: [app, ...state.applications] }))
+    void getRepository().saveApplication(app)
+  },
+
+  advanceStage: (appId) => {
+    const app = get().applications.find((a) => a.id === appId)
+    if (!app) return
+    const next = nextStage(app.stage)
+    const updated: Application = { ...app, stage: next }
+    // Count an implementation only on the transition *into* production —
+    // nextStage() is a no-op at the terminal stage, so guard against
+    // re-advancing an already-finished app inflating the KPI.
+    const reachedProduction = next === 'path_to_production' && app.stage !== 'path_to_production'
+    const metrics = reachedProduction
+      ? {
+          ...get().metrics,
+          implementations: get().metrics.implementations + 1,
+          implementationsThisQuarter: get().metrics.implementationsThisQuarter + 1,
         }
-        return state.metrics
-      })(),
-    })),
+      : get().metrics
+    set((state) => ({
+      applications: state.applications.map((a) => (a.id === appId ? updated : a)),
+      metrics,
+    }))
+    void getRepository().saveApplication(updated)
+    if (reachedProduction) void getRepository().saveMetrics(metrics)
+  },
 
-  assignOwner: (appId, ownerId) =>
-    set((state) => {
-      const app = state.applications.find((a) => a.id === appId)
-      if (!app || app.ownerId) return state
-      // Claiming a startup names the contact and assigns the owner in one move —
-      // jump straight to owner_assigned rather than stepping through named_contact.
-      const claimedStage: Stage =
-        STAGE_ORDER.indexOf(app.stage) < STAGE_ORDER.indexOf('owner_assigned')
-          ? 'owner_assigned'
-          : app.stage
-      return {
-        applications: state.applications.map((a) =>
-          a.id === appId ? { ...a, ownerId, stage: claimedStage } : a
-        ),
-        owners: state.owners.map((o) =>
-          o.id === ownerId ? { ...o, startupsOwned: o.startupsOwned + 1 } : o
-        ),
-      }
-    }),
+  assignOwner: (appId, ownerId) => {
+    const state = get()
+    const app = state.applications.find((a) => a.id === appId)
+    if (!app || app.ownerId) return
+    // Claiming a startup names the contact and assigns the owner in one move —
+    // jump straight to owner_assigned rather than stepping through named_contact.
+    const claimedStage: Stage =
+      STAGE_ORDER.indexOf(app.stage) < STAGE_ORDER.indexOf('owner_assigned')
+        ? 'owner_assigned'
+        : app.stage
+    const updatedApp: Application = { ...app, ownerId, stage: claimedStage }
+    const owner = state.owners.find((o) => o.id === ownerId)
+    const updatedOwner = owner ? { ...owner, startupsOwned: owner.startupsOwned + 1 } : null
+    set((s) => ({
+      applications: s.applications.map((a) => (a.id === appId ? updatedApp : a)),
+      owners: s.owners.map((o) => (o.id === ownerId && updatedOwner ? updatedOwner : o)),
+    }))
+    void getRepository().saveApplication(updatedApp)
+    if (updatedOwner) void getRepository().saveOwner(updatedOwner)
+  },
 
   // The 2-week yes/no call. Branches off the linear stage walk to set an
   // explicit Go or Redirect outcome — decision_redirect is otherwise unreachable.
-  decide: (appId, outcome) =>
+  decide: (appId, outcome) => {
+    const app = get().applications.find((a) => a.id === appId)
+    if (!app) return
+    const updated: Application = {
+      ...app,
+      stage: outcome === 'go' ? 'decision_go' : 'decision_redirect',
+    }
     set((state) => ({
-      applications: state.applications.map((a) =>
-        a.id === appId
-          ? { ...a, stage: outcome === 'go' ? 'decision_go' : 'decision_redirect' }
-          : a
-      ),
-    })),
+      applications: state.applications.map((a) => (a.id === appId ? updated : a)),
+    }))
+    void getRepository().saveApplication(updated)
+  },
 
-  addPainPoint: (pp) =>
-    set((state) => ({ painPoints: [pp, ...state.painPoints] })),
+  addPainPoint: (pp) => {
+    set((state) => ({ painPoints: [pp, ...state.painPoints] }))
+    void getRepository().savePainPoint(pp)
+  },
 
-  matchPainPoint: (ppId, appId) =>
+  matchPainPoint: (ppId, appId) => {
+    const pp = get().painPoints.find((p) => p.id === ppId)
+    if (!pp) return
+    const updated: PainPoint = { ...pp, status: 'matched', linkedApplicationId: appId }
     set((state) => ({
-      painPoints: state.painPoints.map((pp) =>
-        pp.id === ppId
-          ? { ...pp, status: 'matched', linkedApplicationId: appId }
-          : pp
-      ),
-    })),
+      painPoints: state.painPoints.map((p) => (p.id === ppId ? updated : p)),
+    }))
+    void getRepository().savePainPoint(updated)
+  },
 
-  addToPool: (member) =>
+  addToPool: (member) => {
+    if (get().poolMembers.some((m) => m.id === member.id)) return
+    set((state) => ({ poolMembers: [member, ...state.poolMembers] }))
+    void getRepository().savePoolMember(member)
+  },
+
+  // On-demand grouping. Delegates to the repository (local stub in the demo,
+  // Gemini Edge Function when Supabase is configured), then stamps each pain
+  // point with its theme so the map can group and filter by cluster.
+  clusterPainPoints: async () => {
+    const clusters = await getRepository().clusterPainPoints(get().painPoints)
+    const assignment = new Map<string, string>()
+    for (const c of clusters) for (const id of c.painPointIds) assignment.set(id, c.id)
     set((state) => ({
-      poolMembers: state.poolMembers.some(m => m.id === member.id)
-        ? state.poolMembers
-        : [member, ...state.poolMembers],
-    })),
+      clusters,
+      painPoints: state.painPoints.map((pp) => ({
+        ...pp,
+        clusterId: assignment.get(pp.id) ?? null,
+      })),
+    }))
+    void getRepository().saveClusters(clusters)
+  },
 
   // Restore all seed state — lets a presenter reset between testers without a
-  // page reload. In-memory only, no storage touched.
-  resetDemo: () =>
-    set(() => ({
+  // page reload. Kept synchronous so the local UI/tests reset immediately; the
+  // backend reseed (if any) is fired write-through.
+  resetDemo: () => {
+    set({
       applications: seedApplications,
       owners: seedOwners,
       painPoints: seedPainPoints,
       metrics: seedMetrics,
       poolMembers: seedPoolMembers,
       communityEvents: seedCommunityEvents,
-    })),
+      clusters: [],
+    })
+    void getRepository().reseed().catch(() => {})
+  },
 }))
