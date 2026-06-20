@@ -1,13 +1,27 @@
 import { motion } from 'framer-motion'
 import type { TruckStop, TruckStopStatus } from '../store/types'
 
-// Stylized, dependency-free silhouette of Germany. Pins are positioned by
-// percentage over this box (see TruckStop.x / .y), so the same coordinates work
-// at any rendered size. viewBox is ~100×130 to match Germany's tall aspect.
+/**
+ * Accurate, dependency-free outline of Germany.
+ *
+ * Both this path and every pin are produced by the SAME equirectangular
+ * projection of real coordinates: longitude maps linearly to x, latitude to y,
+ * with the longitude/latitude aspect correction baked into the 100×135 viewBox.
+ * Pin positions (TruckStop.x / .y) are percentages in that space, so a city's
+ * pin lands on its true location relative to the border by construction.
+ *
+ *   x% = (lon - 5.87) / 9.17 * 100        // lon 5.87°E … 15.04°E
+ *   y% = (55.06 - lat) / 7.79 * 100       // lat 47.27°N … 55.06°N
+ *   viewBox y = y% * 1.35                  // 7.79 / (9.17·cos51°) ≈ 1.35
+ */
+const VIEWBOX_H = 135
 const GERMANY_PATH =
-  'M45 8 L52 6 L50 16 L58 15 L60 10 L72 16 L78 22 L74 30 L80 40 L78 52 ' +
-  'L70 58 L64 68 L66 80 L58 92 L48 94 L40 88 L34 84 L30 74 L28 60 L22 50 ' +
-  'L16 46 L20 40 L16 34 L26 30 L30 22 L28 16 L38 16 L40 10 Z'
+  'M38.5 4 L55.4 11.8 L67.9 15.3 L78.8 12.8 L90.8 19.8 L93.1 35.7 L95.6 47.1 ' +
+  'L96.9 60.8 L100 67.8 L91.9 72.1 L77.8 80.7 L71.2 86.8 L77.2 99.1 L86.8 109 ' +
+  'L77.8 127.6 L76.7 130.2 L60.3 131.9 L47.2 132.8 L40.7 130.2 L29.2 129.3 ' +
+  'L18.9 129.4 L21 111.9 L24.3 104.7 L10.7 101.6 L5.3 97 L2.8 91 L5.8 82.1 ' +
+  'L1.6 74.7 L2 55.6 L12.3 46.1 L14.5 31.5 L12.3 28.8 L24.3 26.2 L30.3 20.1 ' +
+  'L29.8 11.4 L26.5 2.8 Z'
 
 const STATUS_COLOR: Record<TruckStopStatus, string> = {
   past: 'var(--text-faint)',
@@ -33,26 +47,45 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
     onPlace(x, y)
   }
 
+  // Tour route — connect real stops chronologically (drafts/placeholder pins at
+  // 50/50 are skipped so the line doesn't dart to the centre while editing).
+  const routePoints = stops
+    .filter(s => s.id !== 'draft')
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map(s => `${s.x},${(s.y * VIEWBOX_H) / 100}`)
+
   return (
     <div
       onClick={handleMapClick}
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: '420px',
+        maxWidth: '380px',
         margin: '0 auto',
-        aspectRatio: '100 / 130',
+        aspectRatio: `100 / ${VIEWBOX_H}`,
         cursor: placing ? 'crosshair' : 'default',
       }}
     >
-      <svg viewBox="0 0 100 130" width="100%" height="100%" style={{ display: 'block', overflow: 'visible' }}>
+      <svg viewBox={`0 0 100 ${VIEWBOX_H}`} width="100%" height="100%" style={{ display: 'block', overflow: 'visible' }}>
         <path
           d={GERMANY_PATH}
-          fill="var(--surface)"
+          fill="var(--surface-2, var(--surface))"
           stroke="var(--border-strong)"
-          strokeWidth={1}
+          strokeWidth={0.8}
           strokeLinejoin="round"
         />
+        {routePoints.length > 1 && (
+          <polyline
+            points={routePoints.join(' ')}
+            fill="none"
+            stroke="var(--text-faint)"
+            strokeWidth={0.7}
+            strokeDasharray="2 2"
+            strokeLinecap="round"
+            opacity={0.7}
+          />
+        )}
       </svg>
 
       {/* Pins */}
@@ -60,6 +93,8 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
         const color = STATUS_COLOR[stop.status]
         const isSelected = stop.id === selectedId
         const isCurrent = stop.status === 'current'
+        // Eastern pins put their label on the left so it doesn't clip the edge.
+        const labelOnLeft = stop.x > 62
         return (
           <button
             key={stop.id}
@@ -85,7 +120,7 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
                 transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
                 style={{
                   position: 'absolute', left: '50%', top: '50%',
-                  width: '14px', height: '14px', transform: 'translate(-50%, -50%)',
+                  width: '12px', height: '12px', transform: 'translate(-50%, -50%)',
                   borderRadius: '50%', background: color,
                 }}
               />
@@ -94,15 +129,36 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
               style={{
                 display: 'block',
                 position: 'relative',
-                width: isCurrent ? '14px' : '11px',
-                height: isCurrent ? '14px' : '11px',
+                width: isCurrent ? '13px' : '10px',
+                height: isCurrent ? '13px' : '10px',
                 borderRadius: '50%',
                 background: stop.status === 'past' ? 'var(--bg)' : color,
                 border: `2px solid ${color}`,
-                boxShadow: isSelected ? `0 0 0 3px color-mix(in srgb, ${color} 35%, transparent)` : 'none',
+                boxShadow: isSelected
+                  ? `0 0 0 3px color-mix(in srgb, ${color} 35%, transparent)`
+                  : '0 1px 3px rgba(0,0,0,0.25)',
                 transition: 'box-shadow 0.15s',
               }}
             />
+            {/* City label — flips to the pin's inner side near the map edges */}
+            <span
+              style={{
+                position: 'absolute',
+                ...(labelOnLeft ? { right: 'calc(50% + 9px)' } : { left: 'calc(50% + 9px)' }),
+                top: '50%',
+                transform: 'translateY(-50%)',
+                fontFamily: 'AudiType, sans-serif',
+                fontSize: '10px',
+                fontWeight: isSelected || isCurrent ? 700 : 500,
+                color: isSelected || isCurrent ? 'var(--text)' : 'var(--text-muted)',
+                whiteSpace: 'nowrap',
+                lineHeight: 1,
+                pointerEvents: 'none',
+                textShadow: '0 1px 2px var(--bg), 0 0 2px var(--bg)',
+              }}
+            >
+              {stop.city}
+            </span>
           </button>
         )
       })}

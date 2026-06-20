@@ -30,9 +30,9 @@ describe('Community — tabs', () => {
 
     await user.click(screen.getByRole('tab', { name: 'Tour' }))
 
-    // Seeded stops render (Berlin appears once, in the route list).
-    expect(screen.getByText('Berlin')).toBeInTheDocument()
-    expect(screen.getByText('Stuttgart')).toBeInTheDocument()
+    // Seeded stops render (each city appears on its map pin and in the list).
+    expect(screen.getAllByText('Berlin').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Stuttgart').length).toBeGreaterThan(0)
   })
 
   it('shows seeded events when the Events tab is opened', async () => {
