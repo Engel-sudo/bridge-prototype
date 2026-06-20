@@ -136,46 +136,42 @@ export default function Community() {
         })}
       </div>
 
-      <AnimatePresence mode="wait">
+      {/* Active tab panel. A fresh key re-triggers the fade-in on switch; no
+          exit animation so a panel can never be held back from mounting. */}
+      <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
         {tab === 'overview' && (
-          <motion.div key="overview" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <OverviewTab
-              isFounder={isFounder}
-              memberNotes={member?.notes}
-              addedByName={member?.addedByName}
-              appStage={app?.stage ?? null}
-              openPainPoints={openPainPoints}
-              showApplyCta={!isFounder}
-            />
-          </motion.div>
+          <OverviewTab
+            isFounder={isFounder}
+            memberNotes={member?.notes}
+            addedByName={member?.addedByName}
+            appStage={app?.stage ?? null}
+            openPainPoints={openPainPoints}
+            showApplyCta={!isFounder}
+          />
         )}
 
         {tab === 'events' && (
-          <motion.div key="events" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <EventsTab
-              events={visibleEvents}
-              poolCount={poolMembers.length}
-              isAdmin={isAdmin}
-              showInvitedTag={isMember}
-              onAdd={addCommunityEvent}
-              onUpdate={updateCommunityEvent}
-              onDelete={deleteCommunityEvent}
-            />
-          </motion.div>
+          <EventsTab
+            events={visibleEvents}
+            poolCount={poolMembers.length}
+            isAdmin={isAdmin}
+            showInvitedTag={isMember}
+            onAdd={addCommunityEvent}
+            onUpdate={updateCommunityEvent}
+            onDelete={deleteCommunityEvent}
+          />
         )}
 
         {tab === 'tour' && (
-          <motion.div key="tour" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <TourTab
-              stops={truckStops}
-              isAdmin={isAdmin}
-              onAdd={addTruckStop}
-              onUpdate={updateTruckStop}
-              onDelete={deleteTruckStop}
-            />
-          </motion.div>
+          <TourTab
+            stops={truckStops}
+            isAdmin={isAdmin}
+            onAdd={addTruckStop}
+            onUpdate={updateTruckStop}
+            onDelete={deleteTruckStop}
+          />
         )}
-      </AnimatePresence>
+      </motion.div>
     </motion.div>
   )
 }
