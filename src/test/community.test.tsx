@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Community from '../routes/Community'
@@ -55,6 +55,115 @@ describe('Community — accepted founder view', () => {
     expect(screen.getByText('FlowRoute')).toBeInTheDocument()
     expect(screen.getByText(/welcome to the BRIDGE community/i)).toBeInTheDocument()
     expect(screen.getByText('Accepted Founder')).toBeInTheDocument()
+  })
+})
+
+describe('Community — pain point sharing', () => {
+  const title = 'Carbon accounting is manual and quarter-lagged'
+
+  it('shows shared open pain points to community members by default', () => {
+    useAuthStore.getState().login('pool_member', { memberId: 'pm1' })
+    renderCommunity()
+    expect(screen.getByText(title)).toBeInTheDocument()
+  })
+
+  it('hides a pain point from members once the admin un-shares it', () => {
+    useAuthStore.getState().login('pool_member', { memberId: 'pm1' })
+    renderCommunity()
+    expect(screen.getByText(title)).toBeInTheDocument()
+
+    const pp = useBridgeStore.getState().painPoints.find(p => p.title === title)!
+    act(() => {
+      useBridgeStore.getState().updatePainPoint({ ...pp, sharedWithCommunity: false })
+    })
+
+    expect(screen.queryByText(title)).not.toBeInTheDocument()
+  })
+})
+
+describe('Community — admin truck stop management', () => {
+  it('adds a new truck stop via the form, with no ambiguous "Add stop" buttons left open', async () => {
+    const user = userEvent.setup()
+    useAuthStore.getState().login('admin', {})
+    renderCommunity()
+    await user.click(screen.getByRole('tab', { name: 'Tour' }))
+
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    // Once the form is open there must be exactly one control named "Add stop"
+    // (the submit button) — the header toggle should no longer share that name,
+    // otherwise clicking it discards the in-progress form instead of saving it.
+    expect(screen.getAllByRole('button', { name: 'Add stop' })).toHaveLength(1)
+
+    await user.type(screen.getByPlaceholderText(/city name/i), 'Leipzig')
+    await user.type(screen.getByPlaceholderText(/Garching/i), 'Uni Leipzig')
+    fireEvent.change(screen.getByLabelText(/^Date/), { target: { value: '2026-12-01' } })
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    expect(screen.getAllByText('Leipzig').length).toBeGreaterThan(0)
+  })
+
+  it('carries every field through and derives upcoming status from a future date', async () => {
+    const user = userEvent.setup()
+    useAuthStore.getState().login('admin', {})
+    renderCommunity()
+    await user.click(screen.getByRole('tab', { name: 'Tour' }))
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    await user.type(screen.getByPlaceholderText(/city name/i), 'Kassel')
+    await user.type(screen.getByPlaceholderText(/Garching/i), 'University of Kassel')
+    fireEvent.change(screen.getByLabelText(/^Date/), { target: { value: '2026-12-01' } })
+    await user.type(screen.getByPlaceholderText(/What happens/i), 'Deep-tech scouting afternoon.')
+    await user.type(screen.getByPlaceholderText(/https/i), 'bridge.audi/tour/kassel')
+
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    // Every field is persisted; status is derived from the (future) date.
+    const added = useBridgeStore.getState().truckStops.find(s => s.city === 'Kassel')
+    expect(added).toMatchObject({
+      city: 'Kassel',
+      venue: 'University of Kassel',
+      date: '2026-12-01',
+      description: 'Deep-tech scouting afternoon.',
+      registerUrl: 'bridge.audi/tour/kassel',
+      status: 'upcoming',
+    })
+    expect(screen.getAllByText('Kassel').length).toBeGreaterThan(0)
+  })
+
+  it('marks a stop "here now" when the toggle is set, regardless of date', async () => {
+    const user = userEvent.setup()
+    useAuthStore.getState().login('admin', {})
+    renderCommunity()
+    await user.click(screen.getByRole('tab', { name: 'Tour' }))
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    await user.type(screen.getByPlaceholderText(/city name/i), 'Ulm')
+    await user.type(screen.getByPlaceholderText(/Garching/i), 'Uni Ulm')
+    fireEvent.change(screen.getByLabelText(/^Date/), { target: { value: '2026-01-01' } }) // past date
+    await user.click(screen.getByLabelText(/here now/i))
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    const added = useBridgeStore.getState().truckStops.find(s => s.city === 'Ulm')
+    expect(added?.status).toBe('current')
+  })
+
+  it('requires city, venue and date — shows a visible error listing what is missing', async () => {
+    const user = userEvent.setup()
+    useAuthStore.getState().login('admin', {})
+    renderCommunity()
+    await user.click(screen.getByRole('tab', { name: 'Tour' }))
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    // Submit empty — must surface an error naming the missing fields, not silently do nothing.
+    await user.click(screen.getByRole('button', { name: 'Add stop' }))
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveTextContent(/City/)
+    expect(alert).toHaveTextContent(/Venue/)
+    expect(alert).toHaveTextContent(/Date/)
+    // Form stays open so the user can correct it.
+    expect(screen.getByText('New stop')).toBeInTheDocument()
   })
 })
 

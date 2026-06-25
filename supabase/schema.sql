@@ -65,7 +65,8 @@ create table if not exists pain_points (
   status text,
   "linkedApplicationId" text,
   "submittedAt" text,
-  "clusterId" text references pain_point_clusters(id) on delete set null
+  "clusterId" text references pain_point_clusters(id) on delete set null,
+  "sharedWithCommunity" boolean default true
 );
 
 create table if not exists pool_members (

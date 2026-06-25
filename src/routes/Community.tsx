@@ -6,7 +6,7 @@ import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import StatusTimeline from '../components/StatusTimeline'
-import TruckTourMap from '../components/TruckTourMap'
+import TruckTourMap, { CITY_PRESETS, lonLatToXY } from '../components/TruckTourMap'
 import type { CommunityEventType, CommunityEvent, TruckStop, TruckStopStatus } from '../store/types'
 
 const EVENT_TYPES: CommunityEventType[] = ['workshop', 'networking', 'demo_day', 'hackathon']
@@ -38,7 +38,18 @@ type Tab = 'overview' | 'events' | 'tour'
 const emptyEvent = { title: '', type: 'workshop' as CommunityEventType, date: '', location: '', description: '' }
 const emptyStop = {
   city: '', venue: '', date: '', description: '', registerUrl: '',
-  status: 'upcoming' as TruckStopStatus, x: 50, y: 50,
+  hereNow: false, x: 50, y: 50,
+}
+
+// A stop's status is derived from its date — past if it already happened,
+// upcoming if it's in the future. "Here now" is the one case that can't be
+// inferred (the truck sits at a stop for a window, not exactly on the date),
+// so the admin sets it explicitly and it overrides the date.
+function deriveStatus(date: string, hereNow: boolean): TruckStopStatus {
+  if (hereNow) return 'current'
+  if (!date) return 'upcoming'
+  const today = new Date().toISOString().slice(0, 10)
+  return date < today ? 'past' : 'upcoming'
 }
 
 export default function Community() {
@@ -64,7 +75,9 @@ export default function Community() {
     ? app?.technology
     : (member?.company ? `${member.company} · ${member.techArea}` : member?.techArea)
 
-  const openPainPoints = painPoints.filter(pp => pp.status === 'open')
+  // Community members see open pain points the admin has shared (default-shared:
+  // only an explicit false hides one).
+  const openPainPoints = painPoints.filter(pp => pp.status === 'open' && pp.sharedWithCommunity !== false)
 
   // Pool members see their invitations; everyone else (founder/lead/admin) sees all.
   const visibleEvents = isMember && member
@@ -81,9 +94,15 @@ export default function Community() {
       style={{ padding: '80px 40px 60px', maxWidth: '900px', margin: '0 auto' }}
     >
       <DemoHint
-        persona={isFounder ? `You are ${displayName} — now in the BRIDGE community` : `You are ${displayName} — BRIDGE Community`}
+        persona={
+          isFounder ? `You are ${displayName} — now in the BRIDGE community`
+          : isAdmin ? `Admin · you're viewing the community as ${displayName}`
+          : `You are ${displayName} — BRIDGE Community`
+        }
         hint={isFounder
           ? "You've been accepted into BRIDGE. The community opens up once you're in: events, the recruiting tour, and the open pain points across Audi."
+          : isAdmin
+          ? "This is the member-facing community. As admin you can manage events and the recruiting tour from here."
           : "Community members have access to Audi's open pain points and are invited to events. If you see a problem you can solve, you're welcome to apply."}
       />
 
@@ -92,18 +111,22 @@ export default function Community() {
         <span className="kicker">bridge community</span>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
           <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: 'clamp(24px, 4vw, 42px)', color: 'var(--text)', lineHeight: 1.1 }}>
-            {displayName}
+            {isAdmin ? 'BRIDGE Community' : displayName}
           </h1>
           <span style={{
             fontFamily: 'AudiType', fontSize: '11px',
-            color: isFounder ? 'var(--accent)' : member?.type === 'startup' ? 'var(--accent)' : 'var(--blue)',
-            background: isFounder ? 'var(--accent-dim)' : member?.type === 'startup' ? 'var(--accent-dim)' : 'rgba(59,130,246,0.1)',
+            color: isAdmin ? 'var(--amber)' : isFounder ? 'var(--accent)' : member?.type === 'startup' ? 'var(--accent)' : 'var(--blue)',
+            background: isAdmin ? 'rgba(245,158,11,0.12)' : isFounder ? 'var(--accent-dim)' : member?.type === 'startup' ? 'var(--accent-dim)' : 'rgba(59,130,246,0.1)',
             padding: '4px 10px', borderRadius: '0',
           }}>
-            {isFounder ? 'Accepted Founder' : member?.type === 'startup' ? 'Startup' : 'Contact'}
+            {isAdmin ? 'Admin' : isFounder ? 'Accepted Founder' : member?.type === 'startup' ? 'Startup' : 'Contact'}
           </span>
         </div>
-        {displaySubtitle && (
+        {isAdmin ? (
+          <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginTop: '4px' }}>
+            Viewing as {displayName}{member?.type ? ` · ${member.type === 'startup' ? 'Startup' : 'Contact'}` : ''}
+          </div>
+        ) : displaySubtitle && (
           <div style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
             {displaySubtitle}
           </div>
@@ -397,23 +420,45 @@ function TourTab({
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [placing, setPlacing] = useState(false)
+  const [error, setError] = useState('')
 
   const selected = stops.find(s => s.id === selectedId) ?? null
 
-  function startAdd() { setForm(emptyStop); setEditingId(null); setOpen(true); setPlacing(false) }
+  function startAdd() { setForm(emptyStop); setEditingId(null); setOpen(true); setPlacing(false); setError('') }
   function startEdit(s: TruckStop) {
-    setForm({ city: s.city, venue: s.venue, date: s.date, description: s.description, registerUrl: s.registerUrl ?? '', status: s.status, x: s.x, y: s.y })
-    setEditingId(s.id); setOpen(true); setPlacing(false)
+    setForm({ city: s.city, venue: s.venue, date: s.date, description: s.description, registerUrl: s.registerUrl ?? '', hereNow: s.status === 'current', x: s.x, y: s.y })
+    setEditingId(s.id); setOpen(true); setPlacing(false); setError('')
   }
-  function close() { setOpen(false); setEditingId(null); setForm(emptyStop); setPlacing(false) }
+  function close() { setOpen(false); setEditingId(null); setForm(emptyStop); setPlacing(false); setError('') }
+
+  // Typing or picking a city: if it matches a known preset, drop the pin on its
+  // real location automatically. Validation lives here (not native HTML) so the
+  // form can never silently refuse to submit.
+  function setCity(value: string) {
+    setError('')
+    const preset = CITY_PRESETS.find(c => c.name.toLowerCase() === value.trim().toLowerCase())
+    if (preset) {
+      const { x, y } = lonLatToXY(preset.lon, preset.lat)
+      setForm(f => ({ ...f, city: value, x, y }))
+    } else {
+      setForm(f => ({ ...f, city: value }))
+    }
+  }
 
   function handleSubmit(ev: React.FormEvent) {
     ev.preventDefault()
-    if (!form.city.trim()) return
+    const missing: string[] = []
+    if (!form.city.trim()) missing.push('City')
+    if (!form.venue.trim()) missing.push('Venue')
+    if (!form.date) missing.push('Date')
+    if (missing.length) {
+      setError(`Please fill in: ${missing.join(', ')}.`)
+      return
+    }
     const payload: TruckStop = {
       id: editingId ?? `ts-${Date.now()}`,
-      city: form.city, venue: form.venue || 'TBD', date: form.date || 'TBD',
-      description: form.description, status: form.status,
+      city: form.city.trim(), venue: form.venue.trim(), date: form.date,
+      description: form.description.trim(), status: deriveStatus(form.date, form.hereNow),
       x: Number(form.x), y: Number(form.y),
       registerUrl: form.registerUrl.trim() || undefined,
     }
@@ -423,7 +468,7 @@ function TourTab({
 
   // While the form is open and "place" is active, clicking the map sets x/y.
   const previewStops = open
-    ? [...stops.filter(s => s.id !== editingId), { ...emptyStop, ...form, id: editingId ?? 'draft', x: Number(form.x), y: Number(form.y) } as TruckStop]
+    ? [...stops.filter(s => s.id !== editingId), { ...emptyStop, ...form, id: editingId ?? 'draft', status: deriveStatus(form.date, form.hereNow), x: Number(form.x), y: Number(form.y) } as TruckStop]
     : stops
 
   return (
@@ -433,14 +478,14 @@ function TourTab({
           <Truck size={14} color="var(--text-faint)" />
           <span className="kicker">recruiting truck — tour route</span>
         </div>
-        {isAdmin && (
-          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => open && !editingId ? close() : startAdd()}>
+        {isAdmin && !open && (
+          <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={startAdd}>
             <Plus size={13} /> Add stop
           </button>
         )}
       </div>
       <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '18px', lineHeight: 1.5 }}>
-        The BRIDGE truck tours universities and startup hubs to meet founders where they are. Tap a pin to see when it's near you.
+        The BRIDGE truck tours universities and startup hubs so founders can meet Audi's venture clienting team informally — no idea or pitch required, just a first conversation. Tap a pin to see when it's near you.
       </p>
 
       {/* Legend */}
@@ -453,7 +498,7 @@ function TourTab({
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.1fr)', gap: '24px', alignItems: 'start' }}>
+      <div className="tour-map-grid" style={{ gap: '24px' }}>
         {/* Map */}
         <div className="card" style={{ padding: '16px' }}>
           <TruckTourMap
@@ -471,25 +516,79 @@ function TourTab({
           <AnimatePresence>
             {isAdmin && open && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden', marginBottom: '14px' }}>
-                <form onSubmit={handleSubmit} className="card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--text)' }}>{editingId ? 'Edit stop' : 'New stop'}</span>
-                  <input className="input" placeholder="City *" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} required />
-                  <input className="input" placeholder="Venue" value={form.venue} onChange={e => setForm(f => ({ ...f, venue: e.target.value }))} />
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <input className="input" style={{ flex: 1 }} type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
-                    <select className="input" style={{ flex: 1 }} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as TruckStopStatus }))}>
-                      {STOP_STATUSES.map(s => <option key={s} value={s}>{STOP_STATUS_LABEL[s]}</option>)}
-                    </select>
+                <form onSubmit={handleSubmit} className="card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }} noValidate>
+                  <div>
+                    <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--text)' }}>{editingId ? 'Edit stop' : 'New stop'}</span>
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', marginLeft: '8px' }}>
+                      <span style={{ color: 'var(--accent)' }}>*</span> required
+                    </span>
                   </div>
-                  <textarea className="input" placeholder="Description" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} style={{ minHeight: '54px' }} />
-                  <input className="input" placeholder="Register URL (optional)" value={form.registerUrl} onChange={e => setForm(f => ({ ...f, registerUrl: e.target.value }))} />
+
+                  {/* City — type or pick from the list; a known city drops its pin automatically */}
+                  <label style={fieldLabel}>
+                    City <span style={{ color: 'var(--accent)' }}>*</span>
+                    <input
+                      className="input"
+                      style={{ marginTop: '4px' }}
+                      list="city-presets"
+                      placeholder="City name — type or pick (e.g. Munich)"
+                      value={form.city}
+                      onChange={e => setCity(e.target.value)}
+                      autoFocus
+                    />
+                    <datalist id="city-presets">
+                      {CITY_PRESETS.map(c => <option key={c.name} value={c.name} />)}
+                    </datalist>
+                  </label>
+
+                  <label style={fieldLabel}>
+                    Venue <span style={{ color: 'var(--accent)' }}>*</span>
+                    <input className="input" style={{ marginTop: '4px' }} placeholder="e.g. TUM — UnternehmerTUM, Garching" value={form.venue} onChange={e => setForm(f => ({ ...f, venue: e.target.value }))} />
+                  </label>
+
+                  <label style={fieldLabel}>
+                    Date <span style={{ color: 'var(--accent)' }}>*</span>
+                    <input className="input" style={{ marginTop: '4px', width: '100%' }} type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
+                  </label>
+
+                  {/* Status is derived from the date — only "here now" is a manual override. */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text)', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={form.hereNow} onChange={e => setForm(f => ({ ...f, hereNow: e.target.checked }))} />
+                      Truck is here now
+                    </label>
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>
+                      Status: <span style={{ color: STOP_STATUS_COLOR[deriveStatus(form.date, form.hereNow)], fontWeight: 600 }}>{STOP_STATUS_LABEL[deriveStatus(form.date, form.hereNow)]}</span>
+                      {!form.hereNow && form.date ? ' (from date)' : ''}
+                    </span>
+                  </div>
+
+                  <label style={fieldLabel}>
+                    Description
+                    <textarea className="input" style={{ marginTop: '4px', minHeight: '54px' }} placeholder="What happens at this stop?" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+                  </label>
+
+                  <label style={fieldLabel}>
+                    Register URL
+                    <input className="input" style={{ marginTop: '4px' }} placeholder="https://…" value={form.registerUrl} onChange={e => setForm(f => ({ ...f, registerUrl: e.target.value }))} />
+                  </label>
+
+                  {/* Pin position — set automatically for known cities; otherwise place it on the map */}
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <input className="input" style={{ width: '70px' }} type="number" min={0} max={100} value={form.x} onChange={e => setForm(f => ({ ...f, x: Number(e.target.value) }))} aria-label="Pin X %" />
-                    <input className="input" style={{ width: '70px' }} type="number" min={0} max={100} value={form.y} onChange={e => setForm(f => ({ ...f, y: Number(e.target.value) }))} aria-label="Pin Y %" />
                     <button type="button" onClick={() => setPlacing(p => !p)} className="btn-secondary" style={{ padding: '6px 10px', fontSize: '11px', borderColor: placing ? 'var(--accent)' : undefined, color: placing ? 'var(--accent)' : undefined }}>
-                      {placing ? 'Click the map…' : 'Place on map'}
+                      {placing ? 'Now click the map…' : 'Place pin on map'}
                     </button>
+                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>
+                      Pin: {Number(form.x).toFixed(0)}, {Number(form.y).toFixed(0)} — auto-set for known cities
+                    </span>
                   </div>
+
+                  {error && (
+                    <div role="alert" style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--red)', background: 'var(--red-dim, rgba(220,38,38,0.08))', border: '1px solid var(--red)', borderRadius: 'var(--radius-sm)', padding: '8px 10px' }}>
+                      {error}
+                    </div>
+                  )}
+
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                     <button type="button" className="btn-secondary" style={{ padding: '6px 14px', fontSize: '12px' }} onClick={close}>Cancel</button>
                     <button type="submit" className="btn-primary" style={{ padding: '6px 14px', fontSize: '12px' }}>{editingId ? 'Save changes' : 'Add stop'}</button>
@@ -558,4 +657,8 @@ const iconBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)',
   borderRadius: 'var(--radius-sm)', padding: '5px', cursor: 'pointer',
+}
+
+const fieldLabel: React.CSSProperties = {
+  display: 'block', fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)',
 }

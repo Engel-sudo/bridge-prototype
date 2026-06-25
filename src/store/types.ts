@@ -68,6 +68,12 @@ export interface PainPoint {
   submittedAt: string
   /** Theme assigned by "Group by theme". Null/absent until clustered. */
   clusterId?: string | null
+  /**
+   * Whether this pain point is visible to the external BRIDGE community.
+   * Defaults to shared — absent/undefined is treated as true — so the admin
+   * only ever has to act to *hide* a sensitive one.
+   */
+  sharedWithCommunity?: boolean
 }
 
 export type PoolMemberType = 'startup' | 'contact'

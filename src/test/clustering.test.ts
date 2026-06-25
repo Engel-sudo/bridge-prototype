@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { localStubCluster, parseClusterResponse, type Cluster } from '../store/clustering'
+import { localStubCluster, parseClusterResponse, painPointSignature, type Cluster } from '../store/clustering'
 import type { PainPoint } from '../store/types'
 
 function makePP(id: string, title: string, description = ''): PainPoint {
@@ -69,5 +69,27 @@ describe('parseClusterResponse', () => {
     expect(parseClusterResponse('not json', known)).toEqual([])
     expect(parseClusterResponse(null, known)).toEqual([])
     expect(parseClusterResponse({ nope: true }, known)).toEqual([])
+  })
+})
+
+describe('painPointSignature', () => {
+  it('is stable for the same pain points regardless of order', () => {
+    const a = makePP('a', 'Inspection', 'desc a')
+    const b = makePP('b', 'Routing', 'desc b')
+    expect(painPointSignature([a, b])).toBe(painPointSignature([b, a]))
+  })
+
+  it('changes when a pain point is added or removed', () => {
+    const a = makePP('a', 'Inspection', 'desc a')
+    const b = makePP('b', 'Routing', 'desc b')
+    expect(painPointSignature([a])).not.toBe(painPointSignature([a, b]))
+  })
+
+  it('changes when a pain point title or description is edited', () => {
+    const before = makePP('a', 'Inspection', 'desc a')
+    const editedTitle = makePP('a', 'Inspection automated', 'desc a')
+    const editedDesc = makePP('a', 'Inspection', 'desc a, revised')
+    expect(painPointSignature([before])).not.toBe(painPointSignature([editedTitle]))
+    expect(painPointSignature([before])).not.toBe(painPointSignature([editedDesc]))
   })
 })

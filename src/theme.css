@@ -323,6 +323,19 @@ select.input {
   }
 }
 
+/* Map + detail layout (Tour, Community tour tab) — stacks on small screens
+   so the map keeps a usable size instead of being squeezed into half a column. */
+.tour-map-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .tour-map-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Focus visible (keyboard nav) ──────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--text);

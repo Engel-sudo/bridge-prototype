@@ -29,6 +29,50 @@ const STATUS_COLOR: Record<TruckStopStatus, string> = {
   upcoming: 'var(--blue)',
 }
 
+/** Same projection as GERMANY_PATH above — lets callers go from a real
+ * lon/lat to the x/y percentages TruckStop expects, without the admin
+ * having to guess coordinates by hand. */
+export function lonLatToXY(lon: number, lat: number): { x: number; y: number } {
+  return {
+    x: Math.round(((lon - 5.87) / 9.17) * 1000) / 10,
+    y: Math.round(((55.06 - lat) / 7.79) * 1000) / 10,
+  }
+}
+
+/** Common German university towns / startup hubs, for the admin's city
+ * picker — picking a name plugs in a correct pin position automatically. */
+export const CITY_PRESETS: { name: string; lon: number; lat: number }[] = [
+  { name: 'Aachen', lon: 6.083, lat: 50.776 },
+  { name: 'Berlin', lon: 13.405, lat: 52.52 },
+  { name: 'Munich', lon: 11.582, lat: 48.135 },
+  { name: 'Hamburg', lon: 9.993, lat: 53.551 },
+  { name: 'Cologne', lon: 6.96, lat: 50.937 },
+  { name: 'Frankfurt', lon: 8.682, lat: 50.111 },
+  { name: 'Stuttgart', lon: 9.182, lat: 48.776 },
+  { name: 'Heilbronn', lon: 9.211, lat: 49.142 },
+  { name: 'Ingolstadt', lon: 11.424, lat: 48.766 },
+  { name: 'Nuremberg', lon: 11.077, lat: 49.453 },
+  { name: 'Erlangen', lon: 11.004, lat: 49.59 },
+  { name: 'Dresden', lon: 13.737, lat: 51.05 },
+  { name: 'Leipzig', lon: 12.371, lat: 51.34 },
+  { name: 'Karlsruhe', lon: 8.404, lat: 49.007 },
+  { name: 'Darmstadt', lon: 8.652, lat: 49.873 },
+  { name: 'Heidelberg', lon: 8.672, lat: 49.399 },
+  { name: 'Mannheim', lon: 8.466, lat: 49.488 },
+  { name: 'Bonn', lon: 7.1, lat: 50.735 },
+  { name: 'Düsseldorf', lon: 6.773, lat: 51.227 },
+  { name: 'Münster', lon: 7.626, lat: 51.96 },
+  { name: 'Hannover', lon: 9.733, lat: 52.375 },
+  { name: 'Bremen', lon: 8.808, lat: 53.079 },
+  { name: 'Potsdam', lon: 13.064, lat: 52.39 },
+  { name: 'Würzburg', lon: 9.93, lat: 49.793 },
+  { name: 'Tübingen', lon: 9.057, lat: 48.521 },
+  { name: 'Freiburg', lon: 7.852, lat: 47.999 },
+  { name: 'Augsburg', lon: 10.898, lat: 48.371 },
+  { name: 'Regensburg', lon: 12.101, lat: 49.013 },
+  { name: 'Konstanz', lon: 9.175, lat: 47.663 },
+]
+
 interface Props {
   stops: TruckStop[]
   selectedId?: string | null
@@ -61,10 +105,11 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: '380px',
+        maxWidth: '480px',
         margin: '0 auto',
         aspectRatio: `100 / ${VIEWBOX_H}`,
         cursor: placing ? 'crosshair' : 'default',
+        touchAction: 'manipulation',
       }}
     >
       <svg viewBox={`0 0 100 ${VIEWBOX_H}`} width="100%" height="100%" style={{ display: 'block', overflow: 'visible' }}>
@@ -93,19 +138,27 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
         const color = STATUS_COLOR[stop.status]
         const isSelected = stop.id === selectedId
         const isCurrent = stop.status === 'current'
+        // The form preview pin (admin is still editing, hasn't hit Submit yet) —
+        // shown hollow/dashed so it's never mistaken for an already-saved stop.
+        const isDraft = stop.id === 'draft'
         // Eastern pins put their label on the left so it doesn't clip the edge.
         const labelOnLeft = stop.x > 62
         return (
           <button
             key={stop.id}
             onClick={(e) => { e.stopPropagation(); onSelect?.(stop.id) }}
-            aria-label={`${stop.city} — ${stop.status}`}
-            title={`${stop.city} · ${stop.date}`}
+            aria-label={`${stop.city} — ${isDraft ? 'unsaved draft' : stop.status}`}
+            title={isDraft ? `${stop.city} — not saved yet, click "Add stop" below to save` : `${stop.city} · ${stop.date}`}
             style={{
               position: 'absolute',
               left: `${stop.x}%`,
               top: `${stop.y}%`,
               transform: 'translate(-50%, -50%)',
+              width: '28px',
+              height: '28px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               background: 'transparent',
               border: 'none',
               padding: 0,
@@ -132,8 +185,9 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
                 width: isCurrent ? '13px' : '10px',
                 height: isCurrent ? '13px' : '10px',
                 borderRadius: '50%',
-                background: stop.status === 'past' ? 'var(--bg)' : color,
-                border: `2px solid ${color}`,
+                background: isDraft ? 'transparent' : stop.status === 'past' ? 'var(--bg)' : color,
+                border: isDraft ? `2px dashed ${color}` : `2px solid ${color}`,
+                opacity: isDraft ? 0.7 : 1,
                 boxShadow: isSelected
                   ? `0 0 0 3px color-mix(in srgb, ${color} 35%, transparent)`
                   : '0 1px 3px rgba(0,0,0,0.25)',
@@ -149,15 +203,16 @@ export default function TruckTourMap({ stops, selectedId, onSelect, onPlace, pla
                 transform: 'translateY(-50%)',
                 fontFamily: 'AudiType, sans-serif',
                 fontSize: '10px',
+                fontStyle: isDraft ? 'italic' : 'normal',
                 fontWeight: isSelected || isCurrent ? 700 : 500,
-                color: isSelected || isCurrent ? 'var(--text)' : 'var(--text-muted)',
+                color: isDraft ? 'var(--text-faint)' : isSelected || isCurrent ? 'var(--text)' : 'var(--text-muted)',
                 whiteSpace: 'nowrap',
                 lineHeight: 1,
                 pointerEvents: 'none',
                 textShadow: '0 1px 2px var(--bg), 0 0 2px var(--bg)',
               }}
             >
-              {stop.city}
+              {stop.city}{isDraft ? ' (not saved yet)' : ''}
             </span>
           </button>
         )

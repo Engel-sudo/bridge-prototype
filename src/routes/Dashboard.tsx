@@ -218,7 +218,7 @@ export default function Dashboard() {
           <span className="kicker">system overview · bridge</span>
           <h1 style={{ fontFamily: "'AudiType Extended', 'AudiType', sans-serif", fontWeight: 700, fontSize: '26px', color: 'var(--text)', lineHeight: 1.1 }}>Dashboard</h1>
           <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
-            Audi doesn't need more startups. It needs a system that doesn't lose them.
+            Live view of every application, pain point, and pilot across BRIDGE.
           </p>
         </div>
       </div>
@@ -490,7 +490,7 @@ export default function Dashboard() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.35 }}
         style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '10px' }}>
         {[
-          { num: '01', name: 'The Door',          stat: '48h',                                      caption: '48h to a name · 2 weeks to a decision', body: 'Every founder gets a name, not a form. A yes or no in 2 weeks.',                         color: 'var(--blue)',  route: '/owner' },
+          { num: '01', name: 'The Door',          stat: '48h',                                      caption: '48h to a name · 2 weeks to a decision', body: 'Every founder gets a named contact within 48 hours and a decision within two weeks.',     color: 'var(--blue)',  route: '/owner' },
           { num: '02', name: 'The Internal Lead', stat: String(metrics.implementationsThisQuarter), caption: 'implementations this quarter',   body: 'One named Audi employee is responsible for each startup end-to-end. KPI is implementation.',              color: 'var(--accent)',  route: '/owner' },
           { num: '03', name: 'The Map',            stat: String(painPoints.length),                  caption: 'pain points submitted',         body: 'Any employee can surface a problem. Pilots visible across all silos.',                                    color: 'var(--amber)', route: '/map'   },
         ].map((p, i) => (

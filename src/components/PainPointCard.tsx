@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Pencil, Trash2, Check, X } from 'lucide-react'
+import { Pencil, Trash2, Check, X, Eye, EyeOff } from 'lucide-react'
 import type { PainPoint, PainPointStatus } from '../store/types'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
@@ -18,13 +18,6 @@ interface Props {
   painPoint: PainPoint
   showMatch?: boolean
   clusterLabel?: string
-}
-
-function truncateWords(text: string, max: number): string {
-  if (text.length <= max) return text
-  const sliced = text.slice(0, max)
-  const lastSpace = sliced.lastIndexOf(' ')
-  return (lastSpace > 0 ? sliced.slice(0, lastSpace) : sliced) + '…'
 }
 
 const iconBtn: React.CSSProperties = {
@@ -64,6 +57,12 @@ export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Pr
     }
   }
 
+  // Default-shared: only an explicit false hides it from the community.
+  const isShared = painPoint.sharedWithCommunity !== false
+  function toggleShared() {
+    updatePainPoint({ ...painPoint, sharedWithCommunity: !isShared })
+  }
+
   // ── Admin edit mode ─────────────────────────────────────────────────────
   if (editing) {
     return (
@@ -99,6 +98,15 @@ export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Pr
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          {isAdmin && !isShared && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              fontFamily: 'AudiType', fontSize: '11px',
+              color: 'var(--text-faint)', background: 'var(--surface-2)', padding: '3px 8px',
+            }}>
+              <EyeOff size={11} /> Hidden
+            </span>
+          )}
           <span style={{
             fontFamily: 'AudiType', fontSize: '11px',
             color: style.color, background: style.bg, padding: '3px 8px', borderRadius: '0',
@@ -107,6 +115,14 @@ export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Pr
           </span>
           {isAdmin && (
             <>
+              <button
+                title={isShared ? 'Shared with community — click to hide' : 'Hidden from community — click to share'}
+                aria-label={isShared ? 'Hide from community' : 'Share with community'}
+                onClick={toggleShared}
+                style={{ ...iconBtn, color: isShared ? 'var(--accent)' : 'var(--text-faint)', borderColor: isShared ? 'var(--accent)' : 'var(--border-strong)' }}
+              >
+                {isShared ? <Eye size={13} /> : <EyeOff size={13} />}
+              </button>
               <button title="Edit" onClick={startEdit} style={iconBtn}><Pencil size={13} /></button>
               <button title="Delete" onClick={remove} style={{ ...iconBtn, color: 'var(--red)', borderColor: 'var(--red)' }}><Trash2 size={13} /></button>
             </>
@@ -121,8 +137,13 @@ export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Pr
         </div>
       )}
 
-      <div style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '10px' }}>
-        {truncateWords(painPoint.description, 140)}
+      <div
+        style={{
+          fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5',
+          marginBottom: '10px',
+        }}
+      >
+        {painPoint.description}
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>

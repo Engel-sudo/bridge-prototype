@@ -36,11 +36,11 @@ export default function Tour() {
             The BRIDGE truck is coming to you
           </h1>
           <p style={{ fontFamily: 'AudiType', fontSize: '15px', color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: '560px' }}>
-            We tour universities and startup hubs across Germany to meet founders where they are. Find the next stop near you — and if your technology fits, apply on the spot.
+            We tour universities and startup hubs across Germany so you can meet someone from Audi's venture clienting team in person — no pitch required. Drop by to talk through an early idea, get honest feedback, or just put a face to BRIDGE. Already have a technology ready? You can still apply on the spot. Either way, it starts with a conversation, not a corporation.
           </p>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.1fr)', gap: '32px', alignItems: 'start' }}>
+        <div className="tour-map-grid" style={{ gap: '32px' }}>
           {/* Map */}
           <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.55, ease }} className="card" style={{ padding: '20px' }}>
             <TruckTourMap stops={truckStops} selectedId={selectedId} onSelect={setSelectedId} />

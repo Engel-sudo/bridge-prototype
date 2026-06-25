@@ -124,11 +124,12 @@ export default function Nav() {
       background: 'color-mix(in srgb, var(--bg) 92%, transparent)', backdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--border)',
       display: 'flex', alignItems: 'center',
-      padding: '0 32px', height: '56px', gap: '8px',
+      padding: '0 16px', height: '56px', gap: '8px',
+      overflowX: 'auto', WebkitOverflowScrolling: 'touch',
     }}>
       {/* Logo */}
       <Link to="/login"
-        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', marginRight: '24px', cursor: 'pointer' }}>
+        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', marginRight: '16px', flexShrink: 0, cursor: 'pointer' }}>
         <div style={{ width: '28px', height: '28px', background: 'var(--accent)', borderRadius: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '13px', color: 'var(--accent-contrast)' }}>B</span>
         </div>
@@ -144,14 +145,14 @@ export default function Nav() {
             textDecoration: 'none', padding: '6px 14px', borderRadius: 'var(--radius-sm)',
             border: active ? '1px solid var(--accent)' : '1px solid transparent',
             background: active ? 'var(--accent-dim)' : 'transparent',
-            transition: 'all 0.15s',
+            transition: 'all 0.15s', flexShrink: 0, whiteSpace: 'nowrap',
           }}>
             <span style={{ fontFamily: 'AudiType', fontSize: '13px', fontWeight: 500, color: active ? 'var(--text)' : 'var(--text-muted)' }}>{label}</span>
           </Link>
         )
       })}
 
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
         {/* Light/dark toggle */}
         <button
           onClick={toggleTheme}

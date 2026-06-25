@@ -3,6 +3,7 @@ import type { Application, PainPoint, Owner, SystemMetrics, Stage, PoolMember, C
 import { seedApplications, seedOwners, seedPainPoints, seedMetrics, seedPoolMembers, seedCommunityEvents, seedTruckStops } from './seed'
 import { getRepository } from './repository'
 import type { Cluster } from './clustering'
+import { painPointSignature } from './clustering'
 
 interface BridgeStore {
   applications: Application[]
@@ -13,6 +14,9 @@ interface BridgeStore {
   communityEvents: CommunityEvent[]
   truckStops: TruckStop[]
   clusters: Cluster[]
+  // Fingerprint of the pain-point set the current clusters were computed from.
+  // Lets clusterPainPoints skip a redundant LLM call when nothing changed.
+  clusterSignature: string | null
 
   hydrate: () => Promise<void>
   addApplication: (app: Application) => void
@@ -60,12 +64,19 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   communityEvents: seedCommunityEvents,
   truckStops: seedTruckStops,
   clusters: [],
+  clusterSignature: null,
 
   // Load persisted state from the backend on app start. With the in-memory
   // repository this is a no-op (returns null) and the seed state is kept.
   hydrate: async () => {
     const data = await getRepository().loadAll()
-    if (data) set(data)
+    if (!data) return
+    // Persisted clusters were computed from data.painPoints — derive the same
+    // signature now so the idempotency gate recognizes "already grouped"
+    // across a page reload instead of treating clusterSignature as unset and
+    // re-calling the LLM on the very next "Group by theme" press.
+    const clusterSignature = data.clusters.length > 0 ? painPointSignature(data.painPoints) : null
+    set({ ...data, clusterSignature })
   },
 
   addApplication: (app) => {
@@ -212,11 +223,18 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   // Gemini Edge Function when Supabase is configured), then stamps each pain
   // point with its theme so the map can group and filter by cluster.
   clusterPainPoints: async () => {
-    const clusters = await getRepository().clusterPainPoints(get().painPoints)
+    const painPoints = get().painPoints
+    const signature = painPointSignature(painPoints)
+    // Idempotency gate: if the pain-point set is unchanged since the last
+    // grouping, reuse the existing themes instead of re-running the LLM (which
+    // would otherwise re-roll labels/groupings on every press).
+    if (signature === get().clusterSignature && get().clusters.length > 0) return
+    const clusters = await getRepository().clusterPainPoints(painPoints)
     const assignment = new Map<string, string>()
     for (const c of clusters) for (const id of c.painPointIds) assignment.set(id, c.id)
     set((state) => ({
       clusters,
+      clusterSignature: signature,
       painPoints: state.painPoints.map((pp) => ({
         ...pp,
         clusterId: assignment.get(pp.id) ?? null,
@@ -238,6 +256,7 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
       communityEvents: seedCommunityEvents,
       truckStops: seedTruckStops,
       clusters: [],
+      clusterSignature: null,
     })
     void getRepository().reseed().catch(() => {})
   },

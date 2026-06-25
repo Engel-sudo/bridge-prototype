@@ -171,4 +171,32 @@ describe('clusterPainPoints store action', () => {
     expect(clusters.length).toBeGreaterThan(0)
     expect(painPoints.some((pp) => !!pp.clusterId)).toBe(true)
   })
+
+  it('reuses existing clusters when pressed again with no changes', async () => {
+    const repo = new InMemoryRepository()
+    const spy = vi.spyOn(repo, 'clusterPainPoints')
+    setRepository(repo)
+    useBridgeStore.getState().resetDemo()
+
+    await useBridgeStore.getState().clusterPainPoints()
+    const first = useBridgeStore.getState().clusters
+    await useBridgeStore.getState().clusterPainPoints()
+    const second = useBridgeStore.getState().clusters
+
+    expect(spy).toHaveBeenCalledTimes(1) // second press did not re-run grouping
+    expect(second).toBe(first) // same object reference — unchanged
+  })
+
+  it('re-groups after a pain point is added', async () => {
+    const repo = new InMemoryRepository()
+    const spy = vi.spyOn(repo, 'clusterPainPoints')
+    setRepository(repo)
+    useBridgeStore.getState().resetDemo()
+
+    await useBridgeStore.getState().clusterPainPoints()
+    useBridgeStore.getState().addPainPoint(makePP('pp-new'))
+    await useBridgeStore.getState().clusterPainPoints()
+
+    expect(spy).toHaveBeenCalledTimes(2) // the new pain point invalidated the cache
+  })
 })
