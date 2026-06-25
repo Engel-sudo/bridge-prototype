@@ -89,7 +89,7 @@ function Chrome({ title, badge, children }: { title: string; badge?: string; chi
 // ── Dashboard ──────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { metrics, applications, painPoints, owners, floorWorkerVisibility, setFloorWorkerVisibility } = useBridgeStore()
+  const { metrics, applications, painPoints, owners } = useBridgeStore()
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null)
 
   const stageCount = (s: string) => applications.filter(a => a.stage === s).length
@@ -220,29 +220,6 @@ export default function Dashboard() {
           <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '3px' }}>
             Live view of every application, pain point, and pilot across BRIDGE.
           </p>
-        </div>
-        <div>
-          <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '6px' }}>
-            Floor worker feed shows
-          </span>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {([{ value: 'open' as const, label: 'Open only' }, { value: 'all' as const, label: 'All' }]).map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setFloorWorkerVisibility(opt.value)}
-                style={{
-                  fontFamily: 'AudiType', fontSize: '11px',
-                  padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid',
-                  borderColor: floorWorkerVisibility === opt.value ? 'var(--accent)' : 'var(--border-strong)',
-                  background: floorWorkerVisibility === opt.value ? 'var(--accent-dim)' : 'transparent',
-                  color: floorWorkerVisibility === opt.value ? 'var(--accent)' : 'var(--text-faint)',
-                  cursor: 'pointer', transition: 'all 0.15s',
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 

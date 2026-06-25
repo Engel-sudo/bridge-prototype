@@ -351,7 +351,7 @@ export default function Login() {
                 <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '0', padding: '2px 7px' }}>Audi</span>
               </div>
               <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Floor Worker</div>
-              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Log a pain point from the shop floor and see what's open.</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Report a pain point from the shop floor in seconds.</div>
             </div>
             <motion.div animate={{ rotate: expanded === 'floor_worker' ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={18} color="var(--text-faint)" />
@@ -369,7 +369,7 @@ export default function Login() {
               >
                 <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
                   <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
-                    Report a problem you've spotted, or browse what's already been reported. Read-only beyond submitting — no matching or editing.
+                    A simple form to flag a problem you've spotted on the line — no login friction, no manager approval needed.
                   </p>
                   <button
                     onClick={handleFloorWorker}
