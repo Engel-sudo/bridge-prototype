@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Layers } from 'lucide-react'
+import { Plus, Layers, Check } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import PainPointCard from '../components/PainPointCard'
 import DemoHint from '../components/DemoHint'
@@ -24,6 +24,10 @@ export default function PainPointMap() {
   const [form, setForm] = useState({ title: '', description: '', department: 'Quality', submittedBy: '' })
   const [submitted, setSubmitted] = useState(false)
   const [clustering, setClustering] = useState(false)
+  // Drives the button's own confirmation state — pressing it must visibly
+  // resolve to something even when the idempotency gate skips the LLM call,
+  // otherwise a repeat press looks like the button did nothing.
+  const [clusterDone, setClusterDone] = useState<'grouped' | 'unchanged' | null>(null)
   const [clusterError, setClusterError] = useState<string | null>(null)
 
   const clusterLabel = (id: string | null | undefined) =>
@@ -38,9 +42,12 @@ export default function PainPointMap() {
 
   async function handleCluster() {
     setClusterError(null)
+    setClusterDone(null)
     setClustering(true)
     try {
-      await clusterPainPoints()
+      const result = await clusterPainPoints()
+      setClusterDone(result)
+      setTimeout(() => setClusterDone(null), 2500)
     } catch (e) {
       if (e instanceof ClusterRateLimitError) {
         setClusterError('Groq rate limit reached — this is a usage limit, not an error. Wait about a minute and try again.')
@@ -96,9 +103,34 @@ export default function PainPointMap() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button className="btn-secondary" onClick={handleCluster} disabled={clustering} style={{ opacity: clustering ? 0.6 : 1 }}>
-              <Layers size={14} />
-              {clustering ? 'Grouping…' : 'Group by theme'}
+            <button
+              className="btn-secondary"
+              onClick={handleCluster}
+              disabled={clustering}
+              style={{
+                opacity: clustering ? 0.6 : 1,
+                cursor: clustering ? 'wait' : 'pointer',
+                borderColor: clusterDone ? 'var(--accent)' : undefined,
+                color: clusterDone ? 'var(--accent)' : undefined,
+                transition: 'border-color 0.2s, color 0.2s',
+              }}
+            >
+              {clustering ? (
+                <motion.span style={{ display: 'inline-flex' }} animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}>
+                  <Layers size={14} />
+                </motion.span>
+              ) : clusterDone ? (
+                <Check size={14} />
+              ) : (
+                <Layers size={14} />
+              )}
+              {clustering
+                ? 'Grouping…'
+                : clusterDone === 'grouped'
+                  ? 'Grouped'
+                  : clusterDone === 'unchanged'
+                    ? 'Already grouped'
+                    : 'Group by theme'}
             </button>
             <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
               <Plus size={14} />

@@ -20,6 +20,7 @@ interface BridgeStore {
 
   hydrate: () => Promise<void>
   addApplication: (app: Application) => void
+  deleteApplication: (appId: string) => void
   advanceStage: (appId: string) => void
   assignOwner: (appId: string, ownerId: string) => void
   decide: (appId: string, outcome: 'go' | 'redirect') => void
@@ -34,7 +35,7 @@ interface BridgeStore {
   addTruckStop: (stop: TruckStop) => void
   updateTruckStop: (stop: TruckStop) => void
   deleteTruckStop: (stopId: string) => void
-  clusterPainPoints: () => Promise<void>
+  clusterPainPoints: () => Promise<'unchanged' | 'grouped'>
   resetDemo: () => void
 }
 
@@ -84,6 +85,13 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     // so the activePilots count (Audi-wide narrative figure) is untouched.
     set((state) => ({ applications: [app, ...state.applications] }))
     void getRepository().saveApplication(app)
+  },
+
+  // Admin delete — remove an application (e.g. junk test submissions) and
+  // persist the deletion.
+  deleteApplication: (appId) => {
+    set((state) => ({ applications: state.applications.filter((a) => a.id !== appId) }))
+    void getRepository().deleteApplication(appId)
   },
 
   advanceStage: (appId) => {
@@ -228,7 +236,7 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     // Idempotency gate: if the pain-point set is unchanged since the last
     // grouping, reuse the existing themes instead of re-running the LLM (which
     // would otherwise re-roll labels/groupings on every press).
-    if (signature === get().clusterSignature && get().clusters.length > 0) return
+    if (signature === get().clusterSignature && get().clusters.length > 0) return 'unchanged'
     const clusters = await getRepository().clusterPainPoints(painPoints)
     const assignment = new Map<string, string>()
     for (const c of clusters) for (const id of c.painPointIds) assignment.set(id, c.id)
@@ -241,6 +249,7 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
       })),
     }))
     void getRepository().saveClusters(clusters)
+    return 'grouped'
   },
 
   // Restore all seed state — lets a presenter reset between testers without a

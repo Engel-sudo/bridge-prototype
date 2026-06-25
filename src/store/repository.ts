@@ -40,6 +40,7 @@ export interface BridgeRepository {
   /** Hydrate the store. Return null to keep the store's seed-initialised state. */
   loadAll(): Promise<BridgeData | null>
   saveApplication(app: Application): Promise<void>
+  deleteApplication(id: string): Promise<void>
   saveOwner(owner: Owner): Promise<void>
   savePainPoint(painPoint: PainPoint): Promise<void>
   deletePainPoint(id: string): Promise<void>
@@ -79,6 +80,7 @@ export class InMemoryRepository implements BridgeRepository {
     return null
   }
   async saveApplication(): Promise<void> {}
+  async deleteApplication(): Promise<void> {}
   async saveOwner(): Promise<void> {}
   async savePainPoint(): Promise<void> {}
   async deletePainPoint(): Promise<void> {}

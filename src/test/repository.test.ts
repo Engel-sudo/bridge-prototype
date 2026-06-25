@@ -58,6 +58,7 @@ describe('store write-through', () => {
     savePainPoint: ReturnType<typeof vi.fn>
     saveMetrics: ReturnType<typeof vi.fn>
     deletePainPoint: ReturnType<typeof vi.fn>
+    deleteApplication: ReturnType<typeof vi.fn>
     saveCommunityEvent: ReturnType<typeof vi.fn>
     deleteCommunityEvent: ReturnType<typeof vi.fn>
     saveTruckStop: ReturnType<typeof vi.fn>
@@ -72,6 +73,7 @@ describe('store write-through', () => {
       saveOwner: vi.fn().mockResolvedValue(undefined),
       savePainPoint: vi.fn().mockResolvedValue(undefined),
       deletePainPoint: vi.fn().mockResolvedValue(undefined),
+      deleteApplication: vi.fn().mockResolvedValue(undefined),
       savePoolMember: vi.fn().mockResolvedValue(undefined),
       saveCommunityEvent: vi.fn().mockResolvedValue(undefined),
       deleteCommunityEvent: vi.fn().mockResolvedValue(undefined),
@@ -115,6 +117,13 @@ describe('store write-through', () => {
     useBridgeStore.getState().deletePainPoint('pp-del')
     expect(useBridgeStore.getState().painPoints.some((p) => p.id === 'pp-del')).toBe(false)
     expect(repo.deletePainPoint).toHaveBeenCalledWith('pp-del')
+  })
+
+  it('admin delete removes the application and persists the deletion', () => {
+    useBridgeStore.getState().addApplication(makeApp('APP-DEL', 'submitted'))
+    useBridgeStore.getState().deleteApplication('APP-DEL')
+    expect(useBridgeStore.getState().applications.some((a) => a.id === 'APP-DEL')).toBe(false)
+    expect(repo.deleteApplication).toHaveBeenCalledWith('APP-DEL')
   })
 
   it('admin add community event stores it locally and persists it', () => {

@@ -67,6 +67,9 @@ export class SupabaseRepository implements BridgeRepository {
   async saveApplication(app: Application): Promise<void> {
     await this.client.from('applications').upsert(app)
   }
+  async deleteApplication(id: string): Promise<void> {
+    await this.client.from('applications').delete().eq('id', id)
+  }
   async saveOwner(owner: Owner): Promise<void> {
     await this.client.from('owners').upsert(owner)
   }
