@@ -10,6 +10,7 @@ import Apply from './routes/Apply'
 import FounderStatus from './routes/FounderStatus'
 import OwnerConsole from './routes/OwnerConsole'
 import PainPointMap from './routes/PainPointMap'
+import FloorView from './routes/FloorView'
 import Dashboard from './routes/Dashboard'
 import Community from './routes/Community'
 import Tour from './routes/Tour'
@@ -57,6 +58,12 @@ export default function App() {
           <Route path="/map" element={
             <ProtectedRoute allowedRoles={['internal_lead', 'admin']}>
               <PainPointMap />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/floor" element={
+            <ProtectedRoute allowedRoles={['floor_worker', 'internal_lead', 'admin']}>
+              <FloorView />
             </ProtectedRoute>
           } />
 

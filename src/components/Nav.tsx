@@ -18,6 +18,7 @@ const ALL_LINKS = [
   // My Application: startup only, and only when they DO have an existing application
   { to: '/founder',    label: 'My Application', mono: 'status',       roles: ['startup'],                        requiresAppId: true },
   { to: '/community',  label: 'Community',      mono: 'community',    roles: ['pool_member'],                    requiresAppId: null },
+  { to: '/floor',      label: 'Pain Points',    mono: 'floor',        roles: ['floor_worker'],                    requiresAppId: null },
 ]
 
 function roleBadge(role: string | null, selectedAppId: string | null, selectedOwnerId: string | null, selectedMemberId: string | null, poolMembers: PoolMember[]) {
@@ -34,6 +35,7 @@ function roleBadge(role: string | null, selectedAppId: string | null, selectedOw
     const name = member ? member.name : ''
     return { label: `Community${name ? ` · ${name}` : ''}`, color: 'var(--blue)', bg: 'transparent', border: 'var(--border-strong)' }
   }
+  if (role === 'floor_worker') return { label: 'Floor Worker', color: 'var(--blue)', bg: 'transparent', border: 'var(--border-strong)' }
   return null
 }
 

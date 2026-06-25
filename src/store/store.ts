@@ -5,6 +5,24 @@ import { getRepository } from './repository'
 import type { Cluster } from './clustering'
 import { painPointSignature } from './clustering'
 
+export type FloorWorkerVisibility = 'open' | 'all'
+
+const FLOOR_VISIBILITY_KEY = 'bridge_floor_visibility'
+
+function loadFloorVisibility(): FloorWorkerVisibility {
+  try {
+    const raw = localStorage.getItem(FLOOR_VISIBILITY_KEY)
+    if (raw === 'open' || raw === 'all') return raw
+  } catch {}
+  return 'open'
+}
+
+function saveFloorVisibility(v: FloorWorkerVisibility) {
+  try {
+    localStorage.setItem(FLOOR_VISIBILITY_KEY, v)
+  } catch {}
+}
+
 interface BridgeStore {
   applications: Application[]
   owners: Owner[]
@@ -17,6 +35,8 @@ interface BridgeStore {
   // Fingerprint of the pain-point set the current clusters were computed from.
   // Lets clusterPainPoints skip a redundant LLM call when nothing changed.
   clusterSignature: string | null
+  // Admin-controlled: what floor workers see in their read-only pain-point feed.
+  floorWorkerVisibility: FloorWorkerVisibility
 
   hydrate: () => Promise<void>
   addApplication: (app: Application) => void
@@ -36,6 +56,7 @@ interface BridgeStore {
   updateTruckStop: (stop: TruckStop) => void
   deleteTruckStop: (stopId: string) => void
   clusterPainPoints: () => Promise<'unchanged' | 'grouped'>
+  setFloorWorkerVisibility: (v: FloorWorkerVisibility) => void
   resetDemo: () => void
 }
 
@@ -66,6 +87,7 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   truckStops: seedTruckStops,
   clusters: [],
   clusterSignature: null,
+  floorWorkerVisibility: loadFloorVisibility(),
 
   // Load persisted state from the backend on app start. With the in-memory
   // repository this is a no-op (returns null) and the seed state is kept.
@@ -250,6 +272,14 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     }))
     void getRepository().saveClusters(clusters)
     return 'grouped'
+  },
+
+  // Admin setting — what floor workers see in their read-only feed. Persisted
+  // to localStorage (not the backend repository) since it's app config, not
+  // demo data, and shouldn't reset with resetDemo().
+  setFloorWorkerVisibility: (v) => {
+    saveFloorVisibility(v)
+    set({ floorWorkerVisibility: v })
   },
 
   // Restore all seed state — lets a presenter reset between testers without a

@@ -15,7 +15,7 @@ const SEED_APPS = [
   { id: 'APP-2024-0029', company: 'SonoSense',   founder: 'Elena Vogel',     tech: 'Ultrasonic integrity sensors' },
 ]
 
-type Tile = 'startup' | 'internal_lead' | 'admin' | 'community' | null
+type Tile = 'startup' | 'internal_lead' | 'admin' | 'community' | 'floor_worker' | null
 
 export default function Login() {
   const navigate   = useNavigate()
@@ -34,6 +34,11 @@ export default function Login() {
   function handleInternalLead() {
     login('internal_lead', { ownerId: 'o3' })
     navigate('/owner')
+  }
+
+  function handleFloorWorker() {
+    login('floor_worker', {})
+    navigate('/floor')
   }
 
   function handleFounderSubmit() {
@@ -311,6 +316,63 @@ export default function Login() {
                   </p>
                   <button
                     onClick={handleInternalLead}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', background: 'rgba(59,130,246,0.08)', textAlign: 'left',
+                      border: '1px solid rgba(59,130,246,0.35)', borderRadius: 'var(--radius-sm)',
+                      padding: '12px 18px', cursor: 'pointer', transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(59,130,246,0.14)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(59,130,246,0.08)' }}
+                  >
+                    <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--blue)' }}>Enter</span>
+                    <ArrowRight size={16} color="var(--blue)" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ── FLOOR WORKER ── */}
+        <div
+          style={{
+            ...tileBase,
+            borderColor: expanded === 'floor_worker' ? 'rgba(59,130,246,0.4)' : 'var(--border)',
+            background: expanded === 'floor_worker' ? 'rgba(59,130,246,0.03)' : 'var(--surface)',
+          }}
+        >
+          <div
+            onClick={() => setExpanded(expanded === 'floor_worker' ? null : 'floor_worker')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '0', padding: '2px 7px' }}>Audi</span>
+              </div>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>Floor Worker</div>
+              <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Log a pain point from the shop floor and see what's open.</div>
+            </div>
+            <motion.div animate={{ rotate: expanded === 'floor_worker' ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown size={18} color="var(--text-faint)" />
+            </motion.div>
+          </div>
+
+          <AnimatePresence>
+            {expanded === 'floor_worker' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '16px' }}>
+                  <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
+                    Report a problem you've spotted, or browse what's already been reported. Read-only beyond submitting — no matching or editing.
+                  </p>
+                  <button
+                    onClick={handleFloorWorker}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                       width: '100%', background: 'rgba(59,130,246,0.08)', textAlign: 'left',

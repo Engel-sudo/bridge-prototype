@@ -15,6 +15,7 @@ function roleHome(role: Role, selectedAppId: string | null): string {
   if (role === 'admin') return '/dashboard'
   if (role === 'internal_lead') return '/owner'
   if (role === 'pool_member') return '/community'
+  if (role === 'floor_worker') return '/floor'
   return selectedAppId ? `/founder/${selectedAppId}` : '/apply'
 }
 
