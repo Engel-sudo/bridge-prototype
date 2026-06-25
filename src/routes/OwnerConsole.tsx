@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, Zap, Check, X, ExternalLink, Users, AlertCircle } from 'lucide-react'
+import { ChevronRight, Zap, Check, X, ExternalLink, Users, AlertCircle, Trash2 } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
+import { useAuthStore } from '../store/authStore'
 import StatusTimeline from '../components/StatusTimeline'
 import OwnerCard from '../components/OwnerCard'
 import DemoHint from '../components/DemoHint'
@@ -51,7 +52,8 @@ function Initials({ name, color }: { name: string; color: string }) {
 }
 
 export default function OwnerConsole() {
-  const { applications, owners, advanceStage, assignOwner, decide, metrics, painPoints, poolMembers, addToPool } = useBridgeStore()
+  const { applications, owners, advanceStage, assignOwner, decide, deleteApplication, metrics, painPoints, poolMembers, addToPool } = useBridgeStore()
+  const isAdmin = useAuthStore(s => s.role) === 'admin'
   const owner = owners.find(o => o.id === 'o3') || owners[0]
   const unassigned = applications.filter(a => a.ownerId === null)
   const myApps = applications.filter(a => a.ownerId === owner.id || a.ownerId === 'o2')
@@ -95,6 +97,15 @@ export default function OwnerConsole() {
       if (updated) setSelected(updated)
       setAdvancing(false)
     }, 600)
+  }
+
+  // Admin-only: remove a junk/test application. Re-point the detail at whatever
+  // is left in the queue so the panel never references a deleted row.
+  function handleDelete(app: Application) {
+    if (!window.confirm(`Delete application “${app.companyName}” (${app.id})? This can't be undone.`)) return
+    deleteApplication(app.id)
+    const remaining = useBridgeStore.getState().applications
+    setSelected(remaining.find(a => a.ownerId === null || a.ownerId === owner.id || a.ownerId === 'o2') ?? remaining[0] ?? null)
   }
 
   return (
@@ -172,7 +183,11 @@ export default function OwnerConsole() {
                   onClick={() => setSelected(app)}
                   style={{
                     background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
-                    border: `1px solid ${isSelected ? 'var(--accent)' : isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : 'var(--border)'}`,
+                    // Use per-side longhands (not `border` + `borderLeft`) so React
+                    // doesn't warn about mixing shorthand/non-shorthand on rerender.
+                    borderTop: `1px solid ${isSelected ? 'var(--accent)' : isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : 'var(--border)'}`,
+                    borderRight: `1px solid ${isSelected ? 'var(--accent)' : isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : 'var(--border)'}`,
+                    borderBottom: `1px solid ${isSelected ? 'var(--accent)' : isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : 'var(--border)'}`,
                     borderLeft: `3px solid ${isUnassigned ? 'var(--amber)' : overdue ? 'var(--red)' : isSelected ? 'var(--accent)' : 'var(--border)'}`,
                     borderRadius: 'var(--radius-sm)',
                     padding: '12px 14px',
@@ -274,6 +289,16 @@ export default function OwnerConsole() {
                       <Link to={`/founder/${selected.id}`} className="btn-secondary" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                         <ExternalLink size={13} /> View as founder
                       </Link>
+                    )}
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleDelete(selected)}
+                        aria-label="Delete application"
+                        title="Delete this application (admin)"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '13px', fontWeight: 600, padding: '8px 12px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--red)', background: 'transparent', border: '1px solid var(--red)' }}
+                      >
+                        <Trash2 size={13} /> Delete
+                      </button>
                     )}
                     {selected.ownerId === null ? (
                       <button className="btn-primary" onClick={() => handleClaim(selected.id)} disabled={claiming} style={{ opacity: claiming ? 0.7 : 1 }}>
