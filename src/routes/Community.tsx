@@ -165,7 +165,7 @@ export default function Community() {
         {tab === 'overview' && (
           <OverviewTab
             isFounder={isFounder}
-            memberNotes={member?.notes}
+            memberNotes={member?.type === 'startup' ? member.notes : undefined}
             addedByName={member?.addedByName}
             appStage={app?.stage ?? null}
             openPainPoints={openPainPoints}
