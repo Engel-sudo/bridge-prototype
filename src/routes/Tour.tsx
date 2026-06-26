@@ -17,6 +17,7 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export default function Tour() {
   const truckStops = useBridgeStore(s => s.truckStops)
+    .slice().sort((a, b) => a.date.localeCompare(b.date))
   const upcoming = truckStops.filter(s => s.status !== 'past')
   const [selectedId, setSelectedId] = useState<string | null>(
     truckStops.find(s => s.status === 'current')?.id ?? upcoming[0]?.id ?? null

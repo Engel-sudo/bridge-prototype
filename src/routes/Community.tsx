@@ -82,9 +82,10 @@ export default function Community() {
   const openPainPoints = painPoints.filter(pp => pp.status === 'open' && pp.sharedWithCommunity !== false)
 
   // Pool members see their invitations; everyone else (founder/lead/admin) sees all.
-  const visibleEvents = isMember && member
+  const visibleEvents = (isMember && member
     ? communityEvents.filter(e => e.invitedMemberIds.includes(member.id))
     : communityEvents
+  ).slice().sort((a, b) => a.date.localeCompare(b.date))
 
   if (!isAdmin && !member && !app) return null
 
@@ -191,7 +192,7 @@ export default function Community() {
 
         {tab === 'tour' && (
           <TourTab
-            stops={truckStops}
+            stops={truckStops.slice().sort((a, b) => a.date.localeCompare(b.date))}
             isAdmin={isAdmin}
             onAdd={addTruckStop}
             onUpdate={updateTruckStop}

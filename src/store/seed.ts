@@ -307,6 +307,24 @@ export const seedCommunityEvents: CommunityEvent[] = [
     type: 'networking',
     invitedMemberIds: ['pm2'],
   },
+  {
+    id: 'evt-autobahn',
+    title: 'STARTUP AUTOBAHN Expo Day — 10th Anniversary',
+    date: '2026-07-02',
+    location: 'Porsche Museum, Stuttgart',
+    description: 'OEM–startup matchmaking at STARTUP AUTOBAHN\'s 15th edition. 1,800+ invited guests from across the automotive supply chain. BRIDGE community members get access to the Audi innovation booth and direct intro to pilot leads on-site.',
+    type: 'networking',
+    invitedMemberIds: ['pm1', 'pm2'],
+  },
+  {
+    id: 'evt-bitsandpretzels',
+    title: 'Bits & Pretzels — Founders Festival',
+    date: '2026-09-28',
+    location: 'ICM München, Munich',
+    description: 'Europe\'s premier founder–investor festival: 7,500 attendees, 21,000 founder–investor meetings. BRIDGE hosts a side session on corporate pilot programmes — community members can join and connect with the broader VC network.',
+    type: 'networking',
+    invitedMemberIds: ['pm1', 'pm2'],
+  },
 ]
 
 export const seedTruckStops: TruckStop[] = [
@@ -384,6 +402,27 @@ export const seedTruckStops: TruckStop[] = [
     status: 'upcoming',
     description: 'Final northern stop of the summer tour. Logistics and supply-chain startups especially welcome.',
     registerUrl: 'https://bridge.audi/tour/hamburg',
+  },
+  {
+    id: 'ts-hannover',
+    city: 'Hannover',
+    venue: 'Hannover Messe — Deutsche Messe AG',
+    date: '2026-04-22',
+    x: 42.1,
+    y: 34.5,
+    status: 'past',
+    description: 'BRIDGE scouted 4,000+ exhibitors at Europe\'s largest industrial tech expo. Key focus: AI-driven automation and energy infrastructure startups — 6 teams flagged for follow-up.',
+  },
+  {
+    id: 'ts-freiburg',
+    city: 'Freiburg',
+    venue: 'Käpsele Innovation Festival — Konzerthaus Freiburg',
+    date: '2026-07-16',
+    x: 21.6,
+    y: 90.6,
+    status: 'upcoming',
+    description: 'Largest innovation festival in southwest Germany. BRIDGE joins the GreenTech and deep-tech tracks — drop in at the BRIDGE booth to discuss open pain points from the Ingolstadt line.',
+    registerUrl: 'https://bridge.audi/tour/freiburg',
   },
 ]
 
