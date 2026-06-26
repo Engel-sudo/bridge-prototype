@@ -3,7 +3,9 @@ import type { Application, PainPoint, Owner, SystemMetrics, Stage, PoolMember, C
 import { seedApplications, seedOwners, seedPainPoints, seedMetrics, seedPoolMembers, seedCommunityEvents, seedTruckStops } from './seed'
 import { getRepository } from './repository'
 import type { Cluster } from './clustering'
-import { painPointSignature } from './clustering'
+import { painPointSignature, detectDuplicates, triagePainPoint } from './clustering'
+import type { MatchResults } from './matching'
+import { matchSignature, localStubMatch, matchViaGroq } from './matching'
 
 interface BridgeStore {
   applications: Application[]
@@ -14,9 +16,10 @@ interface BridgeStore {
   communityEvents: CommunityEvent[]
   truckStops: TruckStop[]
   clusters: Cluster[]
-  // Fingerprint of the pain-point set the current clusters were computed from.
-  // Lets clusterPainPoints skip a redundant LLM call when nothing changed.
   clusterSignature: string | null
+  matchResults: MatchResults
+  matchSig: string | null
+  matchLoading: boolean
 
   hydrate: () => Promise<void>
   addApplication: (app: Application) => void
@@ -37,6 +40,8 @@ interface BridgeStore {
   updateTruckStop: (stop: TruckStop) => void
   deleteTruckStop: (stopId: string) => void
   clusterPainPoints: () => Promise<'unchanged' | 'grouped'>
+  computeMatches: () => Promise<void>
+  revertStage: (appId: string) => void
   resetDemo: () => void
 }
 
@@ -67,6 +72,9 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   truckStops: seedTruckStops,
   clusters: [],
   clusterSignature: null,
+  matchResults: {},
+  matchSig: null,
+  matchLoading: false,
 
   // Load persisted state from the backend on app start. With the in-memory
   // repository this is a no-op (returns null) and the seed state is kept.
@@ -263,16 +271,60 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     const clusters = await getRepository().clusterPainPoints(painPoints)
     const assignment = new Map<string, string>()
     for (const c of clusters) for (const id of c.painPointIds) assignment.set(id, c.id)
+    const duplicateOf = detectDuplicates(painPoints)
     set((state) => ({
       clusters,
       clusterSignature: signature,
       painPoints: state.painPoints.map((pp) => ({
         ...pp,
         clusterId: assignment.get(pp.id) ?? null,
+        triageStatus: triagePainPoint(pp),
+        duplicateOf: duplicateOf.get(pp.id) ?? null,
       })),
     }))
     void getRepository().saveClusters(clusters)
     return 'grouped'
+  },
+
+  // Step a startup back one stage. decision_go and decision_redirect both
+  // originate from signal_sent; everything else walks back through STAGE_ORDER.
+  // submitted is the floor — can't go further back.
+  revertStage: (appId) => {
+    const app = get().applications.find(a => a.id === appId)
+    if (!app || app.stage === 'submitted') return
+    let prev: Stage
+    if (app.stage === 'decision_go' || app.stage === 'decision_redirect') {
+      prev = 'signal_sent'
+    } else {
+      const idx = STAGE_ORDER.indexOf(app.stage)
+      if (idx <= 0) return
+      prev = STAGE_ORDER[idx - 1]
+    }
+    const updated: Application = { ...app, stage: prev }
+    set(state => ({ applications: state.applications.map(a => a.id === appId ? updated : a) }))
+    void getRepository().saveApplication(updated)
+  },
+
+  // Auto-match pain points to startups. Tries Groq LLM first (if
+  // VITE_GROQ_API_KEY is set), falls back to the keyword stub. Results are
+  // cached by signature so re-navigating to the map doesn't re-call the LLM.
+  computeMatches: async () => {
+    const { painPoints, applications, matchSig, matchLoading } = get()
+    if (matchLoading) return
+    const sig = matchSignature(painPoints, applications)
+    if (sig === matchSig) return
+    set({ matchLoading: true })
+    try {
+      let results: MatchResults
+      try {
+        results = await matchViaGroq(painPoints, applications)
+      } catch {
+        results = localStubMatch(painPoints, applications)
+      }
+      set({ matchResults: results, matchSig: sig })
+    } finally {
+      set({ matchLoading: false })
+    }
   },
 
   // Restore all seed state — lets a presenter reset between testers without a
@@ -289,6 +341,8 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
       truckStops: seedTruckStops,
       clusters: [],
       clusterSignature: null,
+      matchResults: {},
+      matchSig: null,
     })
     void getRepository().reseed().catch(() => {})
   },

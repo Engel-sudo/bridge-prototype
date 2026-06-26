@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pencil, Trash2, Check, X, Eye, EyeOff } from 'lucide-react'
-import type { PainPoint, PainPointStatus } from '../store/types'
+import type { PainPoint, PainPointStatus, TriageStatus } from '../store/types'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 
@@ -14,10 +14,17 @@ const statusStyles: Record<string, { color: string; bg: string; label: string }>
 const DEPARTMENTS = ['Quality', 'Production', 'Logistics', 'R&D', 'Procurement', 'Innovation & Ventures']
 const STATUSES: PainPointStatus[] = ['open', 'matched', 'in_pilot']
 
+const triageStyles: Record<TriageStatus, { color: string; label: string }> = {
+  valid: { color: 'var(--accent)', label: '' },
+  complaint: { color: 'var(--amber)', label: 'Complaint' },
+  needs_review: { color: 'var(--text-faint)', label: 'Needs review' },
+}
+
 interface Props {
   painPoint: PainPoint
   showMatch?: boolean
   clusterLabel?: string
+  duplicateCount?: number
 }
 
 const iconBtn: React.CSSProperties = {
@@ -26,7 +33,7 @@ const iconBtn: React.CSSProperties = {
   background: 'transparent', borderRadius: 'var(--radius-sm)', cursor: 'pointer', color: 'var(--text-faint)',
 }
 
-export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Props) {
+export default function PainPointCard({ painPoint, showMatch, clusterLabel, duplicateCount = 0 }: Props) {
   const navigate = useNavigate()
   const { role } = useAuthStore()
   const { applications, matchPainPoint, updatePainPoint, deletePainPoint } = useBridgeStore()
@@ -130,12 +137,40 @@ export default function PainPointCard({ painPoint, showMatch, clusterLabel }: Pr
         </div>
       </div>
 
-      {clusterLabel && (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-          <span style={{ width: '5px', height: '5px', background: 'var(--accent)', display: 'inline-block' }} />
-          <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)' }}>{clusterLabel}</span>
-        </div>
-      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: clusterLabel || painPoint.triageStatus || duplicateCount > 0 ? '8px' : '0' }}>
+        {clusterLabel && (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '5px', height: '5px', background: 'var(--accent)', display: 'inline-block' }} />
+            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)' }}>{clusterLabel}</span>
+          </div>
+        )}
+        {painPoint.triageStatus && painPoint.triageStatus !== 'valid' && (
+          <span style={{
+            fontFamily: 'AudiType', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em',
+            color: triageStyles[painPoint.triageStatus].color,
+            border: `1px solid ${triageStyles[painPoint.triageStatus].color}`,
+            padding: '2px 6px',
+          }}>
+            {triageStyles[painPoint.triageStatus].label.toUpperCase()}
+          </span>
+        )}
+        {duplicateCount > 0 && (
+          <span style={{
+            fontFamily: 'AudiType', fontSize: '10px', color: 'var(--text-faint)',
+            background: 'var(--surface-2)', padding: '2px 7px',
+          }}>
+            +{duplicateCount} also reported this
+          </span>
+        )}
+        {painPoint.duplicateOf && (
+          <span style={{
+            fontFamily: 'AudiType', fontSize: '10px', color: 'var(--text-faint)',
+            background: 'var(--surface-2)', padding: '2px 7px',
+          }}>
+            Duplicate
+          </span>
+        )}
+      </div>
 
       <div
         style={{

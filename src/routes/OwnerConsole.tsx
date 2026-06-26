@@ -52,7 +52,7 @@ function Initials({ name, color }: { name: string; color: string }) {
 }
 
 export default function OwnerConsole() {
-  const { applications, owners, advanceStage, revertApplication, assignOwner, decide, deleteApplication, metrics, painPoints, poolMembers, addToPool } = useBridgeStore()
+  const { applications, owners, advanceStage, revertApplication, revertStage, assignOwner, decide, deleteApplication, metrics, painPoints, poolMembers, addToPool } = useBridgeStore()
   const isAdmin = useAuthStore(s => s.role) === 'admin'
   const owner = owners.find(o => o.id === 'o3') || owners[0]
   const unassigned = applications.filter(a => a.ownerId === null)
@@ -349,6 +349,22 @@ export default function OwnerConsole() {
                         {advancing ? 'Advancing…' : 'Advance Stage'}
                       </button>
                     ) : null}
+
+                    {selected.stage !== 'submitted' && (
+                      <button
+                        className="btn-secondary"
+                        onClick={() => {
+                          const prev = applications.find(a => a.id === selected.id)
+                          revertStage(selected.id)
+                          const reverted = useBridgeStore.getState().applications.find(a => a.id === selected.id)
+                          if (reverted) setSelected(reverted)
+                          if (prev) showUndo(prev, `Reverted ${prev.companyName}`)
+                        }}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '6px 12px' }}
+                      >
+                        ← Back one stage
+                      </button>
+                    )}
 
                     {selected.stage === 'decision_redirect' && (() => {
                       const alreadyInPool = poolMembers.some(m => m.applicationId === selected.id)

@@ -57,6 +57,8 @@ export interface Application {
   timeline?: string
 }
 
+export type TriageStatus = 'valid' | 'complaint' | 'needs_review'
+
 export interface PainPoint {
   id: string
   title: string
@@ -74,6 +76,10 @@ export interface PainPoint {
    * only ever has to act to *hide* a sensitive one.
    */
   sharedWithCommunity?: boolean
+  /** Set after "Group by theme" runs. 'complaint' = vague, no business impact. */
+  triageStatus?: TriageStatus
+  /** Id of the earlier pain point this is a near-duplicate of. */
+  duplicateOf?: string | null
 }
 
 export type PoolMemberType = 'startup' | 'contact'
