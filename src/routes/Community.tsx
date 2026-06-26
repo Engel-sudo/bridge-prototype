@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Calendar, MapPin, Users, Lightbulb, Plus, Pencil, Trash2, Truck, CheckCircle2 } from 'lucide-react'
+import { Calendar, MapPin, Users, Lightbulb, Plus, Pencil, Trash2, Truck, CheckCircle2, Building2, Search } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import PainPointCard from '../components/PainPointCard'
 import TruckTourMap, { CITY_PRESETS, lonLatToXY } from '../components/TruckTourMap'
 import type { CommunityEventType, CommunityEvent, TruckStop, TruckStopStatus } from '../store/types'
+import { TRL_LABELS } from '../store/types'
 
 const EVENT_TYPES: CommunityEventType[] = ['workshop', 'networking', 'demo_day', 'hackathon']
 
@@ -33,7 +34,15 @@ const STOP_STATUS_COLOR: Record<TruckStopStatus, string> = {
   past: 'var(--text-faint)', current: 'var(--accent)', upcoming: 'var(--blue)',
 }
 
-type Tab = 'overview' | 'events' | 'tour'
+type Tab = 'overview' | 'events' | 'tour' | 'startups'
+
+const ACCEPTED_STAGES = new Set(['decision_go', 'matched_pain_owner', 'path_to_production'])
+
+function trlLabel(trl?: number): string {
+  if (!trl) return ''
+  const entry = [...TRL_LABELS].reverse().find(t => trl >= t.value)
+  return entry ? entry.label : ''
+}
 
 const emptyEvent = { title: '', type: 'workshop' as CommunityEventType, date: '', location: '', description: '' }
 const emptyStop = {
@@ -137,9 +146,9 @@ export default function Community() {
 
       {/* Tabs */}
       <div role="tablist" style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border)', marginBottom: '28px' }}>
-        {(['overview', 'events', 'tour'] as Tab[]).map(t => {
+        {(['overview', 'events', 'tour', 'startups'] as Tab[]).map(t => {
           const active = tab === t
-          const label = t === 'overview' ? 'Overview' : t === 'events' ? 'Events' : 'Tour'
+          const label = t === 'overview' ? 'Overview' : t === 'events' ? 'Events' : t === 'tour' ? 'Tour' : 'Startups'
           return (
             <button
               key={t}
@@ -196,6 +205,10 @@ export default function Community() {
             onUpdate={updateTruckStop}
             onDelete={deleteTruckStop}
           />
+        )}
+
+        {tab === 'startups' && (
+          <StartupsTab applications={applications} isAdmin={isAdmin} />
         )}
       </motion.div>
     </motion.div>
@@ -671,6 +684,148 @@ function TourTab({
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// ── Startups ────────────────────────────────────────────────────────────────
+
+const DEPARTMENTS_FILTER = ['All', 'Production', 'Quality', 'Logistics', 'R&D', 'Procurement', 'Others']
+
+function StartupsTab({
+  applications, isAdmin,
+}: {
+  applications: import('../store/types').Application[]
+  isAdmin: boolean
+}) {
+  const [keyword, setKeyword] = useState('')
+  const [dept, setDept] = useState('All')
+  const [mvpOnly, setMvpOnly] = useState(false)
+
+  const accepted = applications.filter(a => {
+    if (!ACCEPTED_STAGES.has(a.stage)) return false
+    if (!isAdmin && a.sharedWithCommunity === false) return false
+    return true
+  })
+
+  const filtered = accepted.filter(a => {
+    if (dept !== 'All' && a.targetDepartment !== dept) return false
+    if (mvpOnly && !(a.hasMvp ?? a.productStage === 'MVP')) return false
+    if (keyword) {
+      const q = keyword.toLowerCase()
+      if (
+        !a.companyName.toLowerCase().includes(q) &&
+        !a.technology.toLowerCase().includes(q) &&
+        !(a.targetDepartment ?? '').toLowerCase().includes(q)
+      ) return false
+    }
+    return true
+  })
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+        <Building2 size={14} color="var(--text-faint)" />
+        <span className="kicker">startup directory</span>
+      </div>
+      <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '16px', lineHeight: 1.5 }}>
+        Startups currently working with Audi through BRIDGE. {isAdmin && <span style={{ color: 'var(--amber)' }}>Admin: all visible regardless of sharing toggle.</span>}
+      </p>
+
+      {/* Filters */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '18px', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: '1 1 180px', minWidth: '160px' }}>
+          <Search size={13} color="var(--text-faint)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          <input
+            className="input"
+            placeholder="Search startups…"
+            value={keyword}
+            onChange={e => setKeyword(e.target.value)}
+            style={{ paddingLeft: '30px', fontSize: '13px', width: '100%' }}
+          />
+        </div>
+        <select
+          className="input"
+          value={dept}
+          onChange={e => setDept(e.target.value)}
+          style={{ fontSize: '13px', flex: '0 1 160px' }}
+        >
+          {DEPARTMENTS_FILTER.map(d => <option key={d} value={d}>{d === 'All' ? 'All departments' : d}</option>)}
+        </select>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          <input type="checkbox" checked={mvpOnly} onChange={e => setMvpOnly(e.target.checked)} style={{ accentColor: 'var(--accent)' }} />
+          MVP only
+        </label>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="card" style={{ padding: '28px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)' }}>
+            {accepted.length === 0 ? 'No accepted startups yet.' : 'No startups match the current filters.'}
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {filtered.map((a, i) => {
+            const hasMvp = a.hasMvp ?? a.productStage === 'MVP'
+            const trl = trlLabel(a.trl)
+            return (
+              <motion.div
+                key={a.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.03 + i * 0.04 }}
+              >
+                <Link
+                  to={`/startup/${a.id}`}
+                  style={{ textDecoration: 'none', display: 'block' }}
+                >
+                  <div
+                    className="card"
+                    style={{ padding: '18px 22px', transition: 'border-color 0.15s', cursor: 'pointer' }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '16px', color: 'var(--text)', marginBottom: '4px' }}>
+                          {a.companyName}
+                        </div>
+                        <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 10px', lineHeight: 1.5 }}>
+                          {a.technology.length > 120 ? `${a.technology.slice(0, 120)}…` : a.technology}
+                        </p>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                          {trl && (
+                            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--blue)', background: 'rgba(59,130,246,0.1)', padding: '2px 8px' }}>
+                              {trl}
+                            </span>
+                          )}
+                          {hasMvp && (
+                            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--accent)', background: 'var(--accent-dim)', padding: '2px 8px' }}>
+                              MVP ✓
+                            </span>
+                          )}
+                          {a.targetDepartment && (
+                            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', background: 'var(--surface)', padding: '2px 8px', border: '1px solid var(--border)' }}>
+                              {a.targetDepartment}
+                            </span>
+                          )}
+                          {isAdmin && a.sharedWithCommunity === false && (
+                            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--amber)', padding: '2px 8px' }}>Hidden from community</span>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-faint)', flexShrink: 0 }}>
+                        {a.founderName}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

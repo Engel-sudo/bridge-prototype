@@ -16,6 +16,7 @@ const ALL_LINKS = [
   { to: '/apply',      label: 'Apply',          mono: 'startup',      roles: ['startup'],                        requiresAppId: false },
   // My Application: startup only, and only when they DO have an existing application
   { to: '/founder',    label: 'My Application', mono: 'status',       roles: ['startup'],                        requiresAppId: true },
+  { to: '/startup',    label: 'My Profile',     mono: 'profile',      roles: ['startup'],                        requiresAppId: true },
   { to: '/community',  label: 'Community',      mono: 'community',    roles: ['pool_member'],                    requiresAppId: null },
   { to: '/floor',      label: 'Report',         mono: 'floor',        roles: ['floor_worker'],                    requiresAppId: null },
 ]
@@ -110,6 +111,7 @@ export default function Nav() {
   // For startup: "My Application" links to their specific app if they have one
   function resolvedTo(to: string) {
     if (to === '/founder' && role === 'startup' && selectedAppId) return `/founder/${selectedAppId}`
+    if (to === '/startup' && role === 'startup' && selectedAppId) return `/startup/${selectedAppId}`
     return to
   }
 
@@ -140,7 +142,9 @@ export default function Nav() {
       {/* Role-scoped links */}
       {visibleLinks.map(({ to, label }) => {
         const href = resolvedTo(to)
-        const active = to === '/founder' ? pathname.startsWith('/founder') : pathname.startsWith(to)
+        const active = to === '/founder' ? pathname.startsWith('/founder')
+          : to === '/startup' ? pathname.startsWith('/startup')
+          : pathname.startsWith(to)
         return (
           <Link key={to} to={href} style={{
             textDecoration: 'none', padding: '6px 14px', borderRadius: 'var(--radius-sm)',

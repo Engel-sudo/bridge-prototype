@@ -55,7 +55,19 @@ export interface Application {
   complianceCert?: string
   partnerType?: string
   timeline?: string
+  hasMvp?: boolean
+  /** Whether this startup is visible in the community Startup Directory.
+   *  Absent/undefined = shared (same defaulting convention as PainPoint). */
+  sharedWithCommunity?: boolean
 }
+
+/** Plain-language TRL bands — stored as numeric midpoints for compatibility. */
+export const TRL_LABELS = [
+  { label: 'Idea',         sublabel: 'TRL 1–2', value: 1 },
+  { label: 'Prototype',    sublabel: 'TRL 3–5', value: 4 },
+  { label: 'Validated',    sublabel: 'TRL 6–7', value: 6 },
+  { label: 'Market-ready', sublabel: 'TRL 8–9', value: 8 },
+] as const
 
 export type TriageStatus = 'valid' | 'complaint' | 'needs_review'
 

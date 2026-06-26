@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, screen, fireEvent, act, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Community from '../routes/Community'
@@ -174,10 +174,12 @@ describe('Community — admin event management', () => {
     renderCommunity()
     await user.click(screen.getByRole('tab', { name: 'Events' }))
 
-    expect(screen.getByText('Startup Open Day — Ingolstadt')).toBeInTheDocument()
+    const title = screen.getByText('Startup Open Day — Ingolstadt')
+    expect(title).toBeInTheDocument()
 
-    // The first event card's delete button corresponds to the first seeded event.
-    await user.click(screen.getAllByRole('button', { name: 'Delete event' })[0])
+    // Find the delete button scoped to the card containing this event title.
+    const card = title.closest('.card') as HTMLElement
+    await user.click(within(card).getByRole('button', { name: 'Delete event' }))
 
     expect(screen.queryByText('Startup Open Day — Ingolstadt')).not.toBeInTheDocument()
   })

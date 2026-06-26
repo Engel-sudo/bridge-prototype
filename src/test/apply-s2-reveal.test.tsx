@@ -83,7 +83,7 @@ describe('Apply — Where you are (§02) reveal persistence', () => {
     expect(s2.classList.contains('ap-error-ring')).toBe(true)
   })
 
-  it('clears the error ring once TRL and Stage are both filled', async () => {
+  it('clears the error ring once TRL and MVP are both filled', async () => {
     const user = userEvent.setup()
     renderApply()
 
@@ -94,8 +94,10 @@ describe('Apply — Where you are (§02) reveal persistence', () => {
     await user.click(screen.getByRole('button', { name: /submit application/i }))
     expect(s2.classList.contains('ap-error-ring')).toBe(true)
 
-    await user.click(within(s2).getByRole('button', { name: 'T5' }))
-    await user.selectOptions(within(s2).getByRole('combobox'), 'Pilot (Active Testing)')
+    // New simplified TRL: 4 labelled buttons instead of T1–T9
+    await user.click(within(s2).getByRole('button', { name: /prototype/i }))
+    // New MVP yes/no toggle instead of Current Stage combobox
+    await user.click(within(s2).getByRole('button', { name: /yes.*mvp/i }))
 
     expect(s2.classList.contains('ap-error-ring')).toBe(false)
   })

@@ -6,6 +6,7 @@ import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import type { Application } from '../store/types'
+import { TRL_LABELS } from '../store/types'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -40,6 +41,7 @@ interface FormData {
   technology: string
   targetDepartment: string
   stage: string
+  hasMvp: boolean | null
   ask: string
   trl: number
   milestones: string
@@ -65,6 +67,7 @@ const EMPTY: FormData = {
   technology: '',
   targetDepartment: '',
   stage: '',
+  hasMvp: null,
   ask: '',
   trl: 0,
   milestones: '',
@@ -205,9 +208,10 @@ export default function Apply() {
         .ap-reveal { transition:none; }
         .ap-lime-pulse { animation:none; }
       }
-      .ap-trl { padding:11px 0; border:1px solid var(--border); border-radius:0; background:transparent; color:var(--text); font-family:'AudiType',sans-serif; font-size:12px; cursor:pointer; transition:all 0.15s; text-align:center; }
+      .ap-trl { padding:14px 8px; border:1px solid var(--border); border-radius:0; background:transparent; color:var(--text); font-family:'AudiType',sans-serif; font-size:13px; cursor:pointer; transition:all 0.15s; text-align:center; display:flex; flex-direction:column; gap:4px; align-items:center; }
       .ap-trl:hover { border-color:var(--border-strong); }
       .ap-trl.sel { border-color:var(--text); background:var(--accent-dim); }
+      .ap-trl-sub { font-size:10px; color:var(--text-faint); font-family:'AudiType',sans-serif; }
       .ap-check { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid var(--border); border-radius:0; cursor:pointer; transition:background 0.15s; }
       .ap-check:hover { background:var(--accent-dim); }
       .ap-scroll::-webkit-scrollbar { width:2px; }
@@ -219,14 +223,14 @@ export default function Apply() {
       /* ── Responsive layout ─────────────────────────────────────── */
       .ap-main-grid { grid-template-columns: 220px 1fr; }
       .ap-form-2col { grid-template-columns: 1fr 1fr; }
-      .ap-trl-grid  { grid-template-columns: repeat(9, 1fr); }
+      .ap-trl-grid  { grid-template-columns: repeat(4, 1fr); }
       @media (max-width: 900px) {
         .ap-main-grid { grid-template-columns: 1fr; }
         .ap-left-aside { display: none !important; }
       }
       @media (max-width: 640px) {
         .ap-form-2col { grid-template-columns: 1fr; }
-        .ap-trl-grid  { grid-template-columns: repeat(5, 1fr); }
+        .ap-trl-grid  { grid-template-columns: repeat(2, 1fr); }
       }
     `
     document.head.appendChild(style)
@@ -249,7 +253,7 @@ export default function Apply() {
   }, [done])
 
   const s1Done = !!(data.founderName && data.companyName && data.region)
-  const s2Done = !!(data.trl > 0 && data.stage)
+  const s2Done = !!(data.trl > 0 && data.hasMvp !== null)
   const s3Done = !!(data.technology)
   const s4Done = !!(data.ask)
   const canSubmit = !!(s1Done && s2Done && s3Done && s4Done)
@@ -293,7 +297,8 @@ export default function Apply() {
       linkedin: data.linkedin,
       formerProjects: data.formerProjects,
       targetDepartment: data.targetDepartment,
-      productStage: data.stage,
+      productStage: data.hasMvp ? 'MVP' : 'Pre-MVP',
+      hasMvp: data.hasMvp ?? false,
       trl: data.trl,
       milestones: data.milestones,
       monthsToMarket: data.monthsToMarket,
@@ -573,36 +578,44 @@ export default function Apply() {
               <SectionHeader num="02" title="Where you are" />
 
               <div style={{ marginBottom: '28px' }}>
-                <Label>Technology Readiness Level (TRL) *</Label>
+                <Label>How mature is your technology? *</Label>
                 <div className="ap-trl-grid" style={{ display: 'grid', gap: '6px' }}>
-                  {Array.from({ length: 9 }, (_, i) => i + 1).map(n => (
+                  {TRL_LABELS.map(({ label, sublabel, value }) => (
                     <button
-                      key={n} type="button"
-                      className={`ap-trl${data.trl === n ? ' sel' : ''}`}
-                      onClick={() => setData(d => ({ ...d, trl: n }))}
+                      key={value} type="button"
+                      className={`ap-trl${data.trl === value ? ' sel' : ''}`}
+                      onClick={() => setData(d => ({ ...d, trl: value }))}
                     >
-                      T{n}
+                      <span>{label}</span>
+                      <span className="ap-trl-sub">{sublabel}</span>
                     </button>
                   ))}
                 </div>
-                {data.trl > 0 && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontFamily: MONO, fontSize: '11px', color: LIME, marginTop: '10px' }}>
-                    T{data.trl}: {['basic research principles observed', 'technology concept formulated', 'experimental proof of concept', 'validated in lab environment', 'validated in relevant environment', 'demonstrated in relevant environment', 'system prototype demonstrated in operational environment', 'system complete and qualified', 'actual system proven in operational environment'][data.trl - 1]}
-                  </motion.p>
-                )}
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <Label>Do you already have an MVP? *</Label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {[{ label: 'Yes — we have an MVP', val: true }, { label: 'Not yet', val: false }].map(opt => (
+                    <button
+                      key={String(opt.val)} type="button"
+                      onClick={() => setData(d => ({ ...d, hasMvp: opt.val, stage: opt.val ? 'MVP' : 'Pre-MVP' }))}
+                      style={{
+                        flex: 1, fontFamily: SANS, fontSize: '13px', fontWeight: 600, padding: '12px 16px',
+                        borderRadius: '0', cursor: 'pointer', transition: 'all 0.15s',
+                        background: data.hasMvp === opt.val ? (opt.val ? LIME_DIM : SURFACE) : 'transparent',
+                        border: `1px solid ${data.hasMvp === opt.val ? (opt.val ? LIME_BORDER : BORDER_MED) : BORDER_MED}`,
+                        color: data.hasMvp === opt.val ? (opt.val ? LIME : ON_SURFACE) : MUTED,
+                      }}
+                    >
+                      {data.hasMvp === opt.val && opt.val && <Check size={12} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />}
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="ap-form-2col" style={{ display: 'grid', gap: '20px', marginBottom: '20px' }}>
-                <div>
-                  <Label>Current Stage *</Label>
-                  <ApplySelect value={data.stage} onChange={e => setData(d => ({ ...d, stage: e.target.value }))}>
-                    <option value="">Select…</option>
-                    <option>Prototype / Lab POC</option>
-                    <option>Pilot (Active Testing)</option>
-                    <option>Series Production Ready</option>
-                    <option>Commercial Scale Deployment</option>
-                  </ApplySelect>
-                </div>
                 <div>
                   <Label>Months to Market</Label>
                   <ApplyInput type="number" min={0} placeholder="e.g. 18" value={data.monthsToMarket} onChange={e => setData(d => ({ ...d, monthsToMarket: e.target.value }))} />

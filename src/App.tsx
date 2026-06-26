@@ -14,6 +14,7 @@ import FloorView from './routes/FloorView'
 import Dashboard from './routes/Dashboard'
 import Community from './routes/Community'
 import Tour from './routes/Tour'
+import StartupProfile from './routes/StartupProfile'
 
 export default function App() {
   const hydrate = useBridgeStore((s) => s.hydrate)
@@ -76,6 +77,12 @@ export default function App() {
           <Route path="/community" element={
             <ProtectedRoute allowedRoles={['pool_member', 'internal_lead', 'admin', 'startup']} startupNeedsCommunityAccess>
               <Community />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/startup/:id" element={
+            <ProtectedRoute allowedRoles={['startup', 'internal_lead', 'admin', 'pool_member']}>
+              <StartupProfile />
             </ProtectedRoute>
           } />
 

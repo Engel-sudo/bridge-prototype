@@ -28,6 +28,7 @@ interface BridgeStore {
   revertApplication: (prev: Application) => void
   assignOwner: (appId: string, ownerId: string) => void
   decide: (appId: string, outcome: 'go' | 'redirect') => void
+  updateApplication: (app: Application) => void
   addPainPoint: (pp: PainPoint) => void
   updatePainPoint: (pp: PainPoint) => void
   deletePainPoint: (ppId: string) => void
@@ -81,12 +82,22 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
   hydrate: async () => {
     const data = await getRepository().loadAll()
     if (!data) return
-    // Persisted clusters were computed from data.painPoints — derive the same
-    // signature now so the idempotency gate recognizes "already grouped"
-    // across a page reload instead of treating clusterSignature as unset and
-    // re-calling the LLM on the very next "Group by theme" press.
+    // Merge seed fields into Supabase applications for fields that are absent
+    // in the DB (e.g. new fields added to seed after the DB record was created).
+    const seedById = Object.fromEntries(seedApplications.map(a => [a.id, a]))
+    const mergedApplications = data.applications.map(dbApp => {
+      const seed = seedById[dbApp.id]
+      if (!seed) return dbApp
+      // Only fill in fields that are undefined/null in the DB record
+      return { ...seed, ...Object.fromEntries(Object.entries(dbApp).filter(([, v]) => v !== undefined && v !== null)) }
+    })
+    // Keep seed-only applications (not yet in the DB) so new demo startups appear
+    const dbIds = new Set(data.applications.map(a => a.id))
+    const seedOnlyApps = seedApplications.filter(a => !dbIds.has(a.id))
+    const applications = [...mergedApplications, ...seedOnlyApps]
+
     const clusterSignature = data.clusters.length > 0 ? painPointSignature(data.painPoints) : null
-    set({ ...data, clusterSignature })
+    set({ ...data, applications, clusterSignature })
   },
 
   addApplication: (app) => {
@@ -183,6 +194,13 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
       applications: state.applications.map((a) => (a.id === appId ? updated : a)),
     }))
     void getRepository().saveApplication(updated)
+  },
+
+  updateApplication: (app) => {
+    set((state) => ({
+      applications: state.applications.map((a) => (a.id === app.id ? app : a)),
+    }))
+    void getRepository().saveApplication(app)
   },
 
   addPainPoint: (pp) => {
