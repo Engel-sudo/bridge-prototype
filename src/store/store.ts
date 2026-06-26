@@ -22,6 +22,7 @@ interface BridgeStore {
   addApplication: (app: Application) => void
   deleteApplication: (appId: string) => void
   advanceStage: (appId: string) => void
+  revertApplication: (prev: Application) => void
   assignOwner: (appId: string, ownerId: string) => void
   decide: (appId: string, outcome: 'go' | 'redirect') => void
   addPainPoint: (pp: PainPoint) => void
@@ -116,6 +117,28 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
     }))
     void getRepository().saveApplication(updated)
     if (reachedProduction) void getRepository().saveMetrics(metrics)
+  },
+
+  // Restore a previous application snapshot — used by the undo toast in
+  // OwnerConsole. If the current state is path_to_production and the snapshot
+  // isn't, the implementation KPI that was incremented on advance is rolled back.
+  revertApplication: (prev) => {
+    const current = get().applications.find((a) => a.id === prev.id)
+    if (!current) return
+    const wasProduction = current.stage === 'path_to_production' && prev.stage !== 'path_to_production'
+    const metrics = wasProduction
+      ? {
+          ...get().metrics,
+          implementations: Math.max(0, get().metrics.implementations - 1),
+          implementationsThisQuarter: Math.max(0, get().metrics.implementationsThisQuarter - 1),
+        }
+      : get().metrics
+    set((state) => ({
+      applications: state.applications.map((a) => (a.id === prev.id ? prev : a)),
+      metrics,
+    }))
+    void getRepository().saveApplication(prev)
+    if (wasProduction) void getRepository().saveMetrics(metrics)
   },
 
   assignOwner: (appId, ownerId) => {

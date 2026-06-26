@@ -6,6 +6,7 @@ import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
 import StatusTimeline from '../components/StatusTimeline'
+import PainPointCard from '../components/PainPointCard'
 import TruckTourMap, { CITY_PRESETS, lonLatToXY } from '../components/TruckTourMap'
 import type { CommunityEventType, CommunityEvent, TruckStop, TruckStopStatus } from '../store/types'
 
@@ -67,7 +68,8 @@ export default function Community() {
   const [tab, setTab] = useState<Tab>('overview')
 
   // Viewer identity: a pool member (existing) or an accepted founder (their app).
-  const member = isFounder ? null : (poolMembers.find(m => m.id === selectedMemberId) ?? poolMembers[0])
+  // Admin is never impersonating a member — they get their own admin-wide view.
+  const member = isFounder || isAdmin ? null : (poolMembers.find(m => m.id === selectedMemberId) ?? poolMembers[0])
   const app = isFounder ? (applications.find(a => a.id === selectedAppId) ?? null) : null
 
   const displayName = isFounder ? (app?.companyName ?? 'Your company') : (member?.name ?? '')
@@ -76,7 +78,7 @@ export default function Community() {
     : (member?.company ? `${member.company} · ${member.techArea}` : member?.techArea)
 
   // Community members see open pain points the admin has shared (default-shared:
-  // only an explicit false hides one).
+  // only an explicit false hides one). Admin sees and manages every pain point.
   const openPainPoints = painPoints.filter(pp => pp.status === 'open' && pp.sharedWithCommunity !== false)
 
   // Pool members see their invitations; everyone else (founder/lead/admin) sees all.
@@ -84,7 +86,7 @@ export default function Community() {
     ? communityEvents.filter(e => e.invitedMemberIds.includes(member.id))
     : communityEvents
 
-  if (!member && !app) return null
+  if (!isAdmin && !member && !app) return null
 
   return (
     <motion.div
@@ -96,13 +98,13 @@ export default function Community() {
       <DemoHint
         persona={
           isFounder ? `You are ${displayName} — now in the BRIDGE community`
-          : isAdmin ? `Admin · you're viewing the community as ${displayName}`
+          : isAdmin ? 'Admin · managing the BRIDGE community'
           : `You are ${displayName} — BRIDGE Community`
         }
         hint={isFounder
           ? "You've been accepted into BRIDGE. The community opens up once you're in: events, the recruiting tour, and the open pain points across Audi."
           : isAdmin
-          ? "This is the member-facing community. As admin you can manage events and the recruiting tour from here."
+          ? 'Manage what the community sees: share or hide pain points, run events, and plan the recruiting tour — all editable from here.'
           : "Community members have access to Audi's open pain points and are invited to events. If you see a problem you can solve, you're welcome to apply."}
       />
 
@@ -124,7 +126,7 @@ export default function Community() {
         </div>
         {isAdmin ? (
           <div style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginTop: '4px' }}>
-            Viewing as {displayName}{member?.type ? ` · ${member.type === 'startup' ? 'Startup' : 'Contact'}` : ''}
+            {poolMembers.length} member{poolMembers.length === 1 ? '' : 's'} · {communityEvents.length} event{communityEvents.length === 1 ? '' : 's'} · {truckStops.length} tour stop{truckStops.length === 1 ? '' : 's'}
           </div>
         ) : displaySubtitle && (
           <div style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -165,11 +167,13 @@ export default function Community() {
         {tab === 'overview' && (
           <OverviewTab
             isFounder={isFounder}
+            isAdmin={isAdmin}
             memberNotes={member?.type === 'startup' ? member.notes : undefined}
             addedByName={member?.addedByName}
             appStage={app?.stage ?? null}
             openPainPoints={openPainPoints}
-            showApplyCta={!isFounder}
+            allPainPoints={painPoints}
+            showApplyCta={!isFounder && !isAdmin}
           />
         )}
 
@@ -202,15 +206,36 @@ export default function Community() {
 // ── Overview ────────────────────────────────────────────────────────────────
 
 function OverviewTab({
-  isFounder, memberNotes, addedByName, appStage, openPainPoints, showApplyCta,
+  isFounder, isAdmin, memberNotes, addedByName, appStage, openPainPoints, allPainPoints, showApplyCta,
 }: {
   isFounder: boolean
+  isAdmin: boolean
   memberNotes?: string
   addedByName?: string
   appStage: import('../store/types').Stage | null
   openPainPoints: import('../store/types').PainPoint[]
+  allPainPoints: import('../store/types').PainPoint[]
   showApplyCta: boolean
 }) {
+  if (isAdmin) {
+    return (
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <Lightbulb size={14} color="var(--text-faint)" />
+          <span className="kicker">pain points</span>
+        </div>
+        <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '14px', lineHeight: 1.5 }}>
+          Every pain point Audi has logged. Edit, hide, or share each one with the community — hidden ones never appear on a member's view.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {allPainPoints.map(pp => (
+            <PainPointCard key={pp.id} painPoint={pp} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Why you're here */}

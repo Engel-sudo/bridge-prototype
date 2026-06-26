@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, Zap, Check, X, ExternalLink, Users, AlertCircle, Trash2 } from 'lucide-react'
@@ -52,7 +52,7 @@ function Initials({ name, color }: { name: string; color: string }) {
 }
 
 export default function OwnerConsole() {
-  const { applications, owners, advanceStage, assignOwner, decide, deleteApplication, metrics, painPoints, poolMembers, addToPool } = useBridgeStore()
+  const { applications, owners, advanceStage, revertApplication, assignOwner, decide, deleteApplication, metrics, painPoints, poolMembers, addToPool } = useBridgeStore()
   const isAdmin = useAuthStore(s => s.role) === 'admin'
   const owner = owners.find(o => o.id === 'o3') || owners[0]
   const unassigned = applications.filter(a => a.ownerId === null)
@@ -63,6 +63,25 @@ export default function OwnerConsole() {
   const [claiming, setClaiming] = useState(false)
   const [addedToPool, setAddedToPool] = useState<string | null>(null)
 
+  // Undo toast — holds the pre-action snapshot for 6 seconds after any stage change
+  const [undoSnap, setUndoSnap] = useState<{ prev: Application; label: string } | null>(null)
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function showUndo(prev: Application, label: string) {
+    if (undoTimer.current) clearTimeout(undoTimer.current)
+    setUndoSnap({ prev, label })
+    undoTimer.current = setTimeout(() => setUndoSnap(null), 6000)
+  }
+
+  function handleUndo() {
+    if (!undoSnap) return
+    if (undoTimer.current) clearTimeout(undoTimer.current)
+    revertApplication(undoSnap.prev)
+    const reverted = useBridgeStore.getState().applications.find(a => a.id === undoSnap.prev.id)
+    if (reverted) setSelected(reverted)
+    setUndoSnap(null)
+  }
+
   const matchedPPCount = painPoints.filter(pp => pp.status === 'matched' || pp.status === 'in_pilot').length
   const linkedPP = (appId: string) => painPoints.find(pp => pp.linkedApplicationId === appId) ?? null
   const selectedPP = selected ? linkedPP(selected.id) : null
@@ -70,32 +89,38 @@ export default function OwnerConsole() {
   const ext = (url: string) => (url.startsWith('http') ? url : `https://${url}`)
 
   function handleAdvance(appId: string) {
+    const prev = applications.find(a => a.id === appId)
     setAdvancing(true)
     setTimeout(() => {
       advanceStage(appId)
       const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
       if (updated) setSelected(updated)
       setAdvancing(false)
+      if (prev) showUndo(prev, `Advanced to ${STAGE_LABELS[updated?.stage ?? '']}`)
     }, 600)
   }
 
   function handleClaim(appId: string) {
+    const prev = applications.find(a => a.id === appId)
     setClaiming(true)
     setTimeout(() => {
       assignOwner(appId, owner.id)
       const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
       if (updated) setSelected(updated)
       setClaiming(false)
+      if (prev) showUndo(prev, `Claimed ${prev.companyName}`)
     }, 600)
   }
 
   function handleDecide(appId: string, outcome: 'go' | 'redirect') {
+    const prev = applications.find(a => a.id === appId)
     setAdvancing(true)
     setTimeout(() => {
       decide(appId, outcome)
       const updated = useBridgeStore.getState().applications.find(a => a.id === appId)
       if (updated) setSelected(updated)
       setAdvancing(false)
+      if (prev) showUndo(prev, outcome === 'go' ? 'Decision: GO' : 'Decision: Redirect')
     }, 600)
   }
 
@@ -449,6 +474,44 @@ export default function OwnerConsole() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Undo toast — appears for 6 seconds after any stage change */}
+      <AnimatePresence>
+        {undoSnap && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              position: 'fixed', bottom: '28px', left: '50%', transform: 'translateX(-50%)',
+              background: 'var(--surface)', border: '1px solid var(--border-strong)',
+              borderRadius: 'var(--radius)', padding: '12px 16px',
+              display: 'flex', alignItems: 'center', gap: '14px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.18)', zIndex: 1000,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text)' }}>
+              {undoSnap.label}
+            </span>
+            <button
+              onClick={handleUndo}
+              className="btn-secondary"
+              style={{ padding: '5px 14px', fontSize: '12px', fontWeight: 700 }}
+            >
+              Undo
+            </button>
+            <button
+              onClick={() => { if (undoTimer.current) clearTimeout(undoTimer.current); setUndoSnap(null) }}
+              aria-label="Dismiss"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', fontSize: '16px', lineHeight: 1, padding: '2px 4px' }}
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

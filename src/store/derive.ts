@@ -2,11 +2,11 @@ import type { Application, PainPoint, Stage } from './types'
 
 /**
  * Whether a founder at the given application stage has earned BRIDGE community
- * access. Acceptance (decision_go) and everything downstream unlocks it; a
- * redirect does not — redirected founders join the pool the existing way (an
- * admin adds them, like Elena Vogel).
+ * access. Both decision outcomes unlock it: Go founders enter the pilot
+ * pipeline, Redirect founders join the community pool directly.
  */
 const COMMUNITY_STAGES: ReadonlySet<Stage> = new Set<Stage>([
+  'decision_redirect',
   'decision_go',
   'matched_pain_owner',
   'path_to_production',

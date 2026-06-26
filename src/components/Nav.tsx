@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { RotateCcw, LogOut, Sun, Moon } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
-import { seedApplications } from '../store/seed'
 import { canAccessCommunity } from '../store/derive'
 import { useTheme } from '../theme'
 import type { PoolMember } from '../store/types'
@@ -21,12 +20,12 @@ const ALL_LINKS = [
   { to: '/floor',      label: 'Report',         mono: 'floor',        roles: ['floor_worker'],                    requiresAppId: null },
 ]
 
-function roleBadge(role: string | null, selectedAppId: string | null, selectedOwnerId: string | null, selectedMemberId: string | null, poolMembers: PoolMember[]) {
+function roleBadge(role: string | null, selectedAppId: string | null, selectedOwnerId: string | null, selectedMemberId: string | null, poolMembers: PoolMember[], applications: import('../store/types').Application[]) {
   if (!role) return null
   if (role === 'admin') return { label: 'Admin', color: 'var(--amber)', bg: 'transparent', border: 'var(--border-strong)' }
   if (role === 'internal_lead') return { label: 'Internal Lead · Lukas Reinhardt', color: 'var(--blue)', bg: 'transparent', border: 'var(--border-strong)' }
   if (role === 'startup') {
-    const app = selectedAppId ? seedApplications.find(a => a.id === selectedAppId) : null
+    const app = selectedAppId ? applications.find(a => a.id === selectedAppId) : null
     const name = app ? app.companyName : 'New Application'
     return { label: `Startup · ${name}`, color: 'var(--text)', bg: 'var(--accent-dim)', border: 'var(--border-strong)' }
   }
@@ -106,7 +105,7 @@ export default function Nav() {
   if (founderApp && canAccessCommunity(founderApp.stage)) {
     visibleLinks.push({ to: '/community', label: 'Community', mono: 'community', roles: ['startup'], requiresAppId: null })
   }
-  const badge = roleBadge(role, selectedAppId, selectedOwnerId, selectedMemberId, poolMembers)
+  const badge = roleBadge(role, selectedAppId, selectedOwnerId, selectedMemberId, poolMembers, applications)
 
   // For startup: "My Application" links to their specific app if they have one
   function resolvedTo(to: string) {

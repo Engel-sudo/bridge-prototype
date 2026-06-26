@@ -4,23 +4,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useBridgeStore } from '../store/store'
-import { seedPoolMembers } from '../store/seed'
 
-const SEED_APPS = [
-  { id: 'APP-2024-0047', company: 'VisionQual',  founder: 'Jonas Weber',     tech: 'AI quality inspection' },
-  { id: 'APP-2024-0031', company: 'FlowRoute',   founder: 'Sarah Bauer',     tech: 'Predictive logistics routing' },
-  { id: 'APP-2024-0052', company: 'CarbonLens',  founder: 'Nico Hartmann',   tech: 'Carbon footprint tracking' },
-  { id: 'APP-2024-0058', company: 'GridMind',    founder: 'Daniel Kim',      tech: 'Energy load balancing' },
-  { id: 'APP-2026-0061', company: 'TorqueIQ',    founder: 'Mara Lindqvist',  tech: 'Torque telemetry' },
-  { id: 'APP-2024-0029', company: 'SonoSense',   founder: 'Elena Vogel',     tech: 'Ultrasonic integrity sensors' },
-]
+const SAMPLE_APP_IDS = new Set([
+  'APP-2024-0047', 'APP-2024-0031', 'APP-2024-0052',
+  'APP-2024-0058', 'APP-2026-0061', 'APP-2024-0029',
+])
 
 type Tile = 'startup' | 'internal_lead' | 'admin' | 'community' | 'floor_worker' | null
 
 export default function Login() {
-  const navigate   = useNavigate()
-  const login      = useAuthStore(s => s.login)
-  const resetDemo  = useBridgeStore(s => s.resetDemo)
+  const navigate     = useNavigate()
+  const login        = useAuthStore(s => s.login)
+  const resetDemo    = useBridgeStore(s => s.resetDemo)
+  const applications = useBridgeStore(s => s.applications)
+  const poolMembers  = useBridgeStore(s => s.poolMembers)
   const [expanded, setExpanded] = useState<Tile>(null)
   const [founderName, setFounderName] = useState('')
   const [founderError, setFounderError] = useState(false)
@@ -43,7 +40,7 @@ export default function Login() {
 
   function handleFounderSubmit() {
     const trimmed = founderName.trim()
-    const match = SEED_APPS.find(a => a.founder.toLowerCase() === trimmed.toLowerCase())
+    const match = applications.find(a => a.founderName.toLowerCase() === trimmed.toLowerCase())
     if (match) {
       login('startup', { appId: match.id })
       navigate(`/founder/${match.id}`)
@@ -240,9 +237,9 @@ export default function Login() {
                       )}
                     </AnimatePresence>
 
-                    {/* Name chips */}
+                    {/* Name chips — sample accounts only; others log in via the text input */}
                     <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                      {SEED_APPS.map(app => (
+                      {applications.filter(a => SAMPLE_APP_IDS.has(a.id)).map(app => (
                         <button
                           key={app.id}
                           onClick={() => { login('startup', { appId: app.id }); navigate(`/founder/${app.id}`) }}
@@ -265,7 +262,7 @@ export default function Login() {
                             b.style.background = 'var(--surface-2)'
                           }}
                         >
-                          {app.founder}
+                          {app.founderName}
                         </button>
                       ))}
                     </div>
@@ -429,7 +426,7 @@ export default function Login() {
                     Select your profile
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {seedPoolMembers.map(member => (
+                    {poolMembers.map(member => (
                       <button
                         key={member.id}
                         onClick={() => handleCommunityMember(member.id)}

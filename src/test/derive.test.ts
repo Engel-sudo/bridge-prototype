@@ -39,8 +39,8 @@ function makePainPoint(overrides: Partial<PainPoint> = {}): PainPoint {
 }
 
 describe('canAccessCommunity', () => {
-  const accepted: Stage[] = ['decision_go', 'matched_pain_owner', 'path_to_production']
-  const denied: Stage[] = ['submitted', 'named_contact', 'owner_assigned', 'in_review', 'signal_sent', 'decision_redirect']
+  const accepted: Stage[] = ['decision_redirect', 'decision_go', 'matched_pain_owner', 'path_to_production']
+  const denied: Stage[] = ['submitted', 'named_contact', 'owner_assigned', 'in_review', 'signal_sent']
 
   it.each(accepted)('grants access at %s', (stage) => {
     expect(canAccessCommunity(stage)).toBe(true)
@@ -50,8 +50,8 @@ describe('canAccessCommunity', () => {
     expect(canAccessCommunity(stage)).toBe(false)
   })
 
-  it('denies a redirected founder even though it sits at the decision point', () => {
-    expect(canAccessCommunity('decision_redirect')).toBe(false)
+  it('grants a redirected founder community access', () => {
+    expect(canAccessCommunity('decision_redirect')).toBe(true)
   })
 })
 
