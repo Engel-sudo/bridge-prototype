@@ -5,7 +5,6 @@ import { Calendar, MapPin, Users, Lightbulb, Plus, Pencil, Trash2, Truck, CheckC
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
-import StatusTimeline from '../components/StatusTimeline'
 import PainPointCard from '../components/PainPointCard'
 import TruckTourMap, { CITY_PRESETS, lonLatToXY } from '../components/TruckTourMap'
 import type { CommunityEventType, CommunityEvent, TruckStop, TruckStopStatus } from '../store/types'
@@ -171,7 +170,6 @@ export default function Community() {
             isAdmin={isAdmin}
             memberNotes={member?.type === 'startup' ? member.notes : undefined}
             addedByName={member?.addedByName}
-            appStage={app?.stage ?? null}
             openPainPoints={openPainPoints}
             allPainPoints={painPoints}
             showApplyCta={!isFounder && !isAdmin}
@@ -207,13 +205,12 @@ export default function Community() {
 // ── Overview ────────────────────────────────────────────────────────────────
 
 function OverviewTab({
-  isFounder, isAdmin, memberNotes, addedByName, appStage, openPainPoints, allPainPoints, showApplyCta,
+  isFounder, isAdmin, memberNotes, addedByName, openPainPoints, allPainPoints, showApplyCta,
 }: {
   isFounder: boolean
   isAdmin: boolean
   memberNotes?: string
   addedByName?: string
-  appStage: import('../store/types').Stage | null
   openPainPoints: import('../store/types').PainPoint[]
   allPainPoints: import('../store/types').PainPoint[]
   showApplyCta: boolean
@@ -246,10 +243,9 @@ function OverviewTab({
             <CheckCircle2 size={16} color="var(--accent)" />
             <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>You're in — welcome to the BRIDGE community</span>
           </div>
-          <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: '0 0 16px' }}>
-            Your application was accepted. Here's where you are in the journey — and it keeps moving from here.
+          <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+            Your application was accepted. You now have access to Audi's open pain points, upcoming events, and the BRIDGE truck tour. Check your status page for the full journey.
           </p>
-          {appStage && <StatusTimeline current={appStage} compact />}
         </div>
       ) : (
         memberNotes && (
@@ -502,7 +498,7 @@ function TourTab({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Truck size={14} color="var(--text-faint)" />
-          <span className="kicker">recruiting truck — tour route</span>
+          <span className="kicker">BRIDGE truck — tour route</span>
         </div>
         {isAdmin && !open && (
           <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={startAdd}>

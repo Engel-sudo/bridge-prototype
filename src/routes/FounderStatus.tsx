@@ -1,12 +1,11 @@
 import { Fragment, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useParams } from 'react-router-dom'
-import { Clock, CheckCircle, XCircle, Calendar, MapPin, Lightbulb, Users, Truck } from 'lucide-react'
+import { Clock, CheckCircle, XCircle, Lightbulb, Users, Calendar, Truck } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import OwnerCard from '../components/OwnerCard'
 import DemoHint from '../components/DemoHint'
-import TruckTourMap from '../components/TruckTourMap'
-import type { Stage, CommunityEventType, TruckStopStatus } from '../store/types'
+import type { Stage } from '../store/types'
 
 const STAGE_LABELS: Record<string, string> = {
   submitted: 'Application submitted',
@@ -32,22 +31,6 @@ const NEXT_STEP: Record<string, string> = {
   path_to_production: 'In production. Your technology is going into the car.',
 }
 
-const EVENT_TYPE_LABEL: Record<CommunityEventType, string> = {
-  workshop: 'Workshop',
-  networking: 'Networking',
-  demo_day: 'Demo Day',
-  hackathon: 'Hackathon',
-}
-const EVENT_TYPE_COLOR: Record<CommunityEventType, string> = {
-  workshop: 'var(--blue)',
-  networking: 'var(--accent)',
-  demo_day: 'var(--amber)',
-  hackathon: 'var(--red)',
-}
-const STOP_LABEL: Record<TruckStopStatus, string> = { past: 'Past', current: 'Here now', upcoming: 'Upcoming' }
-const STOP_COLOR: Record<TruckStopStatus, string> = { past: 'var(--text-faint)', current: 'var(--accent)', upcoming: 'var(--blue)' }
-
-type Tab = 'status' | 'events' | 'tour'
 
 // ── Forked Timeline ──────────────────────────────────────────────────────────
 
@@ -177,13 +160,11 @@ function ForkedTimeline({ current }: { current: Stage }) {
 
 export default function FounderStatus() {
   const { id } = useParams()
-  const { applications, owners, communityEvents, truckStops, painPoints } = useBridgeStore()
+  const { applications, owners, painPoints } = useBridgeStore()
 
   const app = id
     ? applications.find(a => a.id === id)
     : applications.find(a => a.id === 'APP-2024-0047') || applications[0]
-
-  const [tab, setTab] = useState<Tab>('status')
 
   if (!app) {
     return (
@@ -212,6 +193,8 @@ export default function FounderStatus() {
   const currentLabel = STAGE_LABELS[app.stage] || app.stage
   const openPainPoints = painPoints.filter(pp => pp.status === 'open' && pp.sharedWithCommunity !== false)
 
+  const [tab, setTab] = useState<'status' | 'community'>('status')
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -224,6 +207,8 @@ export default function FounderStatus() {
         hint={
           isRedirect
             ? "You've been redirected — but you're in the BRIDGE Community now. Access open pain points and upcoming events below."
+            : isGo
+            ? "Your GO decision is confirmed. The Community tab is now open — explore open pain points and upcoming events."
             : "This page updates live when your Internal Lead advances the stage in the Internal Lead Console."
         }
       />
@@ -249,31 +234,32 @@ export default function FounderStatus() {
         </div>
       </motion.div>
 
-      {/* Tabs */}
-      <div role="tablist" style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border)', marginBottom: '28px' }}>
-        {(['status', 'events', 'tour'] as Tab[]).map(t => {
-          const active = tab === t
-          const label = t === 'status' ? 'Status' : t === 'events' ? 'Events' : 'Tour'
-          return (
-            <button
-              key={t}
-              role="tab"
-              aria-selected={active}
-              onClick={() => setTab(t)}
-              style={{
-                fontFamily: 'AudiType', fontSize: '13px', fontWeight: active ? 700 : 500,
-                color: active ? 'var(--text)' : 'var(--text-muted)',
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                padding: '10px 16px', position: 'relative',
-                borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
-                marginBottom: '-1px', transition: 'color 0.15s',
-              }}
-            >
-              {label}
-            </button>
-          )
-        })}
-      </div>
+      {/* Tabs — Community only unlocks on GO */}
+      {isGo && (
+        <div role="tablist" style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border)', marginBottom: '28px' }}>
+          {(['status', 'community'] as const).map(t => {
+            const active = tab === t
+            return (
+              <button
+                key={t}
+                role="tab"
+                aria-selected={active}
+                onClick={() => setTab(t)}
+                style={{
+                  fontFamily: 'AudiType', fontSize: '13px', fontWeight: active ? 700 : 500,
+                  color: active ? 'var(--text)' : 'var(--text-muted)',
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  padding: '10px 16px',
+                  borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+                  marginBottom: '-1px', transition: 'color 0.15s',
+                }}
+              >
+                {t === 'status' ? 'Status' : 'Community'}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
         {tab === 'status' && (
@@ -287,8 +273,7 @@ export default function FounderStatus() {
             openPainPoints={openPainPoints}
           />
         )}
-        {tab === 'events' && <EventsTab events={communityEvents} />}
-        {tab === 'tour' && <TourTab stops={truckStops} />}
+        {tab === 'community' && <CommunityTab openPainPoints={openPainPoints} />}
       </motion.div>
     </motion.div>
   )
@@ -442,7 +427,7 @@ function StatusTab({
               <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>You're in the BRIDGE Community</span>
             </div>
             <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
-              Your technology didn't fit the current roadmap — but you're exactly the kind of team BRIDGE wants to stay close to. You now have access to Audi's open pain points, upcoming events, and the recruiting truck tour. If you see a problem you can solve, you're welcome to apply again.
+              Your technology didn't fit the current roadmap — but you're exactly the kind of team BRIDGE wants to stay close to. You now have access to Audi's open pain points, upcoming events, and the BRIDGE truck tour. If you see a problem you can solve, you're welcome to apply again.
             </p>
           </div>
 
@@ -489,140 +474,57 @@ function StatusTab({
   )
 }
 
-// ── Events Tab ───────────────────────────────────────────────────────────────
+// ── Community Tab (GO founders) ──────────────────────────────────────────────
 
-function EventsTab({ events }: { events: import('../store/types').CommunityEvent[] }) {
+function CommunityTab({ openPainPoints }: { openPainPoints: import('../store/types').PainPoint[] }) {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-        <Calendar size={14} color="var(--text-faint)" />
-        <span className="kicker">upcoming events</span>
+      <div style={{ marginBottom: '28px', padding: '20px 24px', background: 'var(--accent-dim)', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius)', borderLeft: '3px solid var(--accent)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <Users size={15} color="var(--accent)" />
+          <span style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '15px', color: 'var(--text)' }}>You're in the BRIDGE Community</span>
+        </div>
+        <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: '0 0 14px' }}>
+          Your GO decision opens up the full community. Explore Audi's open pain points below — your Internal Lead may match you to one as you move toward a pilot.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <Link to="/community?tab=events" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', background: 'var(--surface)', border: '1px solid var(--border)', padding: '7px 14px', borderRadius: 'var(--radius-sm)', textDecoration: 'none' }}>
+            <Calendar size={13} /> Events
+          </Link>
+          <Link to="/community?tab=tour" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'AudiType', fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', background: 'var(--surface)', border: '1px solid var(--border)', padding: '7px 14px', borderRadius: 'var(--radius-sm)', textDecoration: 'none' }}>
+            <Truck size={13} /> BRIDGE Truck Tour
+          </Link>
+        </div>
       </div>
-      <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '18px', lineHeight: 1.5 }}>
-        As a BRIDGE applicant you have access to all community events — workshops inside the production line, networking with Audi leads, demo days, and hackathons.
-      </p>
 
-      {events.length === 0 ? (
-        <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)' }}>No upcoming events yet.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {events.map((evt, i) => (
-            <motion.div
-              key={evt.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.04 + i * 0.05 }}
-              className="card"
-              style={{ padding: '20px 24px' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: EVENT_TYPE_COLOR[evt.type], background: `${EVENT_TYPE_COLOR[evt.type]}18`, padding: '2px 7px', borderRadius: '0' }}>
-                      {EVENT_TYPE_LABEL[evt.type]}
-                    </span>
-                  </div>
-                  <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '16px', color: 'var(--text)' }}>{evt.title}</div>
-                </div>
-                <div style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-muted)' }}>{evt.date}</div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '8px' }}>
-                <MapPin size={12} color="var(--text-faint)" style={{ marginTop: '2px', flexShrink: 0 }} />
-                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{evt.location}</span>
-              </div>
-              <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>{evt.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ── Tour Tab ─────────────────────────────────────────────────────────────────
-
-function TourTab({ stops }: { stops: import('../store/types').TruckStop[] }) {
-  const upcoming = stops.filter(s => s.status !== 'past')
-  const [selectedId, setSelectedId] = useState<string | null>(
-    stops.find(s => s.status === 'current')?.id ?? upcoming[0]?.id ?? null
-  )
-  const selected = stops.find(s => s.id === selectedId) ?? null
-
-  return (
-    <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-        <Truck size={14} color="var(--text-faint)" />
-        <span className="kicker">recruiting truck — tour route</span>
+        <Lightbulb size={14} color="var(--text-faint)" />
+        <span className="kicker">open pain points</span>
       </div>
-      <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '18px', lineHeight: 1.5 }}>
-        The BRIDGE truck tours universities and startup hubs so founders can meet Audi's venture clienting team informally. Tap a pin to see when it's near you.
+      <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-faint)', marginBottom: '14px', lineHeight: 1.5 }}>
+        Real problems Audi hasn't solved yet. Your Internal Lead can match you to one as you move toward a pilot.
       </p>
-
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' }}>
-        {(['past', 'current', 'upcoming'] as TruckStopStatus[]).map(s => (
-          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: s === 'past' ? 'var(--bg)' : STOP_COLOR[s], border: `2px solid ${STOP_COLOR[s]}` }} />
-            <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-muted)' }}>{STOP_LABEL[s]}</span>
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {openPainPoints.map((pp, i) => (
+          <motion.div
+            key={pp.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.04 + i * 0.04 }}
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '16px 20px' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
+              <div style={{ fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--text)', lineHeight: 1.3 }}>{pp.title}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                <Users size={11} color="var(--text-faint)" />
+                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{pp.department}</span>
+              </div>
+            </div>
+            <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>{pp.description}</p>
+          </motion.div>
         ))}
       </div>
-
-      <div className="tour-map-grid" style={{ gap: '24px' }}>
-        <div className="card" style={{ padding: '16px' }}>
-          <TruckTourMap stops={stops} selectedId={selectedId} onSelect={setSelectedId} />
-        </div>
-
-        <div>
-          {selected && (
-            <div className="card" style={{ padding: '18px 20px', marginBottom: '16px', borderLeft: `3px solid ${STOP_COLOR[selected.status]}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
-                <div>
-                  <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '17px', color: 'var(--text)' }}>{selected.city}</div>
-                  <div style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{selected.venue}</div>
-                </div>
-                <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: STOP_COLOR[selected.status], background: `${STOP_COLOR[selected.status]}18`, padding: '3px 8px', whiteSpace: 'nowrap' }}>
-                  {STOP_LABEL[selected.status]}
-                </span>
-              </div>
-              <div style={{ fontFamily: 'AudiType', fontSize: '12px', color: 'var(--text-faint)', margin: '8px 0' }}>{selected.date}</div>
-              <p style={{ fontFamily: 'AudiType', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>{selected.description}</p>
-              {selected.registerUrl && (
-                <a href={selected.registerUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '12px', fontFamily: 'AudiType', fontSize: '12px', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>
-                  Register →
-                </a>
-              )}
-            </div>
-          )}
-
-          <span className="kicker" style={{ display: 'block', marginBottom: '10px' }}>all stops</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {stops.map(s => {
-              const active = s.id === selectedId
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => setSelectedId(s.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', textAlign: 'left',
-                    background: active ? 'var(--accent-dim)' : 'var(--surface)',
-                    border: `1px solid ${active ? 'var(--border-strong)' : 'var(--border)'}`,
-                    borderRadius: 'var(--radius-sm)', padding: '10px 12px', cursor: 'pointer',
-                  }}
-                >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0, background: s.status === 'past' ? 'var(--bg)' : STOP_COLOR[s.status], border: `2px solid ${STOP_COLOR[s.status]}` }} />
-                    <span style={{ fontFamily: 'AudiType', fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>{s.city}</span>
-                  </span>
-                  <span style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)' }}>{s.date}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
+

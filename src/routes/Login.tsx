@@ -10,6 +10,8 @@ const SAMPLE_APP_IDS = new Set([
   'APP-2024-0058', 'APP-2026-0061', 'APP-2024-0029',
 ])
 
+const SAMPLE_MEMBER_IDS = new Set(['pm1', 'pm2'])
+
 type Tile = 'startup' | 'internal_lead' | 'admin' | 'community' | 'floor_worker' | null
 
 export default function Login() {
@@ -426,7 +428,7 @@ export default function Login() {
                     Select your profile
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {poolMembers.map(member => (
+                    {poolMembers.filter(m => SAMPLE_MEMBER_IDS.has(m.id)).map(member => (
                       <button
                         key={member.id}
                         onClick={() => handleCommunityMember(member.id)}

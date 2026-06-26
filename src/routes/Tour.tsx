@@ -100,7 +100,7 @@ export default function Tour() {
             <div style={{ fontFamily: 'AudiType', fontWeight: 700, fontSize: '18px', color: 'var(--text)', marginBottom: '4px' }}>Can't wait for the truck?</div>
             <div style={{ fontFamily: 'AudiType', fontSize: '14px', color: 'var(--text-muted)' }}>Apply to BRIDGE today — a named contact within 48 hours, a decision in two weeks.</div>
           </div>
-          <Link to="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--accent-contrast)', background: 'var(--accent)', border: 'none', padding: '12px 24px', borderRadius: 'var(--radius-sm)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+          <Link to="/apply" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'AudiType', fontWeight: 600, fontSize: '14px', color: 'var(--accent-contrast)', background: 'var(--accent)', border: 'none', padding: '12px 24px', borderRadius: 'var(--radius-sm)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             Apply to BRIDGE <ArrowRight size={16} />
           </Link>
         </motion.div>
