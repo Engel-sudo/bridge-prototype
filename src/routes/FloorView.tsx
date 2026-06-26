@@ -82,8 +82,8 @@ export default function FloorView() {
                 <input className="input" placeholder="Describe it in one sentence" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required style={{ fontSize: '16px', padding: '12px 14px' }} />
               </div>
               <div>
-                <label style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '6px' }}>More detail</label>
-                <textarea className="input" placeholder="What's the impact? Anything you've tried?" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} style={{ minHeight: '90px', fontSize: '16px', padding: '12px 14px' }} />
+                <label style={{ fontFamily: 'AudiType', fontSize: '11px', color: 'var(--text-faint)', display: 'block', marginBottom: '6px' }}>Give us more detail</label>
+                <textarea className="input" placeholder="What's the impact? Anything you've already tried?" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} style={{ minHeight: '90px', fontSize: '16px', padding: '12px 14px' }} />
               </div>
               <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '14px', minHeight: '48px' }}>Submit</button>
             </form>
