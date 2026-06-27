@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, CheckCircle, ShieldCheck } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import DemoHint from '../components/DemoHint'
@@ -191,6 +191,7 @@ export default function Apply() {
   const sec4Ref = useRef<HTMLElement>(null)
   const { addApplication } = useBridgeStore()
   const loginAuth = useAuthStore(s => s.login)
+  const selectedAppId = useAuthStore(s => s.selectedAppId)
   const navigate = useNavigate()
 
   // Inject page-scoped CSS once
@@ -316,6 +317,13 @@ export default function Apply() {
 
   const completedSections = [s1Done, s2Done, s3Done, s4Done].filter(Boolean).length
   const progressPct = Math.round((completedSections / 4) * 100)
+
+  // A founder who already has an application doesn't apply again — send them to
+  // their status page. (The "Apply" nav link is hidden for them; this guards the
+  // direct URL too.) Skip while showing this session's own success screen.
+  if (selectedAppId && !done) {
+    return <Navigate to={`/founder/${selectedAppId}`} replace />
+  }
 
   // ─── Done Screen ─────────────────────────────────────────────────────────────
 
