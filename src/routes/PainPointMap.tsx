@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Layers, Check, ArrowRight, X } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
@@ -6,6 +7,7 @@ import PainPointCard from '../components/PainPointCard'
 import DemoHint from '../components/DemoHint'
 import type { PainPointStatus, PainPoint } from '../store/types'
 import { ClusterRateLimitError } from '../store/clustering'
+import { hasStartupProfile } from '../store/derive'
 
 const DEPARTMENTS = ['All', 'Quality', 'Production', 'Logistics', 'R&D', 'Procurement', 'Innovation & Ventures']
 const STATUS_FILTERS: { label: string; value: PainPointStatus | 'all' }[] = [
@@ -23,6 +25,7 @@ const STAGE_LABEL: Record<string, string> = {
 
 export default function PainPointMap() {
   const { painPoints, applications, addPainPoint, clusters, clusterPainPoints, matchResults, matchLoading, computeMatches } = useBridgeStore()
+  const navigate = useNavigate()
 
   // Compute matches automatically on mount — no button needed. Signature-gated
   // so navigating back to this page never re-runs the LLM if nothing changed.
@@ -327,9 +330,19 @@ export default function PainPointMap() {
                             </span>
                             <span style={{ fontFamily: 'AudiType', fontSize: '10px', color: 'var(--text-faint)' }}>{app.funding}</span>
                           </div>
-                          <button className="btn-secondary" style={{ padding: '5px 12px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}>
-                            Contact <ArrowRight size={10} />
-                          </button>
+                          {hasStartupProfile(app.stage) ? (
+                            <button
+                              className="btn-secondary"
+                              onClick={() => navigate(`/startup/${app.id}`)}
+                              style={{ padding: '5px 12px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}
+                            >
+                              View profile <ArrowRight size={10} />
+                            </button>
+                          ) : (
+                            <span style={{ fontFamily: 'AudiType', fontSize: '10px', color: 'var(--text-faint)', whiteSpace: 'nowrap' }}>
+                              In pipeline — not yet a partner
+                            </span>
+                          )}
                         </div>
                       </motion.div>
                     ))}
