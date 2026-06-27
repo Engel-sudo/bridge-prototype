@@ -319,8 +319,23 @@ export const useBridgeStore = create<BridgeStore>((set, get) => ({
       prev = STAGE_ORDER[idx - 1]
     }
     const updated: Application = { ...app, stage: prev }
-    set(state => ({ applications: state.applications.map(a => a.id === appId ? updated : a) }))
+    // Stepping back out of production uncounts the implementation that
+    // advanceStage credited on the way in — otherwise revert+advance inflates
+    // the KPI. Mirrors revertApplication's rollback.
+    const leftProduction = app.stage === 'path_to_production' && prev !== 'path_to_production'
+    const metrics = leftProduction
+      ? {
+          ...get().metrics,
+          implementations: Math.max(0, get().metrics.implementations - 1),
+          implementationsThisQuarter: Math.max(0, get().metrics.implementationsThisQuarter - 1),
+        }
+      : get().metrics
+    set(state => ({
+      applications: state.applications.map(a => a.id === appId ? updated : a),
+      metrics,
+    }))
     void getRepository().saveApplication(updated)
+    if (leftProduction) void getRepository().saveMetrics(metrics)
   },
 
   // Auto-match pain points to startups. Tries Groq LLM first (if

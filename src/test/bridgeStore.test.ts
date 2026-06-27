@@ -69,6 +69,34 @@ describe('bridgeStore — advanceStage at the terminal stage', () => {
   })
 })
 
+describe('bridgeStore — revertStage KPI integrity', () => {
+  it('rolls back the implementations KPI when a production app is stepped back', () => {
+    const { addApplication, advanceStage, revertStage } = useBridgeStore.getState()
+    const before = useBridgeStore.getState().metrics.implementations
+
+    addApplication(makeApp('APP-T3', 'matched_pain_owner'))
+    advanceStage('APP-T3') // -> path_to_production, implementations +1
+    expect(useBridgeStore.getState().metrics.implementations).toBe(before + 1)
+
+    revertStage('APP-T3') // path_to_production -> matched_pain_owner
+
+    expect(useBridgeStore.getState().applications.find(a => a.id === 'APP-T3')?.stage)
+      .toBe('matched_pain_owner')
+    // The implementation that was counted on the way in must be uncounted.
+    expect(useBridgeStore.getState().metrics.implementations).toBe(before)
+  })
+
+  it('does not change the KPI when stepping back between non-production stages', () => {
+    const { addApplication, revertStage } = useBridgeStore.getState()
+    const before = useBridgeStore.getState().metrics.implementations
+
+    addApplication(makeApp('APP-T4', 'in_review'))
+    revertStage('APP-T4') // in_review -> owner_assigned
+
+    expect(useBridgeStore.getState().metrics.implementations).toBe(before)
+  })
+})
+
 describe('bridgeStore — truck stop CRUD', () => {
   it('adds a stop to the tour route', () => {
     const before = useBridgeStore.getState().truckStops.length
