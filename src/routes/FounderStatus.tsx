@@ -1,8 +1,9 @@
 import { Fragment, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, Navigate } from 'react-router-dom'
 import { Clock, CheckCircle, XCircle, Lightbulb, Users, Calendar, Truck } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
+import { useAuthStore } from '../store/authStore'
 import OwnerCard from '../components/OwnerCard'
 import DemoHint from '../components/DemoHint'
 import type { Stage } from '../store/types'
@@ -161,6 +162,17 @@ function ForkedTimeline({ current }: { current: Stage }) {
 export default function FounderStatus() {
   const { id } = useParams()
   const { applications, owners, painPoints } = useBridgeStore()
+  const { role, selectedAppId } = useAuthStore()
+  // All hooks must run before any early return — keep useState above the
+  // "not found" / access guards or the hook count changes across :id navigations.
+  const [tab, setTab] = useState<'status' | 'community'>('status')
+
+  // A founder may only view their own application. Leads and admins manage the
+  // whole pipeline, so they can view any. Redirect a founder who deep-links
+  // someone else's id back to their own status page.
+  if (role === 'startup' && selectedAppId && id && id !== selectedAppId) {
+    return <Navigate to={`/founder/${selectedAppId}`} replace />
+  }
 
   const app = id
     ? applications.find(a => a.id === id)
@@ -192,8 +204,6 @@ export default function FounderStatus() {
   const daysLeft = 14 - app.daysInProcess
   const currentLabel = STAGE_LABELS[app.stage] || app.stage
   const openPainPoints = painPoints.filter(pp => pp.status === 'open' && pp.sharedWithCommunity !== false)
-
-  const [tab, setTab] = useState<'status' | 'community'>('status')
 
   return (
     <motion.div

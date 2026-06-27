@@ -43,6 +43,14 @@ export default function StartupProfile() {
     if (!app || !hasStartupProfile(app.stage)) navigate(-1)
   }, [app, navigate])
 
+  // Close the contact modal on Escape — pairs with the click-outside handler.
+  useEffect(() => {
+    if (!contactOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setContactOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [contactOpen])
+
   if (!app || !hasStartupProfile(app.stage)) return null
 
   const trl = trlInfo(app.trl)
@@ -370,7 +378,7 @@ export default function StartupProfile() {
                   <span className="kicker" style={{ marginBottom: '4px', display: 'block' }}>reach out</span>
                   <h3 style={{ fontFamily: EXTENDED, fontSize: '22px', color: 'var(--text)', margin: 0 }}>{app.companyName}</h3>
                 </div>
-                <button onClick={() => setContactOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}>
+                <button onClick={() => setContactOpen(false)} aria-label="Close" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}>
                   <X size={18} />
                 </button>
               </div>
