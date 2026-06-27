@@ -157,17 +157,22 @@ export default function StartupProfile() {
               </>
             ) : role !== 'floor_worker' && (
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <Link
-                  to="/floor"
-                  style={{
-                    fontFamily: SANS, fontSize: '12px', fontWeight: 600,
-                    color: 'var(--text)', border: '1px solid var(--border)',
-                    padding: '8px 14px', textDecoration: 'none',
-                    display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  }}
-                >
-                  <AlertCircle size={13} /> I have a problem
-                </Link>
+                {/* "I have a problem" reports a floor pain point — only Audi-internal
+                    roles can reach /floor, so don't offer it to community members
+                    or other founders (it would bounce on the route guard). */}
+                {(role === 'internal_lead' || role === 'admin') && (
+                  <Link
+                    to="/floor"
+                    style={{
+                      fontFamily: SANS, fontSize: '12px', fontWeight: 600,
+                      color: 'var(--text)', border: '1px solid var(--border)',
+                      padding: '8px 14px', textDecoration: 'none',
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    }}
+                  >
+                    <AlertCircle size={13} /> I have a problem
+                  </Link>
+                )}
                 <button
                   onClick={() => setContactOpen(true)}
                   className="btn-primary"
@@ -426,22 +431,26 @@ export default function StartupProfile() {
                 )}
               </div>
 
-              <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                <p style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--text-faint)', margin: '0 0 10px' }}>
-                  Have a specific problem this startup could help with?
-                </p>
-                <Link
-                  to="/floor"
-                  onClick={() => setContactOpen(false)}
-                  style={{
-                    display: 'block', fontFamily: SANS, fontSize: '12px', fontWeight: 600,
-                    color: 'var(--text)', border: '1px solid var(--border)',
-                    padding: '10px 16px', textDecoration: 'none', textAlign: 'center',
-                  }}
-                >
-                  Submit a pain point instead
-                </Link>
-              </div>
+              {/* Floor pain-point shortcut — only for Audi-internal roles that
+                  can actually reach /floor. */}
+              {(role === 'internal_lead' || role === 'admin') && (
+                <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+                  <p style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--text-faint)', margin: '0 0 10px' }}>
+                    Have a specific problem this startup could help with?
+                  </p>
+                  <Link
+                    to="/floor"
+                    onClick={() => setContactOpen(false)}
+                    style={{
+                      display: 'block', fontFamily: SANS, fontSize: '12px', fontWeight: 600,
+                      color: 'var(--text)', border: '1px solid var(--border)',
+                      padding: '10px 16px', textDecoration: 'none', textAlign: 'center',
+                    }}
+                  >
+                    Submit a pain point instead
+                  </Link>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

@@ -44,6 +44,26 @@ beforeEach(() => {
   useAuthStore.getState().logout()
 })
 
+// ── "I have a problem" CTA gating ─────────────────────────────────────────────
+
+describe('StartupProfile — "I have a problem" CTA visibility', () => {
+  it('shows it to an internal lead (who can reach /floor)', () => {
+    useAuthStore.getState().login('internal_lead', {})
+    useBridgeStore.setState(s => ({ applications: [makeApp({}), ...s.applications] }))
+    renderProfile('APP-TEST-0001')
+    expect(screen.getByText(/I have a problem/i)).toBeInTheDocument()
+  })
+
+  it('hides it from a community member (who would bounce off the /floor guard)', () => {
+    useAuthStore.getState().login('pool_member', { memberId: 'pm1' })
+    useBridgeStore.setState(s => ({ applications: [makeApp({}), ...s.applications] }))
+    renderProfile('APP-TEST-0001')
+    expect(screen.queryByText(/I have a problem/i)).not.toBeInTheDocument()
+    // …but they can still express interest.
+    expect(screen.getByRole('button', { name: /I'm interested/i })).toBeInTheDocument()
+  })
+})
+
 // ── trlInfo display ───────────────────────────────────────────────────────────
 
 describe('StartupProfile — TRL label display', () => {
