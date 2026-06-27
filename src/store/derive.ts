@@ -17,6 +17,22 @@ export function canAccessCommunity(stage: Stage): boolean {
 }
 
 /**
+ * Stages at which a startup has a public-facing profile page. This is the gate
+ * the StartupProfile route enforces and the Nav uses to decide whether to show
+ * the "My Profile" link — keep them in sync via this single source of truth.
+ * Unlike community access, a redirected founder has no startup profile.
+ */
+const PROFILE_STAGES: ReadonlySet<Stage> = new Set<Stage>([
+  'decision_go',
+  'matched_pain_owner',
+  'path_to_production',
+])
+
+export function hasStartupProfile(stage: Stage): boolean {
+  return PROFILE_STAGES.has(stage)
+}
+
+/**
  * Returns an array of `weeks` numbers representing pipeline depth over time.
  * Index 0 = oldest week, index (weeks-1) = most recent week.
  * Pipeline depth = count of apps submitted on or before end-of-week that are

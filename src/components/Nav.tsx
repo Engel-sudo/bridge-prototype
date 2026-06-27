@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { RotateCcw, LogOut, Sun, Moon } from 'lucide-react'
 import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
-import { canAccessCommunity } from '../store/derive'
+import { canAccessCommunity, hasStartupProfile } from '../store/derive'
 import { useTheme } from '../theme'
 import type { PoolMember } from '../store/types'
 
@@ -91,18 +91,21 @@ export default function Nav() {
     )
   }
 
-  const visibleLinks = ALL_LINKS.filter(l => {
-    if (!role || !l.roles.includes(role)) return false
-    if (l.requiresAppId === true  && !selectedAppId) return false
-    if (l.requiresAppId === false &&  selectedAppId) return false
-    return true
-  })
-
   // Accepted founders earn community access — surface the link once their
   // application reaches the Go decision (or beyond).
   const founderApp = role === 'startup' && selectedAppId
     ? applications.find(a => a.id === selectedAppId)
     : null
+
+  const visibleLinks = ALL_LINKS.filter(l => {
+    if (!role || !l.roles.includes(role)) return false
+    if (l.requiresAppId === true  && !selectedAppId) return false
+    if (l.requiresAppId === false &&  selectedAppId) return false
+    // "My Profile" only exists for startups whose application has a profile page;
+    // showing it earlier dead-ends on the StartupProfile redirect.
+    if (l.to === '/startup' && !(founderApp && hasStartupProfile(founderApp.stage))) return false
+    return true
+  })
   if (founderApp && canAccessCommunity(founderApp.stage)) {
     visibleLinks.push({ to: '/community', label: 'Community', mono: 'community', roles: ['startup'], requiresAppId: null })
   }

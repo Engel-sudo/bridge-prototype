@@ -131,3 +131,23 @@ describe('Nav — accepted-founder community link', () => {
     expect(screen.queryByText('Community')).not.toBeInTheDocument()
   })
 })
+
+describe('Nav — My Profile link visibility', () => {
+  // The profile page only renders for accepted startups; the link must not be
+  // shown to founders whose stage would bounce them straight back.
+  beforeEach(() => {
+    useBridgeStore.getState().resetDemo()
+  })
+
+  it('shows My Profile for a startup whose application is accepted', () => {
+    useAuthStore.getState().login('startup', { appId: 'APP-2024-0031' }) // decision_go
+    renderNav('/founder/APP-2024-0031')
+    expect(screen.getByText('My Profile')).toBeInTheDocument()
+  })
+
+  it('hides My Profile for a startup still in review', () => {
+    useAuthStore.getState().login('startup', { appId: 'APP-2024-0047' }) // in_review
+    renderNav('/founder/APP-2024-0047')
+    expect(screen.queryByText('My Profile')).not.toBeInTheDocument()
+  })
+})

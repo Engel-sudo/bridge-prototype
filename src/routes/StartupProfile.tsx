@@ -6,11 +6,10 @@ import { useBridgeStore } from '../store/store'
 import { useAuthStore } from '../store/authStore'
 import { TRL_LABELS } from '../store/types'
 import type { Application, PainPoint } from '../store/types'
+import { hasStartupProfile } from '../store/derive'
 
 const EXTENDED = "'AudiType Extended', 'AudiType', sans-serif"
 const SANS = "'AudiType', sans-serif"
-
-const ACCEPTED_STAGES = new Set(['decision_go', 'matched_pain_owner', 'path_to_production'])
 
 const STAGE_LABEL: Record<string, string> = {
   decision_go: 'Accepted',
@@ -41,10 +40,10 @@ export default function StartupProfile() {
   const [contactOpen, setContactOpen] = useState(false)
 
   useEffect(() => {
-    if (!app || !ACCEPTED_STAGES.has(app.stage)) navigate(-1)
+    if (!app || !hasStartupProfile(app.stage)) navigate(-1)
   }, [app, navigate])
 
-  if (!app || !ACCEPTED_STAGES.has(app.stage)) return null
+  if (!app || !hasStartupProfile(app.stage)) return null
 
   const trl = trlInfo(app.trl)
   const hasMvp = app.hasMvp ?? app.productStage === 'MVP'
