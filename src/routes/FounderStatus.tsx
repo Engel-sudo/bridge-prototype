@@ -168,10 +168,11 @@ export default function FounderStatus() {
   const [tab, setTab] = useState<'status' | 'community'>('status')
 
   // A founder may only view their own application. Leads and admins manage the
-  // whole pipeline, so they can view any. Redirect a founder who deep-links
-  // someone else's id back to their own status page.
-  if (role === 'startup' && selectedAppId && id && id !== selectedAppId) {
-    return <Navigate to={`/founder/${selectedAppId}`} replace />
+  // whole pipeline, so they can view any. A startup with no application has no
+  // founder page at all — send them to Apply. Otherwise pin them to their own id.
+  if (role === 'startup') {
+    if (!selectedAppId) return <Navigate to="/apply" replace />
+    if (id !== selectedAppId) return <Navigate to={`/founder/${selectedAppId}`} replace />
   }
 
   const app = id

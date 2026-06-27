@@ -82,4 +82,12 @@ describe('FounderStatus — startup may only view their own application', () => 
 
     expect(screen.getByText('FlowRoute')).toBeInTheDocument()
   })
+
+  it('sends a startup with no application of their own away from founder pages', () => {
+    useAuthStore.getState().login('startup', {}) // no appId
+    renderFounderStatus('APP-2024-0031')
+
+    expect(screen.queryByText('FlowRoute')).not.toBeInTheDocument()
+    expect(screen.getByText('elsewhere')).toBeInTheDocument() // redirected (to /apply)
+  })
 })
